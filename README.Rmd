@@ -30,7 +30,6 @@ library(badger)
 `r badge_code_size("Amalan-ConStat/NeEDS4BigData")`
 
 `r badge_doi("10.1007/s00362-023-01446-9", "green")`
-
 <!-- badges: end -->
 
 _The R package "NeEDS4BigData" holds subsampling methods that can be implemented over big data._

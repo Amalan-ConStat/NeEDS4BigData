@@ -25,7 +25,6 @@ issues](https://img.shields.io/github/issues/Amalan-ConStat/NeEDS4BigData.svg?st
 [![](https://img.shields.io/github/languages/code-size/Amalan-ConStat/NeEDS4BigData.svg)](https://github.com/Amalan-ConStat/NeEDS4BigData)
 
 [![](https://img.shields.io/badge/doi-10.1007/s00362--023--01446--9-green.svg)](https://doi.org/10.1007/s00362-023-01446-9)
-
 <!-- badges: end -->
 
 *The R package “NeEDS4BigData” holds subsampling methods that can be
