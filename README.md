@@ -20,8 +20,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 [![GitHub
 issues](https://img.shields.io/github/issues/Amalan-ConStat/NeEDS4BigData.svg?style=popout)](https://github.com/Amalan-ConStat/NeEDS4BigData/issues)
 
-[![Codecov test
-coverage](https://codecov.io/gh/Amalan-ConStat/NeEDS4BigData/branch/main/graph/badge.svg)](https://app.codecov.io/gh/Amalan-ConStat/NeEDS4BigData?branch=main)
+[![codecov](https://codecov.io/gh/Amalan-ConStat/NeEDS4BigData/graph/badge.svg?token=UHFWYFPDSI)](https://codecov.io/gh/Amalan-ConStat/NeEDS4BigData)
 [![CodeFactor](https://www.codefactor.io/repository/github/Amalan-ConStat/NeEDS4BigData/badge)](https://www.codefactor.io/repository/github/Amalan-ConStat/NeEDS4BigData)
 [![](https://img.shields.io/github/languages/code-size/Amalan-ConStat/NeEDS4BigData.svg)](https://github.com/Amalan-ConStat/NeEDS4BigData)
 
