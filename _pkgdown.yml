@@ -1,0 +1,88 @@
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+development:
+  mode: release
+
+navbar:
+  title: NeEDS4BigData
+  left:
+    - icon: fa-home
+      href: index.html
+    - text: Functions
+      href: reference/index.html
+    - text: Examples
+      menu:
+        - text: Introduction
+          href: articles/introduction.html
+        - text: Linear Regression
+          href: articles/Linear_Regression.html
+        - text: Logistic Regression
+          href: articles/Logistic_Regression.html
+        - text: Poisson Regression
+          href: articles/Poisson_Regression.html
+    - text: Versions
+      href: news/index.html
+  right:
+    - icon: fa-user-circle
+      href: http://www.amalan-mahendran.com
+    - icon: fa-hashtag
+      href: https://twitter.com/Amalan_Con_Stat
+    - icon: fa-twitter
+      href: https://bsky.app/profile/amalanconstat.bsky.social
+    - icon: fa-github
+      href: https://github.com/Amalan-ConStat
+    - icon: fa-linkedin
+      href: https://www.linkedin.com/in/amalan-mahendran-72b86b37/
+    - icon: fa-google
+      href: https://scholar.google.com/citations?user=fj4E-GMAAAAJ&hl=en
+
+authors:
+  Amalan Mahendran:
+    href: https://www.linkedin.com/in/amalan-mahendran-72b86b37/
+
+
+reference:
+  - title: Big Data
+    desc: Real world big data
+    contents:
+        - Bike_sharing
+        - Electric_consumption
+        - Skin_segmentation
+  - title: Generate Big Data
+    desc: Simulating big data under different conditions
+    contents:
+        - GenGLMdata
+        - GenModelRobustGLMdata
+        - GenModelMissGLMdata
+  - title: Subsampling
+    desc: Basic subsampling algorithms
+    contents:
+        - AoptimalGauLMSub
+        - LCCsampling
+        - ALoptimalGLMSub
+        - LeverageSampling
+        - AoptimalMCGLMSub
+  - title: Model Robust Subsampling
+    desc: Subsampling algorithms when multiple models can describe the big data
+    contents:
+        - modelRobustLinSub
+        - modelRobustLogSub
+        - modelRobustPoiSub
+  - title: Model Misspecified Subsampling
+    desc: Subsampling algorithms when the given model is misspecified
+    contents:
+        - modelMissLinSub
+        - modelMissLogSub
+        - modelMissPoiSub
+  - title: Supporting Functions
+    desc: Functions to plot the results from the outputs
+    contents:
+        - plot_Beta
+        - plot_LmAMSE
+        - plot_Utility
+
+home:
+  sidebar:
+    structure: [links, license, community, citation, authors, dev]
