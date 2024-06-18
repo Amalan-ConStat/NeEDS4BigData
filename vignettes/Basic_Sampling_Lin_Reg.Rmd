@@ -1,0 +1,200 @@
+---
+title: "Basic Sampling for Linear Regression"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Basic Sampling for Linear Regression}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<style>
+body {
+text-align: justify}
+</style>
+
+```{r load packages and theme,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(NeEDS4BigData)
+library(ggplot2)
+library(ggpubr)
+library(kableExtra)
+library(tidyr)
+library(psych)
+library(gam)
+
+# Theme for plots
+Theme_special<-function(){
+  theme(legend.key.width=unit(1,"cm"),
+        axis.text.x = element_text(color = "black",size=12, angle = 30, hjust=0.75),
+        axis.text.y = element_text(color = "black",size=12), 
+        strip.text = element_text(colour = "black",size = 12,face="bold"),
+        panel.grid.minor.x = element_blank(),
+        axis.title= element_text(color = "black",face = "bold",size = 12),
+        legend.text = element_text(color = "black", size=11),
+        legend.position = "bottom",
+        legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(-1,-2,-1,-2)) 
+}
+```
+
+# Understanding the electric consumption data
+
+The data contains $4$ columns and has $2,049,280$ observations, first column is the response variable and the rest are covariates, however we only use $5\%$ of the data for this explanation. 
+The response $y$ is the log scaled intensity, while the covariates are active electrical energy in the a) kitchen ($X_1$), b) laundry room ($X_2$) and c) water-heater and air-conditioner ($X_3$). 
+The covariates are scaled to be mean of $\mu=0$ and variance of $\sigma^2=1$. 
+For the given data subsampling methods are implemented assuming the main effects model can describe the data.
+
+```{r Exploring data}
+indexes<-sample(1:nrow(Electric_consumption),nrow(Electric_consumption)*0.05)
+Original_Data<-cbind(Electric_consumption[indexes,1],1,Electric_consumption[indexes,-1])
+colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
+
+# Scaling the covariate data
+for (j in 3:5) {
+  Original_Data[,j]<-scale(Original_Data[,j])
+}
+head(Original_Data) %>% 
+  kable(format = "html",
+        caption = "First five observations of the electric consumption data.")
+
+# Setting the subsample sizes
+N<-nrow(Original_Data); M<-200; k<-c(6:15)*100; rep_k<-rep(k,each=M)
+```
+
+We focus on assuming the main effects model with the intercept can appropriately describe the big data.
+Based on this model the methods random sampling, leverage sampling, $A$-optimality sampling with Gaussian Linear Model, $A$- and $L$-optimality subsampling and $A$-optimality subsampling with response constraint are implemented on the big data.
+
+```{r Define the subsampling methods}
+# define colors, shapes, line types for the methods
+Method_Names<-c("A-Optimality","L-Optimality","A-Optimality GauLM","A-Optimality MC",
+                "Shrinkage Leverage","Basic Leverage","Unweighted Leverage","Random Sampling")
+Method_Color<-c("green","green4","palegreen","springgreen4",
+                "red","darkred","maroon","black")
+Method_Shape_Types<-c(rep(8,4),rep(4,3),16)
+Method_Line_Types<-c(rep("twodash",4),rep("dotted",3),"solid")
+```
+
+The obtained subsamples and their respective model parameter estimates are over $M=100$ simulations across different subsample sizes $k=(600,\ldots,1500)$. 
+We set the initial subsample size of $r1=300$ for the methods that requires a random sample. 
+From the final subsamples their respective model parameters are estimated. 
+These estimated model parameters are compared with the estimated model parameters of the full big data through the mean squared error $MSE(\tilde{\beta}_k,\hat{\beta})=\sum_{i=1}^M (\tilde{\beta}_k - \hat{\beta})^2/M$. 
+Here, $\tilde{\beta}_k$ is the estimated model parameters from the subsample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data. 
+Below is the code for implementing these subsampling methods.
+
+## Random sampling
+
+```{r Random subsampling}
+# Random sampling
+Final_Beta_RS<-matrix(nrow = length(k)*M,ncol = ncol(Original_Data[,-1])+1)
+for (i in 1:length(rep_k)) {
+  Temp_Data<-Original_Data[sample(1:N,rep_k[i]),]
+  lm(Y~.-1,data=Temp_Data)->Results
+  Final_Beta_RS[i,]<-c(rep_k[i],coefficients(Results))
+  if(i==length(rep_k)){print("All simulations completed for random sampling")}
+}
+Final_Beta_RS<-cbind.data.frame("Random Sampling",Final_Beta_RS)
+colnames(Final_Beta_RS)<-c("Method","Subsample",paste0("Beta",0:3))
+```
+
+## Leverage sampling
+
+```{r Leverage sampling}
+# Leverage sampling
+## we set the shrinkage value of alpha=0.9
+NeEDS4BigData::LeverageSampling(r=rep_k,Y=as.matrix(Original_Data[,1]),
+                                X=as.matrix(Original_Data[,-1]),N=N,
+                                alpha = 0.9,family = "linear")->Results
+Final_Beta_LS<-Results$Beta_Estimates
+colnames(Final_Beta_LS)<-c("Method","Subsample",paste0("Beta",0:3))
+```
+
+## A-optimality subsampling for Gaussian Linear Model
+
+```{r A-optimality subsampling for GauLin Model}
+# A-optimality subsampling for Gaussian Linear Model
+NeEDS4BigData::AoptimalGauLMSub(r1=300,r2=,rep_k,
+                                Y=as.matrix(Original_Data[,1]),
+                                X=as.matrix(Original_Data[,-1]),N=N)->Results
+Final_Beta_AoptGauLM<-Results$Beta_Estimates
+Final_Beta_AoptGauLM$Method<-rep("A-Optimality GauLM",nrow(Final_Beta_AoptGauLM))
+colnames(Final_Beta_AoptGauLM)<-c("Method","Subsample",paste0("Beta",0:3))
+```
+
+## A- and L-optimality subsampling
+
+```{r A- and L- optimaliy subsampling}
+# A- and L-optimality subsampling for GLM
+NeEDS4BigData::ALoptimalGLMSub(r1=300,r2=rep_k,
+                               Y=as.matrix(Original_Data[,1]),
+                               X=as.matrix(Original_Data[,-1]),
+                               N=N,family = "linear")->Results
+Final_Beta_ALoptGLM<-Results$Beta_Estimates
+colnames(Final_Beta_ALoptGLM)<-c("Method","Subsample",paste0("Beta",0:3))
+```
+
+## A-optimality subsampling with measurement constraints
+
+```{r A-optimality subsampling with measurement constraints}
+# A-optimality subsampling for without response
+NeEDS4BigData::AoptimalMCGLMSub(r1=300,r2=rep_k,
+                                Y=as.matrix(Original_Data[,1]),
+                                X=as.matrix(Original_Data[,-1]),
+                                N=N,family="linear")->Results
+Final_Beta_AoptMCGLM<-Results$Beta_Estimates
+Final_Beta_AoptMCGLM$Method<-rep("A-Optimality MC",nrow(Final_Beta_AoptMCGLM))
+colnames(Final_Beta_AoptMCGLM)<-c("Method","Subsample",paste0("Beta",0:3))
+```
+
+## Summary
+
+```{r Summarising the results}
+# Summarising Results of Scenario one
+Final_Beta<-rbind(Final_Beta_RS,Final_Beta_LS,
+                  Final_Beta_AoptGauLM,Final_Beta_ALoptGLM,
+                  Final_Beta_AoptMCGLM)
+
+# Obtaining the model parameter estimates for the full big data model
+lm(Y~.-1,data = Original_Data)->All_Results
+coefficients(All_Results)->All_Beta
+matrix(rep(All_Beta,by=nrow(Final_Beta)),nrow = nrow(Final_Beta),
+       ncol = ncol(Final_Beta[,-c(1,2)]),byrow = TRUE)->All_Beta
+
+remove(Final_Beta_RS,Final_Beta_LS,Final_Beta_AoptGauLM,Final_Beta_ALoptGLM,
+       Final_Beta_AoptMCGLM,Temp_Data,Results,All_Results)
+```
+
+The mean squared error is plotted below.
+
+```{r Model parameter estimates,fig.width=7,fig.height=12,fig.align='center',fig.cap="Mean squared error for a) all the subsampling methods and b) without unweighted leverage sampling."}
+# Obtain the mean squared error for the model parameter estimates
+MSE_Beta<-data.frame("Method"=Final_Beta$Method,
+                     "Subsample"=Final_Beta$Subsample,
+                     "MSE"=rowSums((All_Beta - Final_Beta[,-c(1,2)])^2)) 
+
+MSE_Beta$Method<-factor(MSE_Beta$Method,levels = Method_Names,labels = Method_Names)
+
+# Plot for the mean squared error with all methods
+ggplot(MSE_Beta |> dplyr::group_by(Method,Subsample) |> 
+         dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
+       aes(x=factor(Subsample),y=MSE,color=Method,group=Method,linetype=Method,shape=Method))+
+  geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
+  scale_color_manual(values = Method_Color)+
+  scale_linetype_manual(values=Method_Line_Types)+
+  scale_shape_manual(values = Method_Shape_Types)+
+  theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p1
+
+# Plot for the mean squared error with all methods except unweighted leverage
+ggplot(MSE_Beta[MSE_Beta$Method != "Unweighted Leverage",] |> 
+         dplyr::group_by(Method,Subsample) |> 
+         dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
+       aes(x=factor(Subsample),y=MSE,color=Method,group=Method,linetype=Method,shape=Method))+
+  geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
+  scale_color_manual(values = Method_Color[-7])+
+  scale_linetype_manual(values=Method_Line_Types[-7])+
+  scale_shape_manual(values = Method_Shape_Types[-7])+
+  theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p2
+
+ggarrange(p1,p2,nrow = 2,ncol = 1,labels = "auto")
+```
+
+### THANK YOU

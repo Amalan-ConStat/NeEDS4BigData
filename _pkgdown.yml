@@ -16,11 +16,17 @@ navbar:
       menu:
         - text: Introduction
           href: articles/introduction.html
-        - text: Linear Regression
+        - text: Linear regression - Basic sampling
+          href: articles/Basic_Sampling_Lin_Reg.html
+        - text: Linear Regression - Model robust and misspecification
           href: articles/Linear_Regression.html
-        - text: Logistic Regression
+        - text: Logistic Regression - Basic sampling
+          href: articles/Basic_Sampling_Log_Reg.html
+        - text: Logistic Regression - Model robust and misspecification
           href: articles/Logistic_Regression.html
-        - text: Poisson Regression
+        - text: Poisson Regression - Basic sampling
+          href: articles/Basic_Sampling_Poi_Reg.html
+        - text: Poisson Regression - Model robust and misspecification
           href: articles/Poisson_Regression.html
     - text: Versions
       href: news/index.html

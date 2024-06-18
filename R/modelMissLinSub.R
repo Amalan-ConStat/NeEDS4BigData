@@ -98,21 +98,16 @@
 #' @importFrom psych tr
 #' @export
 modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_Full){
-  if(any(is.na(c(r1,r2,N,Alpha,Var_GAM_Full,Var_Full))) |
-     any(is.nan(c(r1,r2,N,Alpha,Var_GAM_Full,Var_Full)))){
-    stop("NA or Infinite or NAN values in the r1,r2,N,Alpha,Var_GAM_Full or Var_Full")
+  if(any(is.na(c(r1,r2,N,Alpha))) | any(is.nan(c(r1,r2,N,Alpha)))){
+    stop("NA or Infinite or NAN values in the r1,r2,N or Alpha")
   }
 
   if((N != nrow(X)) | (N != nrow(Y)) | nrow(X) != nrow(Y)){
     stop("The big data size N is not the same as of the size of X or Y")
   }
 
-  if((length(F_Estimate_Full) != nrow(X)) | (length(F_Estimate_Full) != nrow(Y)) | N != length(F_Estimate_Full)){
-    stop("The big data size N is not the same as of the size of F_Estimate_Full")
-  }
-
-  if(any(is.na(cbind(Y,X,F_Estimate_Full))) | any(is.nan(cbind(Y,X,F_Estimate_Full)))){
-    stop("NA or Infinite or NAN values in the Y or X or F_Estimate_Full")
+  if(any(is.na(cbind(Y,X))) | any(is.nan(cbind(Y,X)))){
+    stop("NA or Infinite or NAN values in the Y or X")
   }
 
   if(any((2*r1) > r2)){
@@ -146,9 +141,12 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
   f_estimate<-Xbeta_GAM-Xbeta.prop
   Var_GAM.prop<-sum((Y-Xbeta_GAM)^2)/N
 
-  if(is.null(Var_GAM_Full) || is.null(Var_Full) || is.null(F_Estimate_Full) ){
+  if(is.null(Var_GAM_Full) || is.null(Var_Full) || is.null(F_Estimate_Full) ||
+     anyNA(Var_GAM_Full) || anyNA(Var_Full) || anyNA(F_Estimate_Full)){
+
     Var_GAM_Full<-Var_GAM.prop ; Var_Full<-Var.prop ; F_Estimate_Full<-f_estimate
     message("Var_GAM_Full, Var_Full and F_Estimate_Full from the initial sample is used.\n")
+
   }
 
   # mVc
@@ -388,9 +386,11 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
 
   Loss_Subsample_Data[,-c(1,2)]<-Loss_Subsample_Data[,-c(1,2)]/r2
 
+  all_r<-c(r1,r2)
   # Sample Data
   for(j in 1:length(Alpha)){
-    names(Sample.LmAMSE_LO[[j]])<-names(Sample.LmAMSE_Pow[[j]])<-c(length(r2)+1)
+    names(Sample.LmAMSE_LO[j])<-names(Sample.LmAMSE_Pow[j])<-paste0("Alpha_",Alpha[j])
+    names(Sample.LmAMSE_LO[[j]])<-names(Sample.LmAMSE_Pow[[j]])<-all_r
   }
 
   names(Sample.mMSE)<-names(Sample.mVc)<-names(Sample.LmAMSE)<-c(r1,r2)

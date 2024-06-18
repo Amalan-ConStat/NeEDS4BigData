@@ -1,10 +1,11 @@
 ---
-title: "Linear Regression"
+title: "Linear Regression : Model robust or misspecification"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Linear Regression}
+  %\VignetteIndexEntry{Linear Regression : Model robust or misspecification}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: Vig_Method_Ref.bib  
 ---
 
 <style>
@@ -41,11 +42,11 @@ Theme_special<-function(){
 The data contains $4$ columns and has $2,049,280$ observations, first column is the response variable and the rest are covariates, however we only use $5\%$ of the data for this explanation. 
 The response $y$ is the log scaled intensity, while the covariates are active electrical energy in the a) kitchen ($X_1$), b) laundry room ($X_2$) and c) water-heater and air-conditioner ($X_3$). 
 The covariates are scaled to be mean of $\mu=0$ and variance of $\sigma^2=1$. 
-Given data is analysed under three different scenarios,
 
-1. subsampling methods assuming the main effects model can describe the data.
-2. model robust or averaging subsampling methods assuming that a set of models can equally describe the data.
-3. subsampling method assuming the main effects model is potentially misspecified.
+Given data is analysed under two different scenarios,
+
+1. model robust or averaging subsampling methods assuming that a set of models can describe the data.
+2. subsampling method assuming the main effects model is potentially misspecified.
 
 ```{r Exploring data}
 indexes<-sample(1:nrow(Electric_consumption),nrow(Electric_consumption)*0.05)
@@ -64,128 +65,14 @@ head(Original_Data) %>%
 N<-nrow(Original_Data); M<-200; k<-c(6:15)*100; rep_k<-rep(k,each=M)
 ```
 
-## First scenario
+## Model robust or model averaging subsampling
 
-First, we focus on assuming the main effects model with the intercept is true and that it can describe the big data.
-Based on this model the methods random sampling, leverage sampling, $A$-optimality sampling with Gaussian Linear Model, $A$- and $L$-optimality subsampling and $A$-optimality subsampling with response constraint are implemented on the big data.
-The obtained subsamples and their respective model parameter estimates are over $M=100$ simulations across different subsample sizes $k=(600,\ldots,1500)$. 
-We set the initial subsample size of $r1=300$ for the methods that requires a random sample. 
-From the final subsamples their respective model parameters are estimated. 
-These estimated model parameters are compared with the estimated model parameters of the full big data through the mean squared error $MSE(\tilde{\beta}_k,\hat{\beta})=\sum_{i=1}^M (\tilde{\beta}_k - \hat{\beta})^2/M$. 
-Here, $\tilde{\beta}_k$ is the estimated model parameters from the subsample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data. 
-Below is the code for implementing the first scenario.
-
-```{r First scenario of random subsampling}
-# define colors, shapes, line types for the methods
-Method_Names<-c("A-Optimality","L-Optimality","A-Optimality GauLM","A-Optimality MC",
-                "Shrinkage Leverage","Basic Leverage","Unweighted Leverage","Random Sampling")
-Method_Color<-c("green","green4","palegreen","springgreen4",
-                "red","darkred","maroon","black")
-Method_Shape_Types<-c(rep(8,4),rep(4,3),16)
-Method_Line_Types<-c(rep("twodash",4),rep("dotted",3),"solid")
-
-# Random sampling
-Final_Beta_RS<-matrix(nrow = length(k)*M,ncol = ncol(Original_Data[,-1])+1)
-for (i in 1:length(rep_k)) {
-  Temp_Data<-Original_Data[sample(1:N,rep_k[i]),]
-  lm(Y~.-1,data=Temp_Data)->Results
-  Final_Beta_RS[i,]<-c(rep_k[i],coefficients(Results))
-  if(i==length(rep_k)){print("All simulations completed for random sampling")}
-}
-Final_Beta_RS<-cbind.data.frame("Random Sampling",Final_Beta_RS)
-colnames(Final_Beta_RS)<-c("Method","Subsample",paste0("Beta",0:3))
-
-# Leverage sampling
-## we set the shrinkage value of alpha=0.9
-NeEDS4BigData::LeverageSampling(r=rep_k,Y=as.matrix(Original_Data[,1]),
-                                X=as.matrix(Original_Data[,-1]),N=N,
-                                alpha = 0.9,family = "linear")->Results
-Final_Beta_LS<-Results$Beta_Estimates
-colnames(Final_Beta_LS)<-c("Method","Subsample",paste0("Beta",0:3))
-
-# A-optimality subsampling for Gaussian Linear Model
-NeEDS4BigData::AoptimalGauLMSub(r1=300,r2=,rep_k,
-                                Y=as.matrix(Original_Data[,1]),
-                                X=as.matrix(Original_Data[,-1]),N=N)->Results
-Final_Beta_AoptGauLM<-Results$Beta_Estimates
-Final_Beta_AoptGauLM$Method<-rep("A-Optimality GauLM",nrow(Final_Beta_AoptGauLM))
-colnames(Final_Beta_AoptGauLM)<-c("Method","Subsample",paste0("Beta",0:3))
-
-# A- and L-optimality subsampling for GLM
-NeEDS4BigData::ALoptimalGLMSub(r1=300,r2=rep_k,
-                               Y=as.matrix(Original_Data[,1]),
-                               X=as.matrix(Original_Data[,-1]),
-                               N=N,family = "linear")->Results
-Final_Beta_ALoptGLM<-Results$Beta_Estimates
-colnames(Final_Beta_ALoptGLM)<-c("Method","Subsample",paste0("Beta",0:3))
-
-# A-optimality subsampling for without response
-NeEDS4BigData::AoptimalMCGLMSub(r1=300,r2=rep_k,
-                                Y=as.matrix(Original_Data[,1]),
-                                X=as.matrix(Original_Data[,-1]),
-                                N=N,family="linear")->Results
-Final_Beta_AoptMCGLM<-Results$Beta_Estimates
-Final_Beta_AoptMCGLM$Method<-rep("A-Optimality MC",nrow(Final_Beta_AoptMCGLM))
-colnames(Final_Beta_AoptMCGLM)<-c("Method","Subsample",paste0("Beta",0:3))
-
-# Summarising Results of Scenario one
-Final_Beta<-rbind(Final_Beta_RS,Final_Beta_LS,
-                  Final_Beta_AoptGauLM,Final_Beta_ALoptGLM,
-                  Final_Beta_AoptMCGLM)
-
-# Obtaining the model parameter estimates for the full big data model
-lm(Y~.-1,data = Original_Data)->All_Results
-coefficients(All_Results)->All_Beta
-matrix(rep(All_Beta,by=nrow(Final_Beta)),nrow = nrow(Final_Beta),
-       ncol = ncol(Final_Beta[,-c(1,2)]),byrow = TRUE)->All_Beta
-
-remove(Final_Beta_RS,Final_Beta_LS,Final_Beta_AoptGauLM,Final_Beta_ALoptGLM,
-       Final_Beta_AoptMCGLM,Temp_Data,Results,All_Results)
-```
-
-The mean squared error is plotted below.
-
-```{r First scenario model parameter estimates,fig.width=7,fig.height=12,fig.align='center',fig.cap="Mean squared error for a) all the subsampling methods and b) without unweighted leverage sampling."}
-# Obtain the mean squared error for the model parameter estimates
-MSE_Beta<-data.frame("Method"=Final_Beta$Method,
-                     "Subsample"=Final_Beta$Subsample,
-                     "MSE"=rowSums((All_Beta - Final_Beta[,-c(1,2)])^2)) 
-
-MSE_Beta$Method<-factor(MSE_Beta$Method,levels = Method_Names,labels = Method_Names)
-
-# Plot for the mean squared error with all methods
-ggplot(MSE_Beta |> dplyr::group_by(Method,Subsample) |> 
-         dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
-       aes(x=factor(Subsample),y=MSE,color=Method,group=Method,linetype=Method,shape=Method))+
-  geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
-  scale_color_manual(values = Method_Color)+
-  scale_linetype_manual(values=Method_Line_Types)+
-  scale_shape_manual(values = Method_Shape_Types)+
-  theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p1
-
-# Plot for the mean squared error with all methods except unweighted leverage
-ggplot(MSE_Beta[MSE_Beta$Method != "Unweighted Leverage",] |> 
-         dplyr::group_by(Method,Subsample) |> 
-         dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
-       aes(x=factor(Subsample),y=MSE,color=Method,group=Method,linetype=Method,shape=Method))+
-  geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
-  scale_color_manual(values = Method_Color[-7])+
-  scale_linetype_manual(values=Method_Line_Types[-7])+
-  scale_shape_manual(values = Method_Shape_Types[-7])+
-  theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p2
-
-ggarrange(p1,p2,nrow = 2,ncol = 1,labels = "auto")
-```
-
-## Second Scenario
-
-For the second scenario $A$- and $L$-optimality model robust or average subsampling is compared against the $A$- and $L$-optimality subsampling method. 
+The method $A$- and $L$-optimality of model robust or average subsampling is compared against the $A$- and $L$-optimality subsampling method. 
 Here five different models are considered 1) main effects model ($\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3$), 2-4) main effects model with the squared term of each covariate ($X^2_1 / X^2_2 / X^2_3$) and 5) main effects model with all the squared terms ($\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3+\beta_4X^2_1+\beta_5X^2_2+\beta_6X^2_3$). 
-All $Q=5$ models have equal a priori probabilities (i.e $\alpha_q=1/5,q=1,\ldots,5$). 
-As in scenario one for each model the mean squared error of the model parameters are calculated for the same number simulations and subsample sizes.
-Below is the code of implementation for the second scenario.
+For each model $j$ the mean squared error of the model parameters $MSE_j(\tilde{\beta}_k,\hat{\beta})=\sum_{i=1}^M (\tilde{\beta}_k - \hat{\beta})^2/M$ are calculated for the $M=100$ simulations across the subsample sizes $k=(600,\ldots,1500)$ and the initial subsample size is $r1=300$. 
+Here, for the $j$-th model $\tilde{\beta}_k$ is the estimated model parameters from the subsample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data.
 
-```{r Second Scneario with model robust method with equal apriori, fig.width=12,fig.height=12,fig.align='center',fig.cap="Mean squared error for all the models in the order a to e for Model 1 to 5 across the subsampling methods under comparison."}
+```{r Define the methods}
 # Define the subsampling methods and their respective colors, shapes and line types
 Method_Names<-c("A-Optimality","L-Optimality","A-Optimality MR","L-Optimality MR")
 Method_Color<-c("red","darkred","palegreen","springgreen4")
@@ -213,7 +100,14 @@ for (i in 1:No_of_Variables)
 }
 All_Models<-All_Models[-c(5:7)]
 names(All_Models)<-paste0("Model_",1:length(All_Models))
+```
 
+### Apriori probabilities are equal 
+
+Consider for $Q=5$ each model has an equal a priori probability (i.e $\alpha_q=1/5,q=1,\ldots,5$). 
+Below is the code of implementation for this scenario.
+
+```{r Equal apriori probabilities, fig.width=12,fig.height=12,fig.align='center',fig.cap="Mean squared error for all the models with equal apriori in the order a to e for Model 1 to 5 across the subsampling methods under comparison."}
 # A- and L-optimality model robust subsampling for linear regression
 NeEDS4BigData::modelRobustLinSub(r1=300,r2=rep_k,
                                  Y=as.matrix(Original_Data_ModelRobust[,1]),
@@ -237,7 +131,8 @@ for (i in 1:length(All_Models)) {
                                "Subsample"=Final_Beta_modelRobust[[i]]$r2,
                                "MSE"=rowSums((All_Beta - Final_Beta_modelRobust[[i]][,-c(1,2)])^2))
   
-  ggplot(MSE_Beta_MR[[i]] |> dplyr::group_by(Method,Subsample) |> dplyr::summarise(MSE=mean(MSE)),
+  ggplot(MSE_Beta_MR[[i]] |> dplyr::group_by(Method,Subsample) |>
+           dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
          aes(x=factor(Subsample),y=MSE,color=Method,group=Method,linetype=Method,shape=Method))+
     geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
     scale_color_manual(values = Method_Color)+
@@ -251,15 +146,67 @@ ggarrange(plotlist = plot_list_MR,nrow = 3,ncol = 2,labels = "auto",
           common.legend = TRUE,legend = "bottom")
 ```
 
-## Third Scenario
+### Apriori probabilities are unequal 
 
-The final and third scenario is for comparison of the subsampling method under the assumption that the main effects model is potentially misspecified against the $A$- and $L$-optimality subsampling method. 
+Consider for $Q=5$ each model has a different a priori probability that is based on the number of model parameters as in [@scott2010bayes] (i.e., $\alpha_q = \Big(7 {6 \choose b_q}\Big)^{−1}$ where $b_q$ is the number of model parameters in the $q$-th model excluding the intercept).
+Below is the code of implementation for this scenario.
+
+```{r Unequal apriori, fig.width=12,fig.height=12,fig.align='center',fig.cap="Mean squared error for all the models with unequal apriori in the order a to e for Model 1 to 5 across the subsampling methods under comparison."}
+UnEqual_Apriori<-NULL
+for (i in 1:length(All_Models)) 
+{
+  UnEqual_Apriori[i]<-(7*choose(6,length(All_Models[[i]])-1))^(-1)
+}
+
+UnEqual_Apriori<-UnEqual_Apriori/sum(UnEqual_Apriori)
+
+# A- and L-optimality model robust subsampling for linear regression
+NeEDS4BigData::modelRobustLinSub(r1=300,r2=rep_k,
+                                 Y=as.matrix(Original_Data_ModelRobust[,1]),
+                                 X=as.matrix(Original_Data_ModelRobust[,-1]),
+                                 N=N,Alpha=UnEqual_Apriori,
+                                 All_Combinations = All_Models,
+                                 All_Covariates = colnames(Original_Data_ModelRobust)[-1])->Results
+Final_Beta_modelRobust<-Results$Beta_Estimates
+
+# Mean squared error and their respective plots for all five models
+MSE_Beta_MR<-list(); plot_list_MR<-list()
+for (i in 1:length(All_Models)) {
+  lm(Y~.-1,data=Original_Data_ModelRobust[,c("Y",All_Models[[i]])])->All_Results
+  All_Beta<-coefficients(All_Results)
+  
+  matrix(rep(All_Beta,by=nrow(Final_Beta_modelRobust[[i]])),
+         nrow = nrow(Final_Beta_modelRobust[[i]]),
+         ncol = ncol(Final_Beta_modelRobust[[i]][,-c(1,2)]),byrow = TRUE)->All_Beta
+  
+  MSE_Beta_MR[[i]]<-data.frame("Method"=Final_Beta_modelRobust[[i]]$Method,
+                               "Subsample"=Final_Beta_modelRobust[[i]]$r2,
+                               "MSE"=rowSums((All_Beta - Final_Beta_modelRobust[[i]][,-c(1,2)])^2))
+  
+  ggplot(MSE_Beta_MR[[i]] |> dplyr::group_by(Method,Subsample) |> 
+           dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
+         aes(x=factor(Subsample),y=MSE,color=Method,group=Method,linetype=Method,shape=Method))+
+    geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
+    scale_color_manual(values = Method_Color)+
+    ggtitle(paste0("Model ",i))+
+    scale_linetype_manual(values=Method_Line_Types)+
+    scale_shape_manual(values = Method_Shape_Types)+
+    theme_bw()+guides(colour = guide_legend(nrow = 2))+Theme_special()->plot_list_MR[[i]]
+}
+
+ggarrange(plotlist = plot_list_MR,nrow = 3,ncol = 2,labels = "auto",
+          common.legend = TRUE,legend = "bottom")
+```
+
+## Main effects model is potentially misspecified
+
+The final scenario is for comparison of the subsampling method under the assumption that the main effects model is potentially misspecified against the $A$- and $L$-optimality subsampling method. 
 Under the subsampling method that accounts for potential model misspecification we take the scaling factor of $\alpha=10$. 
-As in scenario one an two the number of simulations and the subsample sizes stay the same. 
+As in the above scenarios the number of simulations and the subsample sizes stay the same. 
 We compare the mean squared error of the estimated model parameters, however as we assume the model is potentially misspecified the asymptotic approximation of the mean squared error from the predictions are calculated as well.
 Below is the code for this implementation.
 
-```{r Third Scneario with potential model misspecification methods,fig.width=6,fig.height=6,fig.align='center', fig.cap="Average loss for the potentially misspecified main effects model across the subsampling methods under comparison."}
+```{r Potential model misspecification methods,fig.width=6,fig.height=6,fig.align='center', fig.cap="Average loss for the potentially misspecified main effects model across the subsampling methods under comparison."}
 # Define the subsampling methods and their respective colors, shapes and line types
 Method_Names<-c("A-Optimality","L-Optimality","LmAMSE","LmAMSE Log Odds 10","LmAMSE Power 10")
 Method_Color<-c("red","darkred","palegreen","green","springgreen4")
@@ -302,7 +249,8 @@ MSE_Beta_modelMiss<-data.frame("Method"=Final_Beta_modelMiss$Method,
                                "Subsample"=Final_Beta_modelMiss$r2,
                                "MSE"=rowSums((All_Beta - Final_Beta_modelMiss[,-c(1,2)])^2))
 
-ggplot(MSE_Beta_modelMiss |> dplyr::group_by(Method,Subsample) |> dplyr::summarise(MSE=mean(MSE)),
+ggplot(MSE_Beta_modelMiss |> dplyr::group_by(Method,Subsample) |> 
+         dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
        aes(x=factor(Subsample),y=MSE,color=Method,group=Method,linetype=Method,shape=Method))+
   geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
   scale_color_manual(values = Method_Color)+
@@ -310,7 +258,8 @@ ggplot(MSE_Beta_modelMiss |> dplyr::group_by(Method,Subsample) |> dplyr::summari
   scale_shape_manual(values = Method_Shape_Types)+
   theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p1
 
-ggplot(Final_Loss_modelMiss |> dplyr::group_by(r2,Method) |> dplyr::summarise(meanLoss=mean(Loss)),
+ggplot(Final_Loss_modelMiss |> dplyr::group_by(r2,Method) |> 
+         dplyr::summarise(meanLoss=mean(Loss),.groups ='drop'),
        aes(x=factor(r2),y=meanLoss,color=Method,group=Method,linetype=Method,shape=Method)) +
   geom_point()+geom_line()+xlab("Subsample size")+ylab("Mean Loss")+
   scale_color_manual(values = Method_Color)+
@@ -323,3 +272,5 @@ p2
 ```
 
 ### THANK YOU 
+
+## References

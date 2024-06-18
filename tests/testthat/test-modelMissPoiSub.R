@@ -58,7 +58,7 @@ test_that("Error on input for r2",{
                                N = Full_Data$N,Alpha = 10,
                                Beta_Estimate_Full = Full_Data$Beta$Estimate,
                                F_Estimate_Full = Full_Data$f$Real_GAM),
-               "NA or Infinite or NAN values in the r1,r2,N,Alpha or Beta_Estimate_Full")
+               "NA or Infinite or NAN values in the r1,r2,N or Alpha")
 })
 Original_Data[100,]<-rep(NA,4)
 test_that("Error on X input",{
@@ -85,15 +85,6 @@ test_that("Error on size of X and Y",{
                                Beta_Estimate_Full = Full_Data$Beta$Estimate,
                                F_Estimate_Full = Full_Data$f$Real_GAM),
                "The big data size N is not the same as of the size of X or Y")
-})
-
-test_that("Error on size of F estimate full",{
-  expect_error(modelMissPoiSub(r1 = r1, r2 = r2,Y = as.matrix(Original_Data[,1]),
-                               X = as.matrix(Original_Data[,-1]),
-                               N = Full_Data$N,Alpha = 10,
-                               Beta_Estimate_Full = Full_Data$Beta$Estimate,
-                               F_Estimate_Full = c(Full_Data$f$Real_GAM,1)),
-               "The big data size N is not the same as of the size of F_Estimate_Full")
 })
 
 test_that("Error on Alpha the scaling factor",{

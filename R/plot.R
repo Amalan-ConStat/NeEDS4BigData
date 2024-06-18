@@ -52,10 +52,10 @@ plot_Beta.LocalCaseControl<-function(object){
   method_colors<-c("darkred")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
-                         labels = paste0("\u03B2",label_values))
+                         labels = paste0("beta[",label_values,"]"))
   ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method))+
     ggplot2::geom_histogram()+
-    ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x")+
+    ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
     ggplot2::ylab("Frequency")+
     ggplot2::scale_fill_manual(values = method_colors)+
@@ -76,11 +76,11 @@ plot_Beta.Leverage<-function(object){
   method_colors<-c("maroon","red","darkred")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
-                         labels = paste0("\u03B2",label_values))
+                         labels = paste0("beta[",label_values,"]"))
 
   ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method))+
     ggplot2::geom_histogram()+
-    ggh4x::facet_grid2(r~Beta,scales = "free", independent = "x")+
+    ggh4x::facet_grid2(r~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
     ggplot2::ylab("Frequency")+
     ggplot2::scale_fill_manual(values = method_colors)+
@@ -101,10 +101,10 @@ plot_Beta.A_L_OptimalSubsampling<-function(object){
   method_colors<-c("red","darkred")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
-                         labels = paste0("\u03B2",label_values))
+                         labels = paste0("beta[",label_values,"]"))
   ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method))+
     ggplot2::geom_histogram()+
-    ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x")+
+    ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
     ggplot2::ylab("Frequency")+
     ggplot2::scale_fill_manual(values = method_colors)+
@@ -125,10 +125,10 @@ plot_Beta.AoptimalSubsampling<-function(object){
   method_colors<-c("red")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
-                         labels = paste0("\u03B2",label_values))
+                         labels = paste0("beta[",label_values,"]"))
   ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method))+
     ggplot2::geom_histogram()+
-    ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x")+
+    ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
     ggplot2::ylab("Frequency")+
     ggplot2::scale_fill_manual(values = method_colors)+
@@ -149,10 +149,10 @@ plot_Beta.A_OptimalSubsamplingMC<-function(object){
   method_colors<-c("red")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
-                         labels = paste0("\u03B2",label_values))
+                         labels = paste0("beta[",label_values,"]"))
   ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method))+
     ggplot2::geom_histogram()+
-    ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x")+
+    ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
     ggplot2::ylab("Frequency")+
     ggplot2::scale_fill_manual(values = method_colors)+
@@ -173,11 +173,11 @@ plot_Beta.ModelRobust<-function(object){
       label_values<-0:(length(unique(Temp_Data$Beta))-1)
       Temp_Data$Beta<-factor(Temp_Data$Beta,
                              levels = paste0("beta_",label_values),
-                             labels = paste0("\u03B2",label_values))
+                             labels = paste0("beta[",label_values,"]"))
 
       ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method))+
         ggplot2::geom_histogram()+
-        ggh4x::facet_grid2(r2~Beta,scales = "free")+
+        ggh4x::facet_grid2(r2~Beta,scales = "free",labeller = ggplot2::label_parsed)+
         ggplot2::xlab(expression(paste(beta," values")))+
         ggplot2::ylab("Frequency")+
         ggplot2::scale_fill_manual(values = c("red","pink","darkgreen","green"))+
@@ -204,10 +204,10 @@ plot_Beta.ModelMisspecified<-function(object){
                    paste0("seagreen",1:length(Power_Labels)))
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
-                         labels = paste0("\u03B2",label_values))
+                         labels = paste0("beta[",label_values,"]"))
   ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method))+
     ggplot2::geom_histogram()+
-    ggh4x::facet_grid2(r2~Beta,scales = "free",independent = "x")+
+    ggh4x::facet_grid2(r2~Beta,scales = "free",independent = "x",labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
     ggplot2::ylab("Frequency")+
     ggplot2::scale_fill_manual(values = method_colors)+

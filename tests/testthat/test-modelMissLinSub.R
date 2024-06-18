@@ -67,7 +67,7 @@ test_that("Error on input for r2",{
                                Var_GAM_Full = Full_Data$Variance_Epsilon$Real_GAM,
                                Var_Full = Full_Data$Variance_Epsilon$Estimate,
                                F_Estimate_Full = Full_Data$f$Real_GAM),
-               "NA or Infinite or NAN values in the r1,r2,N,Alpha,Var_GAM_Full or Var_Full")
+               "NA or Infinite or NAN values in the r1,r2,N or Alpha")
 })
 Original_Data[100,]<-rep(NA,4)
 test_that("Error on X input",{
@@ -97,16 +97,6 @@ test_that("Error on size of X and Y",{
                                Var_Full = Full_Data$Variance_Epsilon$Estimate,
                                F_Estimate_Full = Full_Data$f$Real_GAM),
                "The big data size N is not the same as of the size of X or Y")
-})
-
-test_that("Error on size of F estimate full",{
-  expect_error(modelMissLinSub(r1,r2,Y = as.matrix(Original_Data[,1]),
-                               X = as.matrix(Original_Data[,-1]),
-                               N = Full_Data$N,Alpha = 10,
-                               Var_GAM_Full = Full_Data$Variance_Epsilon$Real_GAM,
-                               Var_Full = Full_Data$Variance_Epsilon$Estimate,
-                               F_Estimate_Full = c(Full_Data$f$Real_GAM,1)),
-               "The big data size N is not the same as of the size of F_Estimate_Full")
 })
 
 test_that("Error on Alpha the scaling factor",{

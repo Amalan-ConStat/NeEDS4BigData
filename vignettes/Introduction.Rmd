@@ -19,12 +19,16 @@ body {
 text-align: justify}
 </style>
 
+## Big data analysis
+
 Big data presents both promising opportunities and formidable challenges for data analysts and scientists.
 However, its massive scale and complexity introduce novel computational and statistical hurdles. 
 These include scalability issues, storage constraints, noise accumulation, spurious correlations, incidental endogeneity, and measurement errors. 
 Addressing these challenges demands innovative approaches in both computation and statistics.
 Traditional methods, effective for small and moderate sample sizes, often falter when confronted with massive datasets.
 Thus, there is a pressing need for innovative statistical methodologies and computational tools tailored to the unique demands of big data analysis.
+
+## Computational solutions for big data analysis
 
 Computer engineers often seek more powerful computing facilities to reduce computing time, leading to the rapid development of supercomputers over the past decade. 
 These supercomputers boast speeds and storage capacities hundreds or even thousands of times greater than those of general-purpose PCs. 
@@ -35,6 +39,8 @@ However, recent comparisons have shown that even high-end GPUs can be outperform
 In summary, neither supercomputers, cloud computing, nor GPUs have efficiently solved the big data problem. 
 Instead, there is a growing need for efficient statistical solutions that can make big data manageable on general-purpose PCs.
 
+## Statistical solutions for big data analysis
+
 In the realm of addressing the challenges posed by big data, statistical solutions are relatively novel compared to engineering solutions, with new methodologies continually under development. 
 Currently available methods can be broadly categorized into three groups:
 
@@ -44,6 +50,8 @@ Currently available methods can be broadly categorized into three groups:
 
 In recent years, there has been a growing preference for subsampling over divide and recombine methods in addressing a range of regression problems. 
 Meanwhile, online updating is primarily utilized for streaming data. Furthermore, when a large dataset is unnecessary to confidently answer a specific question, subsampling is often favoured, as it allows for analysis using standard methods.
+
+## Subsampling algorithms for big data
 
 The literature presents two strategies to resolve the primary challenge of how to acquire an informative subset that efficiently addresses specific analytical questions and yield results consistent with analysing the large data set. 
 

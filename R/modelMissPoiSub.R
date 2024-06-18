@@ -94,20 +94,16 @@
 #' @importFrom psych tr
 #' @export
 modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full){
-  if(any(is.na(c(r1,r2,N,Alpha,Beta_Estimate_Full))) | any(is.nan(c(r1,r2,N,Alpha,Beta_Estimate_Full)))){
-    stop("NA or Infinite or NAN values in the r1,r2,N,Alpha or Beta_Estimate_Full")
+  if(any(is.na(c(r1,r2,N,Alpha))) | any(is.nan(c(r1,r2,N,Alpha)))){
+    stop("NA or Infinite or NAN values in the r1,r2,N or Alpha")
   }
 
   if((N != nrow(X)) | (N != nrow(Y)) | nrow(X) != nrow(Y)){
     stop("The big data size N is not the same as of the size of X or Y")
   }
 
-  if((length(F_Estimate_Full) != nrow(X)) | (length(F_Estimate_Full) != nrow(Y)) | N != length(F_Estimate_Full)){
-    stop("The big data size N is not the same as of the size of F_Estimate_Full")
-  }
-
-  if(any(is.na(cbind(Y,X,F_Estimate_Full))) | any(is.nan(cbind(Y,X,F_Estimate_Full)))){
-    stop("NA or Infinite or NAN values in the Y or X or F_Estimate_Full")
+  if(any(is.na(cbind(Y,X))) | any(is.nan(cbind(Y,X)))){
+    stop("NA or Infinite or NAN values in the Y or X")
   }
 
   if(any((2*r1) > r2)){
@@ -145,9 +141,12 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full
   Lambda_GAM<-exp(Xbeta_GAM)
   f_estimate<-Xbeta_GAM - X %*% beta.prop
 
-  if(is.null(Beta_Estimate_Full) || is.null(F_Estimate_Full)){
+  if(is.null(Beta_Estimate_Full) || is.null(F_Estimate_Full) ||
+     anyNA(Beta_Estimate_Full) || anyNA(F_Estimate_Full) ){
+
     Beta_Estimate_Full<- beta.prop ; F_Estimate_Full<-f_estimate
     message("Beta_Estimate_Full and F_Estimate_Full from the initial sample is used.")
+
   }
 
   ## mVC
@@ -402,9 +401,11 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full
 
   Loss_Subsample_Data[,-c(1,2)]<-Loss_Subsample_Data[,-c(1,2)]/r2
 
+  all_r<-c(r1,r2)
   # Sample Data
   for(j in 1:length(Alpha)){
-    names(Sample.LmAMSE_LO[[j]])<-names(Sample.LmAMSE_Pow[[j]])<-c(length(r2)+1)
+    names(Sample.LmAMSE_LO[j])<-names(Sample.LmAMSE_Pow[j])<-paste0("Alpha_",Alpha[j])
+    names(Sample.LmAMSE_LO[[j]])<-names(Sample.LmAMSE_Pow[[j]])<-all_r
   }
 
   names(Sample.mMSE)<-names(Sample.mVc)<-names(Sample.LmAMSE)<-c(r1,r2)

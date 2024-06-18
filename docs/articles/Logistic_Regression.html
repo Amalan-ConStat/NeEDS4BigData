@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="NeEDS4BigData">
-<title>Logistic Regression • NeEDS4BigData</title>
+<title>Logistic Regression : Model robust or misspecification • NeEDS4BigData</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Logistic Regression">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Logistic Regression : Model robust or misspecification">
 <meta property="og:description" content="NeEDS4BigData">
 <meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -55,9 +55,12 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-examples">Examples</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-examples">
     <a class="dropdown-item" href="../articles/introduction.html">Introduction</a>
-    <a class="dropdown-item" href="../articles/Linear_Regression.html">Linear Regression</a>
-    <a class="dropdown-item" href="../articles/Logistic_Regression.html">Logistic Regression</a>
-    <a class="dropdown-item" href="../articles/Poisson_Regression.html">Poisson Regression</a>
+    <a class="dropdown-item" href="../articles/Basic_Sampling_Lin_Reg.html">Linear regression - Basic sampling</a>
+    <a class="dropdown-item" href="../articles/Linear_Regression.html">Linear Regression - Model robust and misspecification</a>
+    <a class="dropdown-item" href="../articles/Basic_Sampling_Log_Reg.html">Logistic Regression - Basic sampling</a>
+    <a class="dropdown-item" href="../articles/Logistic_Regression.html">Logistic Regression - Model robust and misspecification</a>
+    <a class="dropdown-item" href="../articles/Basic_Sampling_Poi_Reg.html">Poisson Regression - Basic sampling</a>
+    <a class="dropdown-item" href="../articles/Poisson_Regression.html">Poisson Regression - Model robust and misspecification</a>
   </div>
 </li>
 <li class="nav-item">
@@ -117,7 +120,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Logistic Regression</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Logistic Regression : Model robust or misspecification</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/Amalan-ConStat/NeEDS4BigData/blob/HEAD/vignettes/Logistic_Regression.Rmd" class="external-link"><code>vignettes/Logistic_Regression.Rmd</code></a></small>
@@ -163,13 +166,11 @@ explanation. Aim of the logistic regression model is to classify if
 images are skin or not based on the a) Red, b) Green and c) Blue colour
 data. Skin presence is denoted as one and skin absence is denoted as
 zero. Each colour vector is scaled to have a mean of zero and a variance
-of one (initial range was between 0−255). Given data is analysed under
-three different scenarios,</p>
+of one (initial range was between 0−255).</p>
+<p>Given data is analysed under two different scenarios,</p>
 <ol style="list-style-type: decimal">
-<li>subsampling methods assuming the main effects model can describe the
-data.</li>
 <li>model robust or averaging subsampling methods assuming that a set of
-models can equally describe the data.</li>
+models can describe the data.</li>
 <li>subsampling method assuming the main effects model is potentially
 misspecified.</li>
 </ol>
@@ -315,160 +316,22 @@ X3
 <code class="sourceCode R"><span><span class="co"># Setting the subsample sizes</span></span>
 <span><span class="va">N</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">)</span>; <span class="va">M</span><span class="op">&lt;-</span><span class="fl">200</span>; <span class="va">k</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span><span class="op">:</span><span class="fl">15</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span>; <span class="va">rep_k</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">k</span>,each<span class="op">=</span><span class="va">M</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
-<h3 id="first-scenario">First scenario<a class="anchor" aria-label="anchor" href="#first-scenario"></a>
+<h3 id="model-robust-or-model-averaging-subsampling">Model robust or model averaging subsampling<a class="anchor" aria-label="anchor" href="#model-robust-or-model-averaging-subsampling"></a>
 </h3>
-<p>First, we focus on assuming the main effects model is true and that
-it can describe the big data. Based on this model the methods random
-sampling, leverage sampling, local case control sampling, <span class="math inline">\(A\)</span>- and <span class="math inline">\(L\)</span>-optimality subsampling and <span class="math inline">\(A\)</span>-optimality subsampling with response
-constraint are used to obtain subsamples and their respective are
-implemented on the big data. The obtained subsamples and their
-respective model parameter estimates are over <span class="math inline">\(M=100\)</span> simulations across different
-subsample sizes <span class="math inline">\(k=(600,\ldots,1500)\)</span>. We set the initial
-subsample size of <span class="math inline">\(r1=300\)</span> for the
-methods that requires a random sample. From the final subsamples their
-respective model parameters are estimated. These estimated model
-parameters are compared with the estimated model parameters of the full
-big data through the mean squared error <span class="math inline">\(MSE(\tilde{\beta}_k,\hat{\beta})=\sum_{i=1}^M
-(\tilde{\beta}_k - \hat{\beta})^2/M\)</span>. Here, <span class="math inline">\(\tilde{\beta}_k\)</span> is the estimated model
-parameters from the subsample of size <span class="math inline">\(k\)</span> and <span class="math inline">\(\hat{\beta}\)</span> is the estimated model
-parameters from the full big data. Below is the code for implementing
-the first scenario.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># define colors, shapes, line types for the methods</span></span>
-<span><span class="va">Method_Names</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A-Optimality"</span>,<span class="st">"L-Optimality"</span>,<span class="st">"A-Optimality MC"</span>,<span class="st">"Local case control sampling"</span>,</span>
-<span>                <span class="st">"Shrinkage Leverage"</span>,<span class="st">"Basic Leverage"</span>,<span class="st">"Unweighted Leverage"</span>,<span class="st">"Random sampling"</span><span class="op">)</span></span>
-<span><span class="va">Method_Color</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"green"</span>,<span class="st">"green4"</span>,<span class="st">"palegreen"</span>,</span>
-<span>                <span class="st">"maroon"</span>,<span class="st">"red"</span>,<span class="st">"darkred"</span>,<span class="st">"firebrick"</span>,<span class="st">"black"</span><span class="op">)</span></span>
-<span><span class="va">Method_Shape_Types</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">8</span>,<span class="fl">3</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span><span class="op">)</span>,<span class="fl">16</span><span class="op">)</span></span>
-<span><span class="va">Method_Line_Types</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"twodash"</span>,<span class="fl">3</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"dotted"</span>,<span class="fl">4</span><span class="op">)</span>,<span class="st">"solid"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Random sampling</span></span>
-<span><span class="va">Final_Beta_RS</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span><span class="op">*</span><span class="va">M</span>,ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">rep_k</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">Temp_Data</span><span class="op">&lt;-</span><span class="va">Original_Data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span>,<span class="va">rep_k</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>,<span class="op">]</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">Y</span><span class="op">~</span><span class="va">.</span><span class="op">-</span><span class="fl">1</span>,data<span class="op">=</span><span class="va">Temp_Data</span>,family<span class="op">=</span><span class="st">"binomial"</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span>
-<span>  <span class="va">Final_Beta_RS</span><span class="op">[</span><span class="va">i</span>,<span class="op">]</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">rep_k</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,<span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coefficients</a></span><span class="op">(</span><span class="va">Results</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="kw">if</span><span class="op">(</span><span class="va">i</span><span class="op">==</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">rep_k</span><span class="op">)</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"All simulations completed for random sampling"</span><span class="op">)</span><span class="op">}</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "All simulations completed for random sampling"</span></span></code></pre>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">Final_Beta_RS</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind.data.frame</a></span><span class="op">(</span><span class="st">"Random sampling"</span>,<span class="va">Final_Beta_RS</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Final_Beta_RS</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>,<span class="st">"Subsample"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Beta"</span>,<span class="fl">0</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Leverage sampling</span></span>
-<span><span class="co">## we set the shrinkage value of alpha=0.9</span></span>
-<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/LeverageSampling.html">LeverageSampling</a></span><span class="op">(</span>r<span class="op">=</span><span class="va">rep_k</span>,Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>                                X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,N<span class="op">=</span><span class="va">N</span>,</span>
-<span>                                alpha <span class="op">=</span> <span class="fl">0.9</span>,family <span class="op">=</span> <span class="st">"logistic"</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>
-<pre><code><span><span class="co">## Basic and shrinkage leverage probabilities calculated.</span></span></code></pre>
-<pre><code><span><span class="co">## Subsampling completed.</span></span></code></pre>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">Final_Beta_LS</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Beta_Estimates</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Final_Beta_LS</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>,<span class="st">"Subsample"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Beta"</span>,<span class="fl">0</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Local case control sampling</span></span>
-<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/LCCsampling.html">LCCsampling</a></span><span class="op">(</span>r1<span class="op">=</span><span class="fl">300</span>,r2<span class="op">=</span><span class="va">rep_k</span>,</span>
-<span>                           Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>                           X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>                           N<span class="op">=</span><span class="va">N</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>
-<pre><code><span><span class="co">## Step 1 of the algorithm completed.</span></span></code></pre>
-<pre><code><span><span class="co">## Step 2 of the algorithm completed.</span></span></code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">Final_Beta_LCCS</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Beta_Estimates</span></span>
-<span><span class="va">Final_Beta_LCCS</span><span class="op">$</span><span class="va">Method</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Local case control sampling"</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Final_Beta_LCCS</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Final_Beta_LCCS</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>,<span class="st">"Subsample"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Beta"</span>,<span class="fl">0</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># A- and L-optimality subsampling for GLM </span></span>
-<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/ALoptimalGLMSub.html">ALoptimalGLMSub</a></span><span class="op">(</span>r1<span class="op">=</span><span class="fl">300</span>,r2<span class="op">=</span><span class="va">rep_k</span>,</span>
-<span>                               Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>                               X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>                               N<span class="op">=</span><span class="va">N</span>,family <span class="op">=</span> <span class="st">"logistic"</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>
-<pre><code><span><span class="co">## Step 1 of the algorithm completed.</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Step 2 of the algorithm completed.</span></span></code></pre>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">Final_Beta_ALoptGLM</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Beta_Estimates</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Final_Beta_ALoptGLM</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>,<span class="st">"Subsample"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Beta"</span>,<span class="fl">0</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># A-optimality subsampling for without response</span></span>
-<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/AoptimalMCGLMSub.html">AoptimalMCGLMSub</a></span><span class="op">(</span>r1<span class="op">=</span><span class="fl">300</span>,r2<span class="op">=</span><span class="va">rep_k</span>,</span>
-<span>                                Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>                                X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>                                N<span class="op">=</span><span class="va">N</span>,family<span class="op">=</span><span class="st">"logistic"</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>
-<pre><code><span><span class="co">## Step 1 of the algorithm completed.</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Step 2 of the algorithm completed.</span></span></code></pre>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">Final_Beta_AoptMCGLM</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Beta_Estimates</span></span>
-<span><span class="va">Final_Beta_AoptMCGLM</span><span class="op">$</span><span class="va">Method</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"A-Optimality MC"</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Final_Beta_AoptMCGLM</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Final_Beta_AoptMCGLM</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>,<span class="st">"Subsample"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Beta"</span>,<span class="fl">0</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Summarising Results of Scenario one</span></span>
-<span><span class="va">Final_Beta</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">Final_Beta_RS</span>,<span class="va">Final_Beta_LS</span>,<span class="va">Final_Beta_LCCS</span>,</span>
-<span>                  <span class="va">Final_Beta_ALoptGLM</span>,<span class="va">Final_Beta_AoptMCGLM</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Obtaining the model parameter estimates for the full big data model</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">Y</span><span class="op">~</span><span class="va">.</span><span class="op">-</span><span class="fl">1</span>,data <span class="op">=</span> <span class="va">Original_Data</span>,family<span class="op">=</span><span class="st">"binomial"</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">All_Results</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coefficients</a></span><span class="op">(</span><span class="va">All_Results</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">All_Beta</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">All_Beta</span>,by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Final_Beta</span><span class="op">)</span><span class="op">)</span>,nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Final_Beta</span><span class="op">)</span>,</span>
-<span>       ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Final_Beta</span><span class="op">[</span>,<span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>,byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">All_Beta</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">remove</a></span><span class="op">(</span><span class="va">Final_Beta_RS</span>,<span class="va">Final_Beta_LS</span>,<span class="va">Final_Beta_LCCS</span>,<span class="va">Final_Beta_ALoptGLM</span>,</span>
-<span>       <span class="va">Final_Beta_AoptMCGLM</span>,<span class="va">Temp_Data</span>,<span class="va">Results</span>,<span class="va">All_Results</span><span class="op">)</span></span></code></pre></div>
-<p>The mean squared error is plotted below.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Obtain the mean squared error for the model parameter estimates</span></span>
-<span><span class="va">MSE_Beta</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="st">"Method"</span><span class="op">=</span><span class="va">Final_Beta</span><span class="op">$</span><span class="va">Method</span>,</span>
-<span>                     <span class="st">"Subsample"</span><span class="op">=</span><span class="va">Final_Beta</span><span class="op">$</span><span class="va">Subsample</span>,</span>
-<span>                     <span class="st">"MSE"</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">All_Beta</span> <span class="op">-</span> <span class="va">Final_Beta</span><span class="op">[</span>,<span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span> </span>
-<span></span>
-<span><span class="va">MSE_Beta</span><span class="op">$</span><span class="va">Method</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">MSE_Beta</span><span class="op">$</span><span class="va">Method</span>,levels <span class="op">=</span> <span class="va">Method_Names</span>,labels <span class="op">=</span> <span class="va">Method_Names</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Plot for the mean squared error with all methods</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">MSE_Beta</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Method</span>,<span class="va">Subsample</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>         <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>MSE<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">MSE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">'drop'</span><span class="op">)</span>,</span>
-<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Subsample</span><span class="op">)</span>,y<span class="op">=</span><span class="va">MSE</span>,color<span class="op">=</span><span class="va">Method</span>,group<span class="op">=</span><span class="va">Method</span>,linetype<span class="op">=</span><span class="va">Method</span>,shape<span class="op">=</span><span class="va">Method</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Subsample size"</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"MSE"</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">Method_Color</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_linetype_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="va">Method_Line_Types</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_shape_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">Method_Shape_Types</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fu">Theme_special</span><span class="op">(</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">p1</span></span>
-<span></span>
-<span><span class="co"># Plot for the mean squared error with all methods except unweighted leverage</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">MSE_Beta</span><span class="op">[</span><span class="op">!</span><span class="op">(</span><span class="va">MSE_Beta</span><span class="op">$</span><span class="va">Method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Unweighted Leverage"</span>,</span>
-<span>                                         <span class="st">"Shrinkage Leverage"</span>,<span class="st">"Basic Leverage"</span><span class="op">)</span><span class="op">)</span>,<span class="op">]</span> <span class="op">|&gt;</span> </span>
-<span>         <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Method</span>,<span class="va">Subsample</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>         <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>MSE<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">MSE</span><span class="op">)</span>,.groups <span class="op">=</span> <span class="st">'drop'</span><span class="op">)</span>,</span>
-<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Subsample</span><span class="op">)</span>,y<span class="op">=</span><span class="va">MSE</span>,color<span class="op">=</span><span class="va">Method</span>,group<span class="op">=</span><span class="va">Method</span>,linetype<span class="op">=</span><span class="va">Method</span>,shape<span class="op">=</span><span class="va">Method</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Subsample size"</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"MSE"</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">Method_Color</span><span class="op">[</span><span class="op">-</span><span class="fl">7</span><span class="op">]</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_linetype_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="va">Method_Line_Types</span><span class="op">[</span><span class="op">-</span><span class="fl">7</span><span class="op">]</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_shape_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">Method_Shape_Types</span><span class="op">[</span><span class="op">-</span><span class="fl">7</span><span class="op">]</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fu">Theme_special</span><span class="op">(</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">p2</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html" class="external-link">ggarrange</a></span><span class="op">(</span><span class="va">p1</span>,<span class="va">p2</span>,nrow <span class="op">=</span> <span class="fl">2</span>,ncol <span class="op">=</span> <span class="fl">1</span>,labels <span class="op">=</span> <span class="st">"auto"</span><span class="op">)</span></span></code></pre></div>
-<div class="figure" style="text-align: center">
-<img src="Logistic_Regression_files/figure-html/First%20scenario%20model%20parameter%20estimates-1.png" alt="Mean squared error for a) all the subsampling methods and b) without unweighted leverage sampling." width="672"><p class="caption">
-Mean squared error for a) all the subsampling methods and b) without
-unweighted leverage sampling.
-</p>
-</div>
-</div>
-<div class="section level3">
-<h3 id="second-scenario">Second Scenario<a class="anchor" aria-label="anchor" href="#second-scenario"></a>
-</h3>
-<p>For the second scenario <span class="math inline">\(A\)</span>- and
-<span class="math inline">\(L\)</span>-optimality model robust or
-average subsampling is compared against the <span class="math inline">\(A\)</span>- and <span class="math inline">\(L\)</span>-optimality subsampling method. Here
+<p>The method <span class="math inline">\(A\)</span>- and <span class="math inline">\(L\)</span>-optimality of model robust or average
+subsampling is compared against the <span class="math inline">\(A\)</span>- and <span class="math inline">\(L\)</span>-optimality subsampling method. Here
 five different models are considered 1) main effects model (<span class="math inline">\(\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3\)</span>),
 2-4) main effects model with the squared term of each covariate (<span class="math inline">\(X^2_1 / X^2_2 / X^2_3\)</span>) and 5) main
 effects model with all the squared terms (<span class="math inline">\(\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3+\beta_4X^2_1+\beta_5X^2_2+\beta_6X^2_3\)</span>).
-All <span class="math inline">\(Q=5\)</span> models have equal a priori
-probabilities (i.e <span class="math inline">\(\alpha_q=1/5,q=1,\ldots,5\)</span>). As in
-scenario one for each model the mean squared error of the model
-parameters are calculated for the same number simulations and subsample
-sizes. Below is the code of implementation for the second scenario.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+For each model <span class="math inline">\(j\)</span> the mean squared
+error of the model parameters <span class="math inline">\(MSE_j(\tilde{\beta}_k,\hat{\beta})=\sum_{i=1}^M
+(\tilde{\beta}_k - \hat{\beta})^2/M\)</span> are calculated for the
+<span class="math inline">\(M=100\)</span> simulations across the
+subsample sizes <span class="math inline">\(k=(600,\ldots,1500)\)</span>
+and the initial subsample size is <span class="math inline">\(r1=300\)</span>. Here, for the <span class="math inline">\(j\)</span>-th model <span class="math inline">\(\tilde{\beta}_k\)</span> is the estimated model
+parameters from the subsample of size <span class="math inline">\(k\)</span> and <span class="math inline">\(\hat{\beta}\)</span> is the estimated model
+parameters from the full big data.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the subsampling methods and their respective colors, shapes and line types</span></span>
 <span><span class="va">Method_Names</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A-Optimality"</span>,<span class="st">"L-Optimality"</span>,<span class="st">"A-Optimality MR"</span>,<span class="st">"L-Optimality MR"</span><span class="op">)</span></span>
 <span><span class="va">Method_Color</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>,<span class="st">"darkred"</span>,<span class="st">"palegreen"</span>,<span class="st">"springgreen4"</span><span class="op">)</span></span>
@@ -495,9 +358,15 @@ sizes. Below is the code of implementation for the second scenario.</p>
 <span>  <span class="op">}</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">All_Models</span><span class="op">&lt;-</span><span class="va">All_Models</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">All_Models</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Model_"</span>,<span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">All_Models</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># A- and L-optimality model robust subsampling for logistic regression</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">All_Models</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Model_"</span>,<span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">All_Models</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="apriori-probabilities-are-equal">Apriori probabilities are equal<a class="anchor" aria-label="anchor" href="#apriori-probabilities-are-equal"></a>
+</h4>
+<p>Consider for <span class="math inline">\(Q=5\)</span> each model has
+an equal a priori probability (i.e <span class="math inline">\(\alpha_q=1/5,q=1,\ldots,5\)</span>). Below is the
+code of implementation for this scenario.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># A- and L-optimality model robust subsampling for logistic regression</span></span>
 <span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/modelRobustLogSub.html">modelRobustLogSub</a></span><span class="op">(</span>r1<span class="op">=</span><span class="fl">300</span>,r2<span class="op">=</span><span class="va">rep_k</span>,</span>
 <span>                                 Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data_ModelRobust</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>                                 X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data_ModelRobust</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
@@ -506,7 +375,7 @@ sizes. Below is the code of implementation for the second scenario.</p>
 <span>                                 All_Covariates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Original_Data_ModelRobust</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>
 <pre><code><span><span class="co">## Step 1 of the algorithm completed.</span></span></code></pre>
 <pre><code><span><span class="co">## Step 2 of the algorithm completed.</span></span></code></pre>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Final_Beta_modelRobust</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Beta_Estimates</span></span>
 <span></span>
 <span><span class="co"># Mean squared error and their respective plots for all five models</span></span>
@@ -537,14 +406,81 @@ sizes. Below is the code of implementation for the second scenario.</p>
 <span><span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html" class="external-link">ggarrange</a></span><span class="op">(</span>plotlist <span class="op">=</span> <span class="va">plot_list_MR</span>,nrow <span class="op">=</span> <span class="fl">3</span>,ncol <span class="op">=</span> <span class="fl">2</span>,labels <span class="op">=</span> <span class="st">"auto"</span>,</span>
 <span>          common.legend <span class="op">=</span> <span class="cn">TRUE</span>,legend <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Logistic_Regression_files/figure-html/Second%20Scneario%20with%20model%20robust%20method%20with%20equal%20apriori-1.png" alt="Mean squared error for all the models in the order a to e for Model 1 to 5 across the subsampling methods under comparison." width="1152"><p class="caption">
-Mean squared error for all the models in the order a to e for Model 1 to
-5 across the subsampling methods under comparison.
+<img src="Logistic_Regression_files/figure-html/Equal%20apriori-1.png" alt="Mean squared error for all the models with equal apriori in the order a to e for Model 1 to 5 across the subsampling methods under comparison." width="1152"><p class="caption">
+Mean squared error for all the models with equal apriori in the order a
+to e for Model 1 to 5 across the subsampling methods under comparison.
 </p>
 </div>
 </div>
+<div class="section level4">
+<h4 id="apriori-probabilities-are-unequal">Apriori probabilities are unequal<a class="anchor" aria-label="anchor" href="#apriori-probabilities-are-unequal"></a>
+</h4>
+<p>Consider for <span class="math inline">\(Q=5\)</span> each model has
+a different a priori probability that is based on the number of model
+parameters as in <span class="citation">(Scott and Berger 2010)</span>
+(i.e., <span class="math inline">\(\alpha_q = \Big(7 {6 \choose
+b_q}\Big)^{−1}\)</span> where <span class="math inline">\(b_q\)</span>
+is the number of model parameters in the <span class="math inline">\(q\)</span>-th model excluding the intercept).
+Below is the code of implementation for this scenario.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">UnEqual_Apriori</span><span class="op">&lt;-</span><span class="cn">NULL</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">All_Models</span><span class="op">)</span><span class="op">)</span> </span>
+<span><span class="op">{</span></span>
+<span>  <span class="va">UnEqual_Apriori</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">&lt;-</span><span class="op">(</span><span class="fl">7</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">choose</a></span><span class="op">(</span><span class="fl">6</span>,<span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">All_Models</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">^</span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">UnEqual_Apriori</span><span class="op">&lt;-</span><span class="va">UnEqual_Apriori</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">UnEqual_Apriori</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># A- and L-optimality model robust subsampling for logistic regression</span></span>
+<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/modelRobustLogSub.html">modelRobustLogSub</a></span><span class="op">(</span>r1<span class="op">=</span><span class="fl">300</span>,r2<span class="op">=</span><span class="va">rep_k</span>,</span>
+<span>                                 Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data_ModelRobust</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>                                 X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data_ModelRobust</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>                                 N<span class="op">=</span><span class="va">N</span>,Alpha<span class="op">=</span><span class="va">UnEqual_Apriori</span>,</span>
+<span>                                 All_Combinations <span class="op">=</span> <span class="va">All_Models</span>,</span>
+<span>                                 All_Covariates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Original_Data_ModelRobust</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>
+<pre><code><span><span class="co">## Step 1 of the algorithm completed.</span></span></code></pre>
+<pre><code><span><span class="co">## Step 2 of the algorithm completed.</span></span></code></pre>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">Final_Beta_modelRobust</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Beta_Estimates</span></span>
+<span></span>
+<span><span class="co"># Mean squared error and their respective plots for all five models</span></span>
+<span><span class="va">MSE_Beta_MR</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>; <span class="va">plot_list_MR</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">All_Models</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">Y</span><span class="op">~</span><span class="va">.</span><span class="op">-</span><span class="fl">1</span>,data<span class="op">=</span><span class="va">Original_Data_ModelRobust</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Y"</span>,<span class="va">All_Models</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>      family<span class="op">=</span><span class="st">"binomial"</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">All_Results</span></span>
+<span>  <span class="va">All_Beta</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coefficients</a></span><span class="op">(</span><span class="va">All_Results</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">All_Beta</span>,by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Final_Beta_modelRobust</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Final_Beta_modelRobust</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>         ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Final_Beta_modelRobust</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>,byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">All_Beta</span></span>
+<span>  </span>
+<span>  <span class="va">MSE_Beta_MR</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="st">"Method"</span><span class="op">=</span><span class="va">Final_Beta_modelRobust</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Method</span>,</span>
+<span>                               <span class="st">"Subsample"</span><span class="op">=</span><span class="va">Final_Beta_modelRobust</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">r2</span>,</span>
+<span>                               <span class="st">"MSE"</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">All_Beta</span> <span class="op">-</span> <span class="va">Final_Beta_modelRobust</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[</span>,<span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">MSE_Beta_MR</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">Method</span>,<span class="va">Subsample</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>           <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>MSE<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">MSE</span><span class="op">)</span>,.groups <span class="op">=</span><span class="st">'drop'</span><span class="op">)</span>,</span>
+<span>         <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Subsample</span><span class="op">)</span>,y<span class="op">=</span><span class="va">MSE</span>,color<span class="op">=</span><span class="va">Method</span>,group<span class="op">=</span><span class="va">Method</span>,linetype<span class="op">=</span><span class="va">Method</span>,shape<span class="op">=</span><span class="va">Method</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Subsample size"</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"MSE"</span><span class="op">)</span><span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">Method_Color</span><span class="op">)</span><span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Model "</span>,<span class="va">i</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_linetype_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="va">Method_Line_Types</span><span class="op">)</span><span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_shape_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">Method_Shape_Types</span><span class="op">)</span><span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fu">Theme_special</span><span class="op">(</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">plot_list_MR</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html" class="external-link">ggarrange</a></span><span class="op">(</span>plotlist <span class="op">=</span> <span class="va">plot_list_MR</span>,nrow <span class="op">=</span> <span class="fl">3</span>,ncol <span class="op">=</span> <span class="fl">2</span>,labels <span class="op">=</span> <span class="st">"auto"</span>,</span>
+<span>          common.legend <span class="op">=</span> <span class="cn">TRUE</span>,legend <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="Logistic_Regression_files/figure-html/Unequal%20apriori-1.png" alt="Mean squared error for all the models with unequal apriori in the order a to e for Model 1 to 5 across the subsampling methods under comparison." width="1152"><p class="caption">
+Mean squared error for all the models with unequal apriori in the order
+a to e for Model 1 to 5 across the subsampling methods under comparison.
+</p>
+</div>
+</div>
+</div>
 <div class="section level3">
-<h3 id="third-scenario">Third Scenario<a class="anchor" aria-label="anchor" href="#third-scenario"></a>
+<h3 id="main-effects-model-is-potentially-misspecified">Main effects model is potentially misspecified<a class="anchor" aria-label="anchor" href="#main-effects-model-is-potentially-misspecified"></a>
 </h3>
 <p>The final and third scenario is for comparison of the subsampling
 method under the assumption that the main effects model is potentially
@@ -557,7 +493,7 @@ the mean squared error of the estimated model parameters, however as we
 assume the model is potentially misspecified the asymptotic
 approximation of the mean squared error from the predictions are
 calculated as well. Below is the code for this implementation.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the subsampling methods and their respective colors, shapes and line types</span></span>
 <span><span class="va">Method_Names</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A-Optimality"</span>,<span class="st">"L-Optimality"</span>,<span class="st">"LmAMSE"</span>,<span class="st">"LmAMSE Log Odds 10"</span>,<span class="st">"LmAMSE Power 10"</span><span class="op">)</span></span>
 <span><span class="va">Method_Color</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>,<span class="st">"darkred"</span>,<span class="st">"palegreen"</span>,<span class="st">"green"</span>,<span class="st">"springgreen4"</span><span class="op">)</span></span>
@@ -585,7 +521,7 @@ calculated as well. Below is the code for this implementation.</p>
 <span>                               F_Estimate_Full <span class="op">=</span> <span class="va">f_estimate</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>
 <pre><code><span><span class="co">## Step 1 of the algorithm completed.</span></span></code></pre>
 <pre><code><span><span class="co">## Step 2 of the algorithm completed.</span></span></code></pre>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Final_Beta_modelMiss</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Beta_Estimates</span></span>
 <span><span class="va">Final_Loss_modelMiss</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Loss_Estimates</span></span>
 <span></span>
@@ -620,7 +556,7 @@ calculated as well. Below is the code for this implementation.</p>
 <span><span class="co">#           legend = "bottom",common.legend = TRUE)</span></span>
 <span><span class="va">p2</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Logistic_Regression_files/figure-html/Third%20Scneario%20with%20potential%20model%20misspecification%20methods-1.png" alt="Average loss for the potentially misspecified main effects model across the subsampling methods under comparison." width="576"><p class="caption">
+<img src="Logistic_Regression_files/figure-html/Potential%20model%20misspecification%20methods-1.png" alt="Average loss for the potentially misspecified main effects model across the subsampling methods under comparison." width="576"><p class="caption">
 Average loss for the potentially misspecified main effects model across
 the subsampling methods under comparison.
 </p>
@@ -628,6 +564,17 @@ the subsampling methods under comparison.
 <div class="section level4">
 <h4 id="thank-you">THANK YOU<a class="anchor" aria-label="anchor" href="#thank-you"></a>
 </h4>
+</div>
+</div>
+<div class="section level3">
+<h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h3>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-scott2010bayes" class="csl-entry">
+Scott, James G, and James O Berger. 2010. <span>“Bayes and
+Empirical-Bayes Multiplicity Adjustment in the Variable-Selection
+Problem.”</span> <em>The Annals of Statistics</em>, 2587–2619.
+</div>
 </div>
 </div>
 </div>
