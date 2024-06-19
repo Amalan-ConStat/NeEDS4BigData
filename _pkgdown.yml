@@ -1,6 +1,10 @@
+authors:
+  Amalan Mahendran:
+    href: https://www.amalan-mahendran.com
+
 template:
   bootstrap: 5
-  bootswatch: flatly
+
 
 development:
   mode: release
@@ -44,11 +48,6 @@ navbar:
     - icon: fa-google
       href: https://scholar.google.com/citations?user=fj4E-GMAAAAJ&hl=en
 
-authors:
-  Amalan Mahendran:
-    href: https://www.linkedin.com/in/amalan-mahendran-72b86b37/
-
-
 reference:
   - title: Big Data
     desc: Real world big data
@@ -90,5 +89,12 @@ reference:
         - plot_Utility
 
 home:
+  title: NeEDS4BigData - An R package for subsampling methods
+  description: Subsampling methods for Generalised Linear Models under big data.
   sidebar:
     structure: [links, license, community, citation, authors, dev]
+
+footer:
+  structure:
+    left: developed_by
+    right: built_with

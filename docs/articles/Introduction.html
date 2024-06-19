@@ -29,7 +29,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">NeEDS4BigData</a>
 
@@ -133,17 +133,28 @@
 body {
 text-align: justify}
 </style>
+<div class="section level2">
+<h2 id="big-data-analysis">Big data analysis<a class="anchor" aria-label="anchor" href="#big-data-analysis"></a>
+</h2>
 <p>Big data presents both promising opportunities and formidable
 challenges for data analysts and scientists. However, its massive scale
-and complexity introduce novel computational and statistical hurdles.
+and complexity introduces novel computational and statistical hurdles.
 These include scalability issues, storage constraints, noise
-accumulation, spurious correlations, incidental endogeneity, and
+accumulation, spurious correlations, incidental endogeneity and
 measurement errors. Addressing these challenges demands innovative
 approaches in both computation and statistics. Traditional methods,
 effective for small and moderate sample sizes, often falter when
 confronted with massive datasets. Thus, there is a pressing need for
 innovative statistical methodologies and computational tools tailored to
 the unique demands of big data analysis.</p>
+<div class="float">
+<img src="../reference/figures/Figure_1.webp" alt="The continuously increasing size of big data from ``Big Data: A Survey”."><div class="figcaption">The continuously increasing size of big data
+from ``Big Data: A Survey”.</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="computational-solutions-for-big-data-analysis">Computational solutions for big data analysis<a class="anchor" aria-label="anchor" href="#computational-solutions-for-big-data-analysis"></a>
+</h2>
 <p>Computer engineers often seek more powerful computing facilities to
 reduce computing time, leading to the rapid development of
 supercomputers over the past decade. These supercomputers boast speeds
@@ -152,15 +163,19 @@ those of general-purpose PCs. However, their significant energy
 consumption and limited accessibility to ordinary users remain major
 drawbacks. While cloud computing offers a partial solution by providing
 accessible computing resources, it faces challenges related to data
-transfer inefficiency, privacy, and security concerns. Graphic
-Processing Units (GPUs) have emerged as another computational facility,
-offering powerful parallel computing capabilities. However, recent
-comparisons have shown that even high-end GPUs can be outperformed by
+transfer inefficiency, privacy and security concerns. Graphic Processing
+Units (GPUs) have emerged as another computational facility, offering
+powerful parallel computing capabilities. However, recent comparisons
+have shown that even high-end GPUs can be outperformed by
 general-purpose multi-core processors, primarily due to data transfer
 inefficiencies. In summary, neither supercomputers, cloud computing, nor
 GPUs have efficiently solved the big data problem. Instead, there is a
 growing need for efficient statistical solutions that can make big data
 manageable on general-purpose PCs.</p>
+</div>
+<div class="section level2">
+<h2 id="statistical-solutions-for-big-data-analysis">Statistical solutions for big data analysis<a class="anchor" aria-label="anchor" href="#statistical-solutions-for-big-data-analysis"></a>
+</h2>
 <p>In the realm of addressing the challenges posed by big data,
 statistical solutions are relatively novel compared to engineering
 solutions, with new methodologies continually under development.
@@ -184,6 +199,10 @@ problems. Meanwhile, online updating is primarily utilized for streaming
 data. Furthermore, when a large dataset is unnecessary to confidently
 answer a specific question, subsampling is often favoured, as it allows
 for analysis using standard methods.</p>
+</div>
+<div class="section level2">
+<h2 id="subsampling-algorithms-for-big-data">Subsampling algorithms for big data<a class="anchor" aria-label="anchor" href="#subsampling-algorithms-for-big-data"></a>
+</h2>
 <p>The literature presents two strategies to resolve the primary
 challenge of how to acquire an informative subset that efficiently
 addresses specific analytical questions and yield results consistent
@@ -220,6 +239,7 @@ misspecification as by <span class="citation">Adewale and Wiens
 (2009)</span> and <span class="citation">Adewale and Xu
 (2010)</span>.</li>
 </ol>
+</div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
@@ -324,13 +344,14 @@ for Generalized Linear Models Under Measurement Constraints.”</span>
 </div>
 </div>
 </div>
-  </main>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by <a href="https://www.linkedin.com/in/amalan-mahendran-72b86b37/" class="external-link">Amalan Mahendran</a>.</p>
+  <p>Developed by <a href="https://www.amalan-mahendran.com" class="external-link">Amalan Mahendran</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">

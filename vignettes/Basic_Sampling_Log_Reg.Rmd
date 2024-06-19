@@ -22,17 +22,18 @@ library(tidyr)
 library(psych)
 library(gam)
 
+# Theme for plots
 Theme_special<-function(){
-  theme(legend.key.width=unit(1,"cm"),
-        axis.text.x = element_text(color = "black",size=12, angle = 30, hjust=0.75),
-        axis.text.y = element_text(color = "black",size=12),
-        strip.text = element_text(colour = "black",size = 12,face="bold"),
-        panel.grid.minor.x = element_blank(),
-        axis.title= element_text(color = "black",face = "bold",size = 12),
-        legend.text = element_text(color = "black", size=11),
-        legend.position = "bottom",
-        legend.margin=margin(0,0,0,0),
-        legend.box.margin=margin(-1,-2,-1,-2)) 
+  theme(legend.key.width= unit(1,"cm"),
+        axis.text.x= element_text(color= "black", size= 12, angle= 30, hjust=0.75),
+        axis.text.y= element_text(color= "black", size= 12), 
+        strip.text= element_text(colour= "black", size= 12, face= "bold"),
+        panel.grid.minor.x= element_blank(),
+        axis.title= element_text(color= "black", face= "bold", size= 12),
+        legend.text= element_text(color= "black", size= 11),
+        legend.position= "bottom",
+        legend.margin= margin(0,0,0,0),
+        legend.box.margin= margin(-1,-2,-1,-2)) 
 }
 ```
 
@@ -66,8 +67,9 @@ Based on this model the methods random sampling, leverage sampling, local case c
 
 ```{r Define the methods}
 # define colors, shapes, line types for the methods
-Method_Names<-c("A-Optimality","L-Optimality","A-Optimality MC","Local case control sampling",
-                "Shrinkage Leverage","Basic Leverage","Unweighted Leverage","Random sampling")
+Method_Names<-c("A-Optimality","L-Optimality","A-Optimality MC",
+                "Local case control sampling","Shrinkage Leverage",
+                "Basic Leverage","Unweighted Leverage","Random sampling")
 Method_Color<-c("green","green4","palegreen",
                 "maroon","red","darkred","firebrick","black")
 Method_Shape_Types<-c(rep(8,3),rep(4,4),16)
@@ -175,8 +177,9 @@ MSE_Beta$Method<-factor(MSE_Beta$Method,levels = Method_Names,labels = Method_Na
 
 # Plot for the mean squared error with all methods
 ggplot(MSE_Beta |> dplyr::group_by(Method,Subsample) |> 
-         dplyr::summarise(MSE=mean(MSE), .groups = 'drop'),
-       aes(x=factor(Subsample),y=MSE,color=Method,group=Method,linetype=Method,shape=Method))+
+       dplyr::summarise(MSE=mean(MSE), .groups = 'drop'),
+    aes(x=factor(Subsample),y=MSE,color=Method,group=Method,
+        linetype=Method,shape=Method))+
   geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
   scale_color_manual(values = Method_Color)+
   scale_linetype_manual(values=Method_Line_Types)+
@@ -184,11 +187,12 @@ ggplot(MSE_Beta |> dplyr::group_by(Method,Subsample) |>
   theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p1
 
 # Plot for the mean squared error with all methods except unweighted leverage
-ggplot(MSE_Beta[!(MSE_Beta$Method %in% c("Unweighted Leverage",
-                                         "Shrinkage Leverage","Basic Leverage")),] |> 
-         dplyr::group_by(Method,Subsample) |> 
-         dplyr::summarise(MSE=mean(MSE),.groups = 'drop'),
-       aes(x=factor(Subsample),y=MSE,color=Method,group=Method,linetype=Method,shape=Method))+
+ggplot(MSE_Beta[!(MSE_Beta$Method %in% c("Unweighted Leverage","Shrinkage Leverage",
+                                         "Basic Leverage")),] |> 
+       dplyr::group_by(Method,Subsample) |> 
+       dplyr::summarise(MSE=mean(MSE),.groups = 'drop'),
+    aes(x=factor(Subsample),y=MSE,color=Method,group=Method,
+        linetype=Method,shape=Method))+
   geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
   scale_color_manual(values = Method_Color[-7])+
   scale_linetype_manual(values=Method_Line_Types[-7])+

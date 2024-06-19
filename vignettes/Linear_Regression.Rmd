@@ -23,17 +23,18 @@ library(tidyr)
 library(psych)
 library(gam)
 
+# Theme for plots
 Theme_special<-function(){
-  theme(legend.key.width=unit(1,"cm"),
-        axis.text.x = element_text(color = "black",size=12, angle = 30, hjust=0.75),
-        axis.text.y = element_text(color = "black",size=12), 
-        strip.text = element_text(colour = "black",size = 12,face="bold"),
-        panel.grid.minor.x = element_blank(),
-        axis.title= element_text(color = "black",face = "bold",size = 12),
-        legend.text = element_text(color = "black", size=11),
-        legend.position = "bottom",
-        legend.margin=margin(0,0,0,0),
-        legend.box.margin=margin(-1,-2,-1,-2)) 
+  theme(legend.key.width= unit(1,"cm"),
+        axis.text.x= element_text(color= "black", size= 12, angle= 30, hjust=0.75),
+        axis.text.y= element_text(color= "black", size= 12), 
+        strip.text= element_text(colour= "black", size= 12, face= "bold"),
+        panel.grid.minor.x= element_blank(),
+        axis.title= element_text(color= "black", face= "bold", size= 12),
+        legend.text= element_text(color= "black", size= 11),
+        legend.position= "bottom",
+        legend.margin= margin(0,0,0,0),
+        legend.box.margin= margin(-1,-2,-1,-2)) 
 }
 ```
 
@@ -50,7 +51,8 @@ Given data is analysed under two different scenarios,
 
 ```{r Exploring data}
 indexes<-sample(1:nrow(Electric_consumption),nrow(Electric_consumption)*0.05)
-Original_Data<-cbind(Electric_consumption[indexes,1],1,Electric_consumption[indexes,-1])
+Original_Data<-cbind(Electric_consumption[indexes,1],1,
+                     Electric_consumption[indexes,-1])
 colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
 
 # Scaling the covariate data
@@ -108,13 +110,14 @@ Consider for $Q=5$ each model has an equal a priori probability (i.e $\alpha_q=1
 Below is the code of implementation for this scenario.
 
 ```{r Equal apriori probabilities, fig.width=12,fig.height=12,fig.align='center',fig.cap="Mean squared error for all the models with equal apriori in the order a to e for Model 1 to 5 across the subsampling methods under comparison."}
+All_Covariates<-colnames(Original_Data_ModelRobust)[-1]
 # A- and L-optimality model robust subsampling for linear regression
 NeEDS4BigData::modelRobustLinSub(r1=300,r2=rep_k,
                                  Y=as.matrix(Original_Data_ModelRobust[,1]),
-                                 X=as.matrix(Original_Data_ModelRobust[,-1]),
-                                 N=N,Alpha=rep(1/length(All_Models),length(All_Models)),
-                                 All_Combinations = All_Models,
-                                 All_Covariates = colnames(Original_Data_ModelRobust)[-1])->Results
+                                 X=as.matrix(Original_Data_ModelRobust[,-1]),N=N,
+                                 Alpha=rep(1/length(All_Models),length(All_Models)),
+                                 All_Combinations=All_Models,
+                                 All_Covariates=All_Covariates)->Results
 Final_Beta_modelRobust<-Results$Beta_Estimates
 
 # Mean squared error and their respective plots for all five models
@@ -127,71 +130,22 @@ for (i in 1:length(All_Models)) {
          nrow = nrow(Final_Beta_modelRobust[[i]]),
          ncol = ncol(Final_Beta_modelRobust[[i]][,-c(1,2)]),byrow = TRUE)->All_Beta
   
-  MSE_Beta_MR[[i]]<-data.frame("Method"=Final_Beta_modelRobust[[i]]$Method,
-                               "Subsample"=Final_Beta_modelRobust[[i]]$r2,
-                               "MSE"=rowSums((All_Beta - Final_Beta_modelRobust[[i]][,-c(1,2)])^2))
+  data.frame("Method"=Final_Beta_modelRobust[[i]]$Method,
+             "Subsample"=Final_Beta_modelRobust[[i]]$r2,
+             "MSE"=rowSums((All_Beta-Final_Beta_modelRobust[[i]][,-c(1,2)])^2))->
+    MSE_Beta_MR[[i]]
   
   ggplot(MSE_Beta_MR[[i]] |> dplyr::group_by(Method,Subsample) |>
-           dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
-         aes(x=factor(Subsample),y=MSE,color=Method,group=Method,linetype=Method,shape=Method))+
+         dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
+         aes(x=factor(Subsample),y=MSE,color=Method,group=Method,
+             linetype=Method,shape=Method))+
     geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
     scale_color_manual(values = Method_Color)+
     ggtitle(paste0("Model ",i))+
     scale_linetype_manual(values=Method_Line_Types)+
-    scale_shape_manual(values = Method_Shape_Types)+
-    theme_bw()+guides(colour = guide_legend(nrow = 2))+Theme_special()->plot_list_MR[[i]]
-}
-
-ggarrange(plotlist = plot_list_MR,nrow = 3,ncol = 2,labels = "auto",
-          common.legend = TRUE,legend = "bottom")
-```
-
-### Apriori probabilities are unequal 
-
-Consider for $Q=5$ each model has a different a priori probability that is based on the number of model parameters as in [@scott2010bayes] (i.e., $\alpha_q = \Big(7 {6 \choose b_q}\Big)^{−1}$ where $b_q$ is the number of model parameters in the $q$-th model excluding the intercept).
-Below is the code of implementation for this scenario.
-
-```{r Unequal apriori, fig.width=12,fig.height=12,fig.align='center',fig.cap="Mean squared error for all the models with unequal apriori in the order a to e for Model 1 to 5 across the subsampling methods under comparison."}
-UnEqual_Apriori<-NULL
-for (i in 1:length(All_Models)) 
-{
-  UnEqual_Apriori[i]<-(7*choose(6,length(All_Models[[i]])-1))^(-1)
-}
-
-UnEqual_Apriori<-UnEqual_Apriori/sum(UnEqual_Apriori)
-
-# A- and L-optimality model robust subsampling for linear regression
-NeEDS4BigData::modelRobustLinSub(r1=300,r2=rep_k,
-                                 Y=as.matrix(Original_Data_ModelRobust[,1]),
-                                 X=as.matrix(Original_Data_ModelRobust[,-1]),
-                                 N=N,Alpha=UnEqual_Apriori,
-                                 All_Combinations = All_Models,
-                                 All_Covariates = colnames(Original_Data_ModelRobust)[-1])->Results
-Final_Beta_modelRobust<-Results$Beta_Estimates
-
-# Mean squared error and their respective plots for all five models
-MSE_Beta_MR<-list(); plot_list_MR<-list()
-for (i in 1:length(All_Models)) {
-  lm(Y~.-1,data=Original_Data_ModelRobust[,c("Y",All_Models[[i]])])->All_Results
-  All_Beta<-coefficients(All_Results)
-  
-  matrix(rep(All_Beta,by=nrow(Final_Beta_modelRobust[[i]])),
-         nrow = nrow(Final_Beta_modelRobust[[i]]),
-         ncol = ncol(Final_Beta_modelRobust[[i]][,-c(1,2)]),byrow = TRUE)->All_Beta
-  
-  MSE_Beta_MR[[i]]<-data.frame("Method"=Final_Beta_modelRobust[[i]]$Method,
-                               "Subsample"=Final_Beta_modelRobust[[i]]$r2,
-                               "MSE"=rowSums((All_Beta - Final_Beta_modelRobust[[i]][,-c(1,2)])^2))
-  
-  ggplot(MSE_Beta_MR[[i]] |> dplyr::group_by(Method,Subsample) |> 
-           dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
-         aes(x=factor(Subsample),y=MSE,color=Method,group=Method,linetype=Method,shape=Method))+
-    geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
-    scale_color_manual(values = Method_Color)+
-    ggtitle(paste0("Model ",i))+
-    scale_linetype_manual(values=Method_Line_Types)+
-    scale_shape_manual(values = Method_Shape_Types)+
-    theme_bw()+guides(colour = guide_legend(nrow = 2))+Theme_special()->plot_list_MR[[i]]
+    scale_shape_manual(values= Method_Shape_Types)+
+    theme_bw()+guides(colour= guide_legend(nrow = 2))+
+    Theme_special()->plot_list_MR[[i]]
 }
 
 ggarrange(plotlist = plot_list_MR,nrow = 3,ncol = 2,labels = "auto",
@@ -208,16 +162,19 @@ Below is the code for this implementation.
 
 ```{r Potential model misspecification methods,fig.width=6,fig.height=6,fig.align='center', fig.cap="Average loss for the potentially misspecified main effects model across the subsampling methods under comparison."}
 # Define the subsampling methods and their respective colors, shapes and line types
-Method_Names<-c("A-Optimality","L-Optimality","LmAMSE","LmAMSE Log Odds 10","LmAMSE Power 10")
+Method_Names<-c("A-Optimality","L-Optimality","LmAMSE",
+                "LmAMSE Log Odds 10","LmAMSE Power 10")
 Method_Color<-c("red","darkred","palegreen","green","springgreen4")
 Method_Shape_Types<-c(rep(8,2),rep(4,3))
 Method_Line_Types<-c(rep("twodash",2),rep("dotted",3))
 
 # For the big data fit the main effects model and estimate the contamination
-interaction_terms <- combn(colnames(Original_Data[,-1])[-1],2,FUN=function(x) paste(x,collapse="*"))
-my_formula<-as.formula(paste("Y ~ ",
-                             paste(paste0("s(X",1:ncol(Original_Data[,-c(1,2)]),")"),collapse="+"),
-                             "+",paste(paste0("s(",interaction_terms,")"),collapse="+")))
+interaction_terms <- combn(colnames(Original_Data[,-1])[-1],2,
+                           FUN=function(x) paste(x,collapse="*"))
+as.formula(paste("Y ~ ",
+                 paste(paste0("s(X",1:ncol(Original_Data[,-c(1,2)]),")"),
+                       collapse="+"),"+",paste(paste0("s(",interaction_terms,")"),
+                                               collapse="+")))->my_formula
 
 lm(Y~.-1,data=Original_Data)->Results
 beta.prop<-coefficients(Results)
@@ -233,7 +190,8 @@ NeEDS4BigData::modelMissLinSub(r1=300,r2=rep_k,
                                Y=as.matrix(Original_Data[,1]),
                                X=as.matrix(Original_Data[,-1]),
                                N=N,Alpha=10,Var_GAM_Full = Var_GAM.prop,
-                               Var_Full=Var.prop,F_Estimate_Full = f_estimate)->Results
+                               Var_Full=Var.prop,
+                               F_Estimate_Full = f_estimate)->Results
 
 Final_Beta_modelMiss<-Results$Beta_Estimates
 Final_Loss_modelMiss<-Results$Loss_Estimates
@@ -247,11 +205,13 @@ matrix(rep(All_Beta,by=nrow(Final_Beta_modelMiss)),nrow = nrow(Final_Beta_modelM
 # and the loss for the main effects model 
 MSE_Beta_modelMiss<-data.frame("Method"=Final_Beta_modelMiss$Method,
                                "Subsample"=Final_Beta_modelMiss$r2,
-                               "MSE"=rowSums((All_Beta - Final_Beta_modelMiss[,-c(1,2)])^2))
+                               "MSE"=rowSums((All_Beta - 
+                                              Final_Beta_modelMiss[,-c(1,2)])^2))
 
 ggplot(MSE_Beta_modelMiss |> dplyr::group_by(Method,Subsample) |> 
-         dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
-       aes(x=factor(Subsample),y=MSE,color=Method,group=Method,linetype=Method,shape=Method))+
+       dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
+       aes(x=factor(Subsample),y=MSE,color=Method,group=Method,
+           linetype=Method,shape=Method))+
   geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
   scale_color_manual(values = Method_Color)+
   scale_linetype_manual(values=Method_Line_Types)+
@@ -259,8 +219,9 @@ ggplot(MSE_Beta_modelMiss |> dplyr::group_by(Method,Subsample) |>
   theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p1
 
 ggplot(Final_Loss_modelMiss |> dplyr::group_by(r2,Method) |> 
-         dplyr::summarise(meanLoss=mean(Loss),.groups ='drop'),
-       aes(x=factor(r2),y=meanLoss,color=Method,group=Method,linetype=Method,shape=Method)) +
+       dplyr::summarise(meanLoss=mean(Loss),.groups ='drop'),
+       aes(x=factor(r2),y=meanLoss,color=Method,group=Method,
+           linetype=Method,shape=Method)) +
   geom_point()+geom_line()+xlab("Subsample size")+ylab("Mean Loss")+
   scale_color_manual(values = Method_Color)+
   scale_linetype_manual(values=Method_Line_Types)+

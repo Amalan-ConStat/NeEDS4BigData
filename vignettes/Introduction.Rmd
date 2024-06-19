@@ -22,18 +22,20 @@ text-align: justify}
 ## Big data analysis
 
 Big data presents both promising opportunities and formidable challenges for data analysts and scientists.
-However, its massive scale and complexity introduce novel computational and statistical hurdles. 
-These include scalability issues, storage constraints, noise accumulation, spurious correlations, incidental endogeneity, and measurement errors. 
+However, its massive scale and complexity introduces novel computational and statistical hurdles. 
+These include scalability issues, storage constraints, noise accumulation, spurious correlations, incidental endogeneity and measurement errors. 
 Addressing these challenges demands innovative approaches in both computation and statistics.
 Traditional methods, effective for small and moderate sample sizes, often falter when confronted with massive datasets.
 Thus, there is a pressing need for innovative statistical methodologies and computational tools tailored to the unique demands of big data analysis.
+
+![The continuously increasing size of big data from ``Big Data: A Survey".](../man/figures/Figure_1.webp)
 
 ## Computational solutions for big data analysis
 
 Computer engineers often seek more powerful computing facilities to reduce computing time, leading to the rapid development of supercomputers over the past decade. 
 These supercomputers boast speeds and storage capacities hundreds or even thousands of times greater than those of general-purpose PCs. 
 However, their significant energy consumption and limited accessibility to ordinary users remain major drawbacks. 
-While cloud computing offers a partial solution by providing accessible computing resources, it faces challenges related to data transfer inefficiency, privacy, and security concerns. 
+While cloud computing offers a partial solution by providing accessible computing resources, it faces challenges related to data transfer inefficiency, privacy and security concerns. 
 Graphic Processing Units (GPUs) have emerged as another computational facility, offering powerful parallel computing capabilities. 
 However, recent comparisons have shown that even high-end GPUs can be outperformed by general-purpose multi-core processors, primarily due to data transfer inefficiencies. 
 In summary, neither supercomputers, cloud computing, nor GPUs have efficiently solved the big data problem. 
@@ -49,7 +51,8 @@ Currently available methods can be broadly categorized into three groups:
 3. Online updating of streamed data: The statistical inference is updated as new data arrive sequentially.
 
 In recent years, there has been a growing preference for subsampling over divide and recombine methods in addressing a range of regression problems. 
-Meanwhile, online updating is primarily utilized for streaming data. Furthermore, when a large dataset is unnecessary to confidently answer a specific question, subsampling is often favoured, as it allows for analysis using standard methods.
+Meanwhile, online updating is primarily utilized for streaming data. 
+Furthermore, when a large dataset is unnecessary to confidently answer a specific question, subsampling is often favoured, as it allows for analysis using standard methods.
 
 ## Subsampling algorithms for big data
 
