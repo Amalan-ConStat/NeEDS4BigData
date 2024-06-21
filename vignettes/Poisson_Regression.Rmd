@@ -1,8 +1,8 @@
 ---
-title: "Poisson Regression : Model robust or misspecification"
+title: "Poisson Regression : Model robust and misspecification"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Poisson Regression : Model robust or misspecification}
+  %\VignetteIndexEntry{Poisson Regression : Model robust and misspecification}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: Vig_Method_Ref.bib  
@@ -62,7 +62,7 @@ head(Original_Data) %>%
         caption = "First five observations of the bike sharing data.")
 
 # Setting the subsample sizes
-N<-nrow(Original_Data); M<-200; k<-c(6:15)*100; rep_k<-rep(k,each=M)
+N<-nrow(Original_Data); M<-250; k<-seq(6,18,by=3)*100; rep_k<-rep(k,each=M)
 ```
 
 ## Model robust or model averaging subsampling

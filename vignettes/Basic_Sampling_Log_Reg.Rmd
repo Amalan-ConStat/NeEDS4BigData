@@ -59,7 +59,7 @@ head(Original_Data) %>%
         caption = "First five observations of the skin segmentation data.")
 
 # Setting the subsample sizes
-N<-nrow(Original_Data); M<-200; k<-c(6:15)*100; rep_k<-rep(k,each=M)
+N<-nrow(Original_Data); M<-250; k<-seq(6,18,by=3)*100; rep_k<-rep(k,each=M)
 ```
 
 We focus on assuming the main effects model with the intercept can appropriately describe the big data.

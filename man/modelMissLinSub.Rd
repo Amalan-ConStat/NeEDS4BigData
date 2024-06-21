@@ -84,7 +84,7 @@ r1<-300; r2<-100*c(6,9); Original_Data<-Full_Data$Full_Data;
 
 # cl <- parallel::makeCluster(4)
 # doParallel::registerDoParallel(cl)
-
+\dontrun{
 Results<-modelMissLinSub(r1 = r1, r2 = r2,
                          Y = as.matrix(Original_Data[,1]),
                          X = as.matrix(Original_Data[,-1]),
@@ -98,6 +98,7 @@ Results<-modelMissLinSub(r1 = r1, r2 = r2,
 
 plot_Beta(Results)
 plot_LmAMSE(Results)
+}
 
 }
 \references{

@@ -7,7 +7,7 @@ template:
 
 
 development:
-  mode: release
+  mode: auto
 
 navbar:
   title: NeEDS4BigData

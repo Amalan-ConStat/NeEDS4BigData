@@ -75,7 +75,7 @@
 #'
 #' # cl <- parallel::makeCluster(4)
 #' # doParallel::registerDoParallel(cl)
-#'
+#' \dontrun{
 #' Results<-modelMissLinSub(r1 = r1, r2 = r2,
 #'                          Y = as.matrix(Original_Data[,1]),
 #'                          X = as.matrix(Original_Data[,-1]),
@@ -89,6 +89,7 @@
 #'
 #' plot_Beta(Results)
 #' plot_LmAMSE(Results)
+#' }
 #'
 #' @importFrom Rdpack reprompt
 #' @import stats

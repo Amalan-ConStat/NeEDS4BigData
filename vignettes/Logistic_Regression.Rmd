@@ -1,8 +1,8 @@
 ---
-title: "Logistic Regression : Model robust or misspecification"
+title: "Logistic Regression : Model robust and misspecification"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Logistic Regression : Model robust or misspecification}
+  %\VignetteIndexEntry{Logistic Regression : Model robust and misspecification}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: Vig_Method_Ref.bib
@@ -64,7 +64,7 @@ head(Original_Data) %>%
         caption = "First five observations of the skin segmentation data.")
 
 # Setting the subsample sizes
-N<-nrow(Original_Data); M<-200; k<-c(6:15)*100; rep_k<-rep(k,each=M)
+N<-nrow(Original_Data); M<-250; k<-seq(6,18,by=3)*100; rep_k<-rep(k,each=M)
 ```
 
 ## Model robust or model averaging subsampling
@@ -229,6 +229,4 @@ ggplot(Final_Loss_modelMiss |> dplyr::group_by(r2,Method) |>
 p2
 ```
 
-### THANK YOU 
-
-## References
+### THANK YOU
