@@ -1,11 +1,8 @@
 Type: Package
 Package: NeEDS4BigData
-Title: New Experimental Design based Subsampling Methods for Big Data
+Title: New Experimental Design Based Subsampling Methods for Big Data
 Version: 1.0.0
-Authors@R: c(
-    person("Amalan", "Mahendran", , "amalan0595@gmail.com", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-0643-9052"))
-           )
+Authors@R: person(given = "Amalan", family = "Mahendran", email = "amalan0595@gmail.com", role = c("aut", "cre"),comment = c(ORCID = "0000-0002-0643-9052"))
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: Subsampling methods for big data under different models and assumptions.
     Starting with linear regression and leading to Generalised Linear Models, softmax
