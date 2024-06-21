@@ -4,7 +4,9 @@ authors:
 
 template:
   bootstrap: 5
-
+  bslib:
+    bg: "#ffffff"
+    fg: "#003366"
 
 development:
   mode: auto
