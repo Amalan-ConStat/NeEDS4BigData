@@ -405,12 +405,10 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full
   all_r<-c(r1,r2)
   # Sample Data
   for(j in 1:length(Alpha)){
-    names(Sample.LmAMSE_LO[j])<-names(Sample.LmAMSE_Pow[j])<-paste0("Alpha_",Alpha[j])
-    names(Sample.LmAMSE_LO[[j]])<-names(Sample.LmAMSE_Pow[[j]])<-all_r
+    names(Sample.LmAMSE_LO[[j]])<-names(Sample.LmAMSE_Pow[[j]])<-paste0("Alpha_",Alpha[j],"_",all_r)
   }
 
   names(Sample.mMSE)<-names(Sample.mVc)<-names(Sample.LmAMSE)<-c(r1,r2)
-  names(Sample.LmAMSE_LO)<-names(Sample.LmAMSE_Pow)<-paste0("Alpha_",Alpha)
 
   message("Step 2 of the algorithm completed.")
 

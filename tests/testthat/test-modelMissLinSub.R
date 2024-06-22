@@ -47,11 +47,11 @@ test_that("dimension of the LmAMSE subsample",{
 })
 
 test_that("dimension of the LmAMSE Log Odds subsample",{
-  expect_equal(length(Results$Sample_LmAMSE_Log_Odds$Alpha_10),c(length(r2)+1))
+  expect_equal(length(Results$Sample_LmAMSE_Log_Odds[[1]]),c(length(r2)+1))
 })
 
 test_that("dimension of the LmAMSE Power subsample",{
-  expect_equal(length(Results$Sample_LmAMSE_Power$Alpha_10),c(length(r2)+1))
+  expect_equal(length(Results$Sample_LmAMSE_Power[[1]]),c(length(r2)+1))
 })
 
 No_Of_Var<-2; Beta<-c(-1,2,2,1); Var_Epsilon<-0.5; N<-10000;

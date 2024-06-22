@@ -142,7 +142,6 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     Sample.mMSE<-list()
 
     Sample.mMSE[[1]]<-idx.prop
-    names(Sample.mMSE[[1]])<-"r1"
 
     beta.mMSE[,1]<-Var_Epsilon[,1]<-r2
     colnames(beta.mMSE)<-c("r2",paste0("Beta",0:(ncol(X)-1)))
@@ -170,7 +169,7 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
       Xbeta_Final<-as.vector(X%*%beta.prop)
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
 
-      Sample.mMSE[[i+1]]<-idx.mMSE; names(Sample.mMSE[[i+1]])<-r2[i]
+      Sample.mMSE[[i+1]]<-idx.mMSE
       beta.mMSE[i,-1] <- beta.prop
       Var_Epsilon[i,2]<-Var.prop
 
@@ -189,6 +188,8 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
                                        "Subsample"=rep(r2,times=length(Subsampling_Methods)),
                                        "Var Epsilon"=c(Var_Epsilon[,"A-Optimality"]))
+
+    names(Sample.mMSE)<-c(r1,r2)
 
     message("Step 2 of the algorithm completed.")
 
@@ -222,7 +223,6 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     Sample.mMSE<-list()
 
     Sample.mMSE[[1]]<-idx.prop
-    names(Sample.mMSE[[1]])<-"r1"
 
     beta.mMSE[,1]<-r2
     colnames(beta.mMSE)<-c("r2",paste0("Beta",0:(ncol(X)-1)))
@@ -246,7 +246,7 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
       y.mMSE <- Y[c(idx.mMSE)]
       fit.mMSE <- .getMLE(x=x.mMSE, y=y.mMSE,w=c(1 / PI.mMSE[idx.mMSE]))
 
-      Sample.mMSE[[i+1]]<-idx.mMSE; names(Sample.mMSE[[i+1]])<-r2[i]
+      Sample.mMSE[[i+1]]<-idx.mMSE
       beta.mMSE[i,-1] <- fit.mMSE$par
 
       if(anyNA(fit.mMSE$par)){
@@ -261,6 +261,8 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
 
     Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
                                 beta.mMSE)
+
+    names(Sample.mMSE)<-c(r1,r2)
 
     message("Step 2 of the algorithm completed.")
 
@@ -293,7 +295,6 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     Sample.mMSE<-list()
 
     Sample.mMSE[[1]]<-idx.prop
-    names(Sample.mMSE[[1]])<-"r1"
 
     beta.mMSE[,1]<-r2
     colnames(beta.mMSE)<-c("r2",paste0("Beta",0:(ncol(X)-1)))
@@ -317,7 +318,7 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
       pinv.mMSE<-c(1 / PI.mMSE[idx.mMSE])
 
       fit.mMSE <- stats::glm(y.mMSE~x.mMSE-1, family = "poisson",weights=pinv.mMSE)
-      Sample.mMSE[[i+1]]<-idx.mMSE; names(Sample.mMSE[[i+1]])<-r2[i]
+      Sample.mMSE[[i+1]]<-idx.mMSE
 
       beta.mMSE[i,-1] <-fit.mMSE$coefficients
 
@@ -334,6 +335,8 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
                                 beta.mMSE)
 
+    names(Sample.mMSE)<-c(r1,r2)
+
     message("Step 2 of the algorithm completed.")
 
     ans<-list("Beta_Estimates"=Beta_Data,
@@ -343,3 +346,4 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     return(ans)
   }
 }
+
