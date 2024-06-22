@@ -503,7 +503,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 #' \code{Complete_Data} a matrix for Y and X
 #'
 #' @references
-#' Nelder, J. A., & Wedderburn, R. W. (1972). Generalized linear models. Journal of the Royal Statistical Society Series A: Statistics in Society, 135(3), 370-384.
+#' \insertRef{lee1996hierarchical}{NeEDS4BigData}
 #'
 #' @examples
 #' Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5)

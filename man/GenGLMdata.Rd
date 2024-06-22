@@ -56,5 +56,5 @@ Results<-GenGLMdata(Dist,NULL,No_Of_Var,Beta,N,Family)
 
 }
 \references{
-Nelder, J. A., & Wedderburn, R. W. (1972). Generalized linear models. Journal of the Royal Statistical Society Series A: Statistics in Society, 135(3), 370-384.
+\insertRef{lee1996hierarchical}{NeEDS4BigData}
 }
