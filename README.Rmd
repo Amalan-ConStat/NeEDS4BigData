@@ -8,7 +8,7 @@ knitr::opts_chunk$set(echo = TRUE,comment = "#>",collapse = TRUE, fig.retina=2, 
 library(badger)
 ```
 
-# NeEDS4BigData <img src="man/figures/logo.png" align="right" width="150" />
+# NeEDS4BigData <img src='man/figures/logo.png' align="right" height="150" />
 
 <!-- badges: start -->
 
@@ -62,18 +62,19 @@ Algorithms are implemented under Generalised Linear Models (GLMs) for big data t
 6. Model Robust subsampling method for GLMs.
 7. Subsampling method for GLMs when the model is potentially misspecified.
 
-To explain these methods in detail $4$ articles are written and they are, 
+To explain these methods in detail $7$ articles are written and they are, 
 
 1. Introduction - explains the need for subsampling methods.
-2. Linear Regression - implementing subsampling methods for linear regression under $3$ scenarios.
-3. Logistic Regression - implementing subsampling methods for logistic regression under $3$ scenarios.
-4. Poisson Regression - implementing subsampling methods for Poisson regression under $3$ scenarios.
+2. Linear Regression - Basic sampling.
+3. Linear Regression - Model robust and misspecification.
+4. Logistic Regression - Basic sampling.
+5. Logistic Regression - Model robust and misspecification. 
+6. Poisson Regression - Basic sampling.
+7. Poisson Regression - Model robust and misspecification.
 
-The $3$ scenarios mentioned above are,
-
-1. First scenario - we assume the main effects can explicitly describe the big data.
-2. Second scenario - we assume a set of models can appropriately describe the big data.
-3. Third scenario - we the main effects model is potentially misspecified.
+Here, for $2,4$ and $6$ we assume the main effects model can describe the data. 
+While for $3,5$ and $7$ first we consider there are several models that can describe the big data, then later we assume the given main effects model is misspecified. 
+Under these conditions from $2-7$ we explore subsampling for $3$ given big data sets.
 
 #### Thank You
 
