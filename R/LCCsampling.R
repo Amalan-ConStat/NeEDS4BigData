@@ -57,7 +57,6 @@
 #'             N = nrow(Original_Data))->Results
 #'
 #' plot_Beta(Results)
-#' #plot_Utility(Results)
 #'
 #' @importFrom Rdpack reprompt
 #' @export

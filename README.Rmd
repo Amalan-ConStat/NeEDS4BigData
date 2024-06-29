@@ -8,7 +8,7 @@ knitr::opts_chunk$set(echo = TRUE,comment = "#>",collapse = TRUE, fig.retina=2, 
 library(badger)
 ```
 
-# NeEDS4BigData <img src='man/figures/logo.png' align="right" height="150" />
+# NeEDS4BigData <img src='man/figures/logo.png' align="right" height="175" width="165" />
 
 <!-- badges: start -->
 

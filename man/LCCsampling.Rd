@@ -63,7 +63,6 @@ LCCsampling(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,colnames(Original_Dat
             N = nrow(Original_Data))->Results
 
 plot_Beta(Results)
-#plot_Utility(Results)
 
 }
 \references{

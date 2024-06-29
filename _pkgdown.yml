@@ -89,7 +89,6 @@ reference:
     contents:
         - plot_Beta
         - plot_LmAMSE
-        - plot_Utility
 
 home:
   title: NeEDS4BigData - An R package for subsampling methods

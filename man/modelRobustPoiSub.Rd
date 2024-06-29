@@ -88,7 +88,6 @@ modelRobustPoiSub(r1 = r1, r2 = r2,
                   All_Covariates = colnames(Original_Data)[-1])->Results
 
 Beta_Plots<-plot_Beta(Results)
-Utility_Plots<-plot_Utility(Results)
 
 }
 \references{

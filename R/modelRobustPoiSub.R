@@ -79,7 +79,6 @@
 #'                   All_Covariates = colnames(Original_Data)[-1])->Results
 #'
 #' Beta_Plots<-plot_Beta(Results)
-#' Utility_Plots<-plot_Utility(Results)
 #'
 #' @importFrom Rdpack reprompt
 #' @import stats

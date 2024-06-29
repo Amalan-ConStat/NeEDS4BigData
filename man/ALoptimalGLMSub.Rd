@@ -75,7 +75,6 @@ ALoptimalGLMSub(r1 = r1, r2 = r2,
                 family = "linear")->Results
 
 plot_Beta(Results)
-#plot_Utility(Results)
 
 Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1)
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"logistic"
@@ -89,7 +88,6 @@ ALoptimalGLMSub(r1 = r1, r2 = r2,
                 family = "logistic")->Results
 
 plot_Beta(Results)
-plot_Utility(Results)
 
 Dist<-"Normal";
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"poisson"
@@ -103,7 +101,6 @@ ALoptimalGLMSub(r1 = r1, r2 = r2,
                 family = "poisson")->Results
 
 plot_Beta(Results)
-plot_Utility(Results)
 
 }
 \references{

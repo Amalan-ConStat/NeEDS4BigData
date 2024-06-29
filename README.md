@@ -1,5 +1,5 @@
 
-# NeEDS4BigData <img src='man/figures/logo.png' align="right" height="150" />
+# NeEDS4BigData <img src='man/figures/logo.png' align="right" height="175" width="165" />
 
 <!-- badges: start -->
 

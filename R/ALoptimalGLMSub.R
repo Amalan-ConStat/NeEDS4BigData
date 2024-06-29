@@ -70,7 +70,6 @@
 #'                 family = "linear")->Results
 #'
 #' plot_Beta(Results)
-#' #plot_Utility(Results)
 #'
 #' Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1)
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"logistic"
@@ -84,7 +83,6 @@
 #'                 family = "logistic")->Results
 #'
 #' plot_Beta(Results)
-#' plot_Utility(Results)
 #'
 #' Dist<-"Normal";
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"poisson"
@@ -98,7 +96,6 @@
 #'                 family = "poisson")->Results
 #'
 #' plot_Beta(Results)
-#' plot_Utility(Results)
 #'
 #' @importFrom Rdpack reprompt
 #' @import stats
