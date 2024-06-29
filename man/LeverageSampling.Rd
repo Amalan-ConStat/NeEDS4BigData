@@ -78,7 +78,7 @@ Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1)
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"logistic"
 Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
-r<-100*c(6,10); Original_Data<-Full_Data$Complete_Data;
+r<-100*c(6:10); Original_Data<-Full_Data$Complete_Data;
 
 LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),
                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
@@ -91,7 +91,7 @@ Dist<-"Normal";
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"poisson"
 Full_Data<-GenGLMdata(Dist,NULL,No_Of_Var,Beta,N,Family)
 
-r<-100*c(6,10); Original_Data<-Full_Data$Complete_Data;
+r<-100*c(6:10); Original_Data<-Full_Data$Complete_Data;
 
 LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),
                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),

@@ -72,7 +72,7 @@
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"logistic"
 #' Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 #'
-#' r<-100*c(6,10); Original_Data<-Full_Data$Complete_Data;
+#' r<-100*c(6:10); Original_Data<-Full_Data$Complete_Data;
 #'
 #' LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
@@ -85,7 +85,7 @@
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"poisson"
 #' Full_Data<-GenGLMdata(Dist,NULL,No_Of_Var,Beta,N,Family)
 #'
-#' r<-100*c(6,10); Original_Data<-Full_Data$Complete_Data;
+#' r<-100*c(6:10); Original_Data<-Full_Data$Complete_Data;
 #'
 #' LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
@@ -241,12 +241,12 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
       stop("There are NA or NaN values in the model parameters")
     }
 
-    X_Temp<-X
+    X_Temp<-X; XX_Inv<-solve(t(X)%*%X)
     PP <-apply(X_Temp,1,function(X_Temp){
       P.prop  <- 1 - 1 / (1 + exp(X_Temp%*% beta.prop))
       W.prop <- sqrt(P.prop*(1-P.prop))
       x_bar <- W.prop%*%X_Temp
-      x_bar%*%solve(t(X)%*%X)%*%t(x_bar)
+      x_bar%*%XX_Inv%*%t(x_bar)
       })
 
     PI.blev <- PP / sum(PP)
@@ -345,11 +345,11 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
 
     P.prop  <- exp(X %*% beta.prop)
 
-    X_Temp<-X
+    X_Temp<-X; XX_Inv<-solve(t(X)%*%X)
     PP <-apply(X_Temp,1,function(X_Temp){
       P.prop  <- sqrt(exp(X_Temp%*%beta.prop))
       x_bar <- P.prop%*%X_Temp
-      x_bar%*%solve(t(X)%*%X)%*%t(x_bar)
+      x_bar%*%XX_Inv%*%t(x_bar)
     })
 
     PI.blev <- PP / sum(PP)
