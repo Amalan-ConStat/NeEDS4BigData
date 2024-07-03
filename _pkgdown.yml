@@ -22,7 +22,7 @@ navbar:
     - text: Examples
       menu:
         - text: Introduction
-          href: articles/introduction.html
+          href: articles/Introduction.html
         - text: Linear Regression - Basic sampling
           href: articles/Basic_Sampling_Lin_Reg.html
         - text: Linear Regression - Model robust and misspecification
