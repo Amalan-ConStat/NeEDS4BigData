@@ -171,7 +171,7 @@ air-conditioner (<span class="math inline">\(X_3\)</span>). The
 covariates are scaled to be mean of <span class="math inline">\(\mu=0\)</span> and variance of <span class="math inline">\(\sigma^2=1\)</span>.</p>
 <p>Given data is analysed under two different scenarios,</p>
 <ol style="list-style-type: decimal">
-<li>model robust or averaging subsampling methods assuming that a set of
+<li>model robust or average subsampling methods assuming that a set of
 models can describe the data.</li>
 <li>subsampling method assuming the main effects model is potentially
 misspecified.</li>
@@ -339,7 +339,7 @@ X3
 <code class="sourceCode R"><span><span class="co"># Setting the subsample sizes</span></span>
 <span><span class="va">N</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">)</span>; <span class="va">M</span><span class="op">&lt;-</span><span class="fl">250</span>; <span class="va">k</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">6</span>,<span class="fl">18</span>,by<span class="op">=</span><span class="fl">3</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span>; <span class="va">rep_k</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">k</span>,each<span class="op">=</span><span class="va">M</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
-<h3 id="model-robust-or-model-averaging-subsampling">Model robust or model averaging subsampling<a class="anchor" aria-label="anchor" href="#model-robust-or-model-averaging-subsampling"></a>
+<h3 id="model-robust-or-average-subsampling">Model robust or average subsampling<a class="anchor" aria-label="anchor" href="#model-robust-or-average-subsampling"></a>
 </h3>
 <p>The method <span class="math inline">\(A\)</span>- and <span class="math inline">\(L\)</span>-optimality of model robust or average
 subsampling is compared against the <span class="math inline">\(A\)</span>- and <span class="math inline">\(L\)</span>-optimality subsampling method. Here

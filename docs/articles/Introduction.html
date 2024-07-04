@@ -182,26 +182,26 @@ solutions, with new methodologies continually under development.
 Currently available methods can be broadly categorized into three
 groups:</p>
 <ol style="list-style-type: decimal">
-<li>Sampling Method: Sampling involves selecting a representative subset
-of the data for analysis instead of analysing the entire dataset. This
-approach can significantly reduce computational requirements while still
+<li>Sampling: This involves selecting a representative subset of the
+data for analysis instead of analysing the entire dataset. This approach
+can significantly reduce computational requirements while still
 providing valuable insights into the underlying population.</li>
-<li>Divide and conquer method: This approach involves breaking down the
-large problem into smaller, more manageable sub problems. Each sub
-problem is then independently analysed, often in parallel, before
-combining the results to obtain the final output.</li>
+<li>Divide and conquer: This approach involves breaking down the large
+problem into smaller, more manageable sub problems. Each sub problem is
+then independently analysed, often in parallel, before combining the
+results to obtain the final output.</li>
 <li>Online updating of streamed data: The statistical inference is
 updated as new data arrive sequentially.</li>
 </ol>
-<p>In recent years, there has been a growing preference for subsampling
+<p>In recent years, there has been a growing preference for sampling
 over divide and recombine methods in addressing a range of regression
 problems. Meanwhile, online updating is primarily utilized for streaming
 data. Furthermore, when a large dataset is unnecessary to confidently
-answer a specific question, subsampling is often favoured, as it allows
-for analysis using standard methods.</p>
+answer a specific question, sampling is often favoured, as it allows for
+analysis using standard methods.</p>
 </div>
 <div class="section level2">
-<h2 id="subsampling-algorithms-for-big-data">Subsampling algorithms for big data<a class="anchor" aria-label="anchor" href="#subsampling-algorithms-for-big-data"></a>
+<h2 id="sampling-algorithms-for-big-data">Sampling algorithms for big data<a class="anchor" aria-label="anchor" href="#sampling-algorithms-for-big-data"></a>
 </h2>
 <p>The literature presents two strategies to resolve the primary
 challenge of how to acquire an informative subset that efficiently
@@ -219,7 +219,7 @@ Zhang, Ning, and Ruppert 2021)</span>
 Cheng, Wang, and Yang 2020; Hou-Liu and Browne 2023; Reuter and Schwabe
 2023; Yu, Liu, and Wang 2023)</span>.</li>
 </ol>
-<p>As of now in this package we focus on the subsampling methods</p>
+<p>As of now in this package we focus on the sampling methods</p>
 <ol style="list-style-type: decimal">
 <li>Leverage sampling by <span class="citation">Ma, Mahoney, and Yu
 (2014)</span> and <span class="citation">Ma and Sun (2015)</span>.</li>
