@@ -46,15 +46,15 @@ Instead, there is a growing need for efficient statistical solutions that can ma
 In the realm of addressing the challenges posed by big data, statistical solutions are relatively novel compared to engineering solutions, with new methodologies continually under development. 
 Currently available methods can be broadly categorized into three groups:
 
-1. Sampling Method: Sampling involves selecting a representative subset of the data for analysis instead of analysing the entire dataset. This approach can significantly reduce computational requirements while still providing valuable insights into the underlying population.
-2. Divide and conquer method: This approach involves breaking down the large problem into smaller, more manageable sub problems. Each sub problem is then independently analysed, often in parallel, before combining the results to obtain the final output.
+1. Sampling: This involves selecting a representative subset of the data for analysis instead of analysing the entire dataset. This approach can significantly reduce computational requirements while still providing valuable insights into the underlying population.
+2. Divide and conquer: This approach involves breaking down the large problem into smaller, more manageable sub problems. Each sub problem is then independently analysed, often in parallel, before combining the results to obtain the final output.
 3. Online updating of streamed data: The statistical inference is updated as new data arrive sequentially.
 
-In recent years, there has been a growing preference for subsampling over divide and recombine methods in addressing a range of regression problems. 
+In recent years, there has been a growing preference for sampling over divide and recombine methods in addressing a range of regression problems. 
 Meanwhile, online updating is primarily utilized for streaming data. 
-Furthermore, when a large dataset is unnecessary to confidently answer a specific question, subsampling is often favoured, as it allows for analysis using standard methods.
+Furthermore, when a large dataset is unnecessary to confidently answer a specific question, sampling is often favoured, as it allows for analysis using standard methods.
 
-## Subsampling algorithms for big data
+## Sampling algorithms for big data
 
 The literature presents two strategies to resolve the primary challenge of how to acquire an informative subset that efficiently addresses specific analytical questions and yield results consistent with analysing the large data set. 
 
@@ -63,7 +63,7 @@ They are:
 1. Sample randomly from the large dataset using subsampling probabilities determined via an assumed statistical model and objective (e.g., prediction and/or parameter estimation) [@wang2018optimal;@yao2019softmax;@ai2020quantile;@ai2021optimal;@lee2021fast;@zhang2021optimal;@lee2022sampling]
 2. Select subsamples based on an experimental design [@drovandi2017principles;@wang2019information;@cheng2020information;@hou2023generalized;@reuter2023optimal;@yu2023information].
 
-As of now in this package we focus on the subsampling methods
+As of now in this package we focus on the sampling methods
 
 1. Leverage sampling by @ma2014statistical and @ma2015leveraging.
 2. Local case control sampling by @fithian2015local.

@@ -46,7 +46,7 @@ The covariates are scaled to be mean of $\mu=0$ and variance of $\sigma^2=1$.
 
 Given data is analysed under two different scenarios,
 
-1. model robust or averaging subsampling methods assuming that a set of models can describe the data.
+1. model robust or average subsampling methods assuming that a set of models can describe the data.
 2. subsampling method assuming the main effects model is potentially misspecified.
 
 ```{r Exploring data}
@@ -65,7 +65,7 @@ head(Original_Data) %>%
 N<-nrow(Original_Data); M<-250; k<-seq(6,18,by=3)*100; rep_k<-rep(k,each=M)
 ```
 
-## Model robust or model averaging subsampling
+## Model robust or average subsampling
 
 The method $A$- and $L$-optimality of model robust or average subsampling is compared against the $A$- and $L$-optimality subsampling method. 
 Here five different models are considered 1) main effects model ($\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3$), 2-4) main effects model with the squared term of each covariate ($X^2_1 / X^2_2 / X^2_3$) and 5) main effects model with all the squared terms ($\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3+\beta_4X^2_1+\beta_5X^2_2+\beta_6X^2_3$). 
