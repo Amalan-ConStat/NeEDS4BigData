@@ -13,19 +13,19 @@
 #'
 #' For leverage sampling the facets are for subsample sizes and beta values.
 #'
-#' For A- and L-optimality criterion subsampling under Generalised Linear Models
+#' For A- and L-optimality criteria subsampling under Generalised Linear Models
 #' the facets are for subsample sizes and beta values.
 #'
-#' For A-optimality criterion subsampling under Gaussian Linear Models
+#' For A-optimality criteria subsampling under Gaussian Linear Models
 #' the facets are for subsample sizes and beta values.
 #'
-#' For A-optimality criterion subsampling under Generalised Linear Models
+#' For A-optimality criteria subsampling under Generalised Linear Models
 #' with response variable not inclusive the facets are for subsample sizes and beta values.
 #'
-#' For A- and L-optimality criterion subsampling under Generalised Linear Models
+#' For A- and L-optimality criteria subsampling under Generalised Linear Models
 #' where multiple models can describe the data the facets are for subsample sizes and beta values.
 #'
-#' For A- and L-optimality criterion and LmAMSE subsampling under Generalised Linear Models
+#' For A- and L-optimality criteria and LmAMSE subsampling under Generalised Linear Models
 #' with potential model misspecification the facets are for subsample sizes and beta values.
 #'
 #' @return
@@ -228,7 +228,7 @@ plot_Beta.ModelMisspecified<-function(object){
 #' @param object Any object after subsampling from our subsampling function under potential model misspecification
 #'
 #' @details
-#' For A- and L-optimality criterion and RLmAMSE subsampling under Generalised Linear Models
+#' For A- and L-optimality criteria and RLmAMSE subsampling under Generalised Linear Models
 #' with potential model misspecification the facets are for variance and bias^2 of AMSE values.
 #'
 #' @return

@@ -155,10 +155,10 @@ with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error
 <p><code>AMSE_Estimates</code> matrix of estimated AMSE values after subsampling</p>
 
 
-<p><code>Sample_A-Optimality</code> list of indexes for the initial and optimal subsamples obtained based on A-Optimality criterion</p>
+<p><code>Sample_A-Optimality</code> list of indexes for the initial and optimal subsamples obtained based on A-Optimality criteria</p>
 
 
-<p><code>Sample_L-Optimality</code> list of indexes for the initial and optimal subsamples obtained based on L-Optimality criterion</p>
+<p><code>Sample_L-Optimality</code> list of indexes for the initial and optimal subsamples obtained based on L-Optimality criteria</p>
 
 
 <p><code>Sample_RLmAMSE</code> list of indexes for the optimal subsamples obtained based on RLmAMSE</p>
@@ -176,7 +176,7 @@ with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Two stage subsampling algorithm for big data under logistic regression for potential model misspecification.</p>
 <p>First stage is to obtain a random sample of size \(r_1\) and estimate the model parameters.
-Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criterion,
+Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria,
 RLmAMSE and enhanced RLmAMSE(log-odds and power) subsampling methods.</p>
 <p>Through the estimated subsampling probabilities an subsample of size \(r_2 \ge r_1\) is obtained.
 Finally, the two samples are combined and the model parameters are estimated for A- and L-optimality,

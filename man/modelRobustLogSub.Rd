@@ -2,7 +2,7 @@
 % Please edit documentation in R/modelRobustLogSub.R
 \name{modelRobustLogSub}
 \alias{modelRobustLogSub}
-\title{Model robust optimal subsampling for A- and L- optimality criterion under logistic regression}
+\title{Model robust optimal subsampling for A- and L- optimality criteria under logistic regression}
 \usage{
 modelRobustLogSub(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates)
 }
@@ -30,27 +30,27 @@ The output of \code{modelRobustLinSub} gives a list of
 
 \code{Utility_Data} estimated Variance and Information of the model parameters after subsampling
 
-\code{Sample_L-optimality} list of indexes for the initial and optimal subsamples obtained based on L-optimality criterion
+\code{Sample_L-optimality} list of indexes for the initial and optimal subsamples obtained based on L-optimality criteria
 
-\code{Sample_L-optimality_MR} list of indexes for the initial and model robust optimal subsamples obtained based on L-optimality criterion
+\code{Sample_L-optimality_MR} list of indexes for the initial and model robust optimal subsamples obtained based on L-optimality criteria
 
-\code{Sample_A-optimality} list of indexes for the initial and optimal subsamples obtained based on A-optimality criterion
+\code{Sample_A-optimality} list of indexes for the initial and optimal subsamples obtained based on A-optimality criteria
 
-\code{Sample_A-optimality_MR} list of indexes for the initial and model robust optimal subsamples obtained based on A-optimality criterion
+\code{Sample_A-optimality_MR} list of indexes for the initial and model robust optimal subsamples obtained based on A-optimality criteria
 
-\code{Subsampling_Probability} matrix of calculated subsampling probabilities for A- and L- optimality criterion
+\code{Subsampling_Probability} matrix of calculated subsampling probabilities for A- and L- optimality criteria
 }
 \description{
 Using this function subsample from big data under logistic regression when there are more than
 one model to describe the data. Subsampling probabilities are obtained based on the A- and L-
-optimality criterions.
+optimality criteria.
 }
 \details{
 Two stage subsampling algorithm for big data under logistic regression for multiple models that can
 describe the big data.
 
 First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters for all models.
-Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criterion and
+Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria and
 model averaging A-, L-optimality subsampling methods.
 
 Through the estimated subsampling probabilities an subsample of size \eqn{r_2 \ge r_1} is obtained.

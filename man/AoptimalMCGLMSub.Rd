@@ -2,7 +2,7 @@
 % Please edit documentation in R/AoptimalMCGLMSub.R
 \name{AoptimalMCGLMSub}
 \alias{AoptimalMCGLMSub}
-\title{A-optimality criterion based subsampling under measurement constraints for Generalised Linear Models}
+\title{A-optimality criteria based subsampling under measurement constraints for Generalised Linear Models}
 \usage{
 AoptimalMCGLMSub(r1,r2,Y,X,N,family)
 }
@@ -26,14 +26,14 @@ The output of \code{AoptimalMCGLMSub} gives a list of
 
 \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after subsampling (valid only for linear regression)
 
-\code{Sample_A-Optimality} list of indexes for the initial and optimal subsamples obtained based on A-Optimality criterion
+\code{Sample_A-Optimality} list of indexes for the initial and optimal subsamples obtained based on A-Optimality criteria
 
-\code{Subsampling_Probability} matrix of calculated subsampling probabilities for A-optimality criterion
+\code{Subsampling_Probability} matrix of calculated subsampling probabilities for A-optimality criteria
 }
 \description{
 Using this function subsample from big data under linear, logistic and Poisson regression
 to describe the data when response \eqn{y} is partially unavailable. Subsampling probabilities are
-obtained based on the A-optimality criterion.
+obtained based on the A-optimality criteria.
 }
 \details{
 Two stage subsampling algorithm for big data under Generalised Linear Models
@@ -41,7 +41,7 @@ Two stage subsampling algorithm for big data under Generalised Linear Models
 subsampling probability evaluation.
 
 First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-Using the estimated parameters subsampling probabilities are evaluated for A-optimality criterion.
+Using the estimated parameters subsampling probabilities are evaluated for A-optimality criteria.
 
 Through the estimated subsampling probabilities an optimal subsample of size \eqn{r_2 \ge r_1} is obtained.
 Finally, only the optimal sample is used and the model parameters are estimated.

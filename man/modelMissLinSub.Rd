@@ -34,9 +34,9 @@ The output of \code{modelMissLinSub} gives a list of
 
 \code{AMSE_Estimates} matrix of estimated AMSE values after subsampling
 
-\code{Sample_A-Optimality} list of indexes for the initial and optimal subsamples obtained based on A-Optimality criterion
+\code{Sample_A-Optimality} list of indexes for the initial and optimal subsamples obtained based on A-Optimality criteria
 
-\code{Sample_L-Optimality} list of indexes for the initial and optimal subsamples obtained based on L-Optimality criterion
+\code{Sample_L-Optimality} list of indexes for the initial and optimal subsamples obtained based on L-Optimality criteria
 
 \code{Sample_RLmAMSE} list of indexes for the optimal subsamples obtained based obtained based on RLmAMSE
 
@@ -55,7 +55,7 @@ with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error
 Two stage subsampling algorithm for big data under linear regression for potential model misspecification.
 
 First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criterion,
+Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria,
 RLmAMSE and enhanced RLmAMSE (log-odds and power) subsampling methods.
 
 Through the estimated subsampling probabilities an subsample of size \eqn{r_2 \ge r_1} is obtained.

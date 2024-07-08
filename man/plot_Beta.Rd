@@ -21,18 +21,18 @@ For local case control sampling the facets are for subsample sizes and beta valu
 
 For leverage sampling the facets are for subsample sizes and beta values.
 
-For A- and L-optimality criterion subsampling under Generalised Linear Models
+For A- and L-optimality criteria subsampling under Generalised Linear Models
 the facets are for subsample sizes and beta values.
 
-For A-optimality criterion subsampling under Gaussian Linear Models
+For A-optimality criteria subsampling under Gaussian Linear Models
 the facets are for subsample sizes and beta values.
 
-For A-optimality criterion subsampling under Generalised Linear Models
+For A-optimality criteria subsampling under Generalised Linear Models
 with response variable not inclusive the facets are for subsample sizes and beta values.
 
-For A- and L-optimality criterion subsampling under Generalised Linear Models
+For A- and L-optimality criteria subsampling under Generalised Linear Models
 where multiple models can describe the data the facets are for subsample sizes and beta values.
 
-For A- and L-optimality criterion and LmAMSE subsampling under Generalised Linear Models
+For A- and L-optimality criteria and LmAMSE subsampling under Generalised Linear Models
 with potential model misspecification the facets are for subsample sizes and beta values.
 }

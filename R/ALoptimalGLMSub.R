@@ -1,8 +1,8 @@
-#' A- and L-optimality criterion based subsampling under Generalised Linear Models
+#' A- and L-optimality criteria based subsampling under Generalised Linear Models
 #'
 #' Using this function subsample from big data under linear, logistic and Poisson regression
 #' to describe the data. Subsampling probabilities are obtained based on the A- and L-
-#' optimality criterions.
+#' optimality criteria.
 #'
 #' @usage
 #' ALoptimalGLMSub(r1,r2,Y,X,N,family)
@@ -19,7 +19,7 @@
 #' (linear, logistic and Poisson regression).
 #'
 #' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-#' Using the estimated parameters subsampling probabilities are evaluated for A- and L-optimality criterion.
+#' Using the estimated parameters subsampling probabilities are evaluated for A- and L-optimality criteria.
 #'
 #' Through the estimated subsampling probabilities an optimal subsample of size \eqn{r_2 \ge r_1} is obtained.
 #' Finally, the two samples are combined and the model parameters are estimated.
@@ -46,11 +46,11 @@
 #'
 #' \code{Utility_Estimates} estimated log scaled Information and variance for the estimated model parameters
 #'
-#' \code{Sample_A-Optimality} list of indexes for the initial and optimal subsamples obtained based on A-Optimality criterion
+#' \code{Sample_A-Optimality} list of indexes for the initial and optimal subsamples obtained based on A-Optimality criteria
 #'
-#' \code{Sample_L-Optimality} list of indexes for the initial and optimal subsamples obtained based on L-Optimality criterion
+#' \code{Sample_L-Optimality} list of indexes for the initial and optimal subsamples obtained based on L-Optimality criteria
 #'
-#' \code{Subsampling_Probability} matrix of calculated subsampling probabilities for A- and L- optimality criterion
+#' \code{Subsampling_Probability} matrix of calculated subsampling probabilities for A- and L- optimality criteria
 #'
 #' @references
 #' \insertRef{wang2018optimal}{NeEDS4BigData}

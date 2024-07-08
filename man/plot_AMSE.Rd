@@ -17,6 +17,6 @@ After using the subsampling methods under potential model misspecification we ob
 their respective AMSE values for the predictions. They are summarised as plots here.
 }
 \details{
-For A- and L-optimality criterion and RLmAMSE subsampling under Generalised Linear Models
+For A- and L-optimality criteria and RLmAMSE subsampling under Generalised Linear Models
 with potential model misspecification the facets are for variance and bias^2 of AMSE values.
 }
