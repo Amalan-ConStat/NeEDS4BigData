@@ -1,4 +1,4 @@
-#' Plotting model parameter (Beta) outputs after subsampling
+#' Plotting model parameter outputs after subsampling
 #'
 #' After using the subsampling methods we mostly obtain the estimated model parameter
 #' estimates. Here, they are summarised as histogram plots.
@@ -217,19 +217,19 @@ plot_Beta.ModelMisspecified<-function(object){
   return(plot_beta)
 }
 
-#' Plotting loss function or mAMSE outputs for the subsamples under model misspecification
+#' Plotting AMSE outputs for the subsamples under model misspecification
 #'
 #' After using the subsampling methods under potential model misspecification we obtain
-#' their respective loss or mAMSE values. They are summarised as plots here.
+#' their respective AMSE values for the predictions. They are summarised as plots here.
 #'
 #' @usage
-#' plot_LmAMSE(object)
+#' plot_AMSE(object)
 #'
 #' @param object Any object after subsampling from our subsampling function under potential model misspecification
 #'
 #' @details
-#' For A- and L-optimality criterion and LmAMSE subsampling under Generalised Linear Models
-#' with potential model misspecification the facets are for variance and bias^2 of mAMSE values.
+#' For A- and L-optimality criterion and RLmAMSE subsampling under Generalised Linear Models
+#' with potential model misspecification the facets are for variance and bias^2 of AMSE values.
 #'
 #' @return
 #' The output is a faceted ggplot result
@@ -240,25 +240,25 @@ plot_Beta.ModelMisspecified<-function(object){
 #' @importFrom tidyr pivot_longer starts_with
 #' @importFrom dplyr group_by summarise
 #' @export
-plot_LmAMSE<-function(object){
-  UseMethod("plot_LmAMSE",object)
+plot_AMSE<-function(object){
+  UseMethod("plot_AMSE",object)
 }
 
-#' @method plot_LmAMSE ModelMisspecified
+#' @method plot_AMSE ModelMisspecified
 #' @export
-plot_LmAMSE.ModelMisspecified<-function(object){
-  Temp_Data<-data.frame(object$Loss_Estimates) |>
-    tidyr::pivot_longer(cols = c("Variance","Bias.2","Loss"),names_to = "Metric",values_to = "Values") |>
+plot_AMSE.ModelMisspecified<-function(object){
+  Temp_Data<-data.frame(object$AMSE_Estimates) |>
+    tidyr::pivot_longer(cols = c("Variance","Bias.2","AMSE"),names_to = "Metric",values_to = "Values") |>
     dplyr::group_by(.data$Method,.data$r2,.data$Metric) |>
     dplyr::summarise(Mean=mean(.data$Values),.groups = "drop")
 
-  Temp_Data$Metric<-factor(Temp_Data$Metric,levels = c("Bias.2","Variance","Loss"),
-                           labels = c("Bias^2","Variance","Loss"))
+  Temp_Data$Metric<-factor(Temp_Data$Metric,levels = c("Bias.2","Variance","AMSE"),
+                           labels = c("Bias^2","Variance","AMSE"))
 
   method_labels<-levels(Temp_Data$Method)
 
-  Log_Odds_Labels<-method_labels[startsWith(method_labels,"LmAMSE Log Odds")]
-  Power_Labels<-method_labels[startsWith(method_labels,"LmAMSE Power")]
+  Log_Odds_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Log Odds")]
+  Power_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Power")]
   method_colors<-c("red","pink","lightgreen",paste0("springgreen",1:length(Log_Odds_Labels)),
                    paste0("seagreen",1:length(Log_Odds_Labels)))
   method_linetypes<-c(rep("dashed",2),"solid",rep("dotted",length(Log_Odds_Labels)),
@@ -273,7 +273,7 @@ plot_LmAMSE.ModelMisspecified<-function(object){
     ggplot2::scale_x_continuous(labels=unique(Temp_Data$r2),breaks=unique(Temp_Data$r2))+
     ggplot2::facet_wrap(~Metric,scales = "free")+
     ggplot2::theme_bw()+
-    ggplot2::theme(legend.position = "bottom")->plot_lmAMSE
+    ggplot2::theme(legend.position = "bottom")->plot_AMSE
 
-  return(plot_lmAMSE)
+  return(plot_AMSE)
 }

@@ -9,6 +9,17 @@
     ]
   },
   "Packages": {
+    "GPArotation": {
+      "Package": "GPArotation",
+      "Version": "2024.3-1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "stats"
+      ],
+      "Hash": "b8b658ec0d7a6a55d9d01e00e3cafd20"
+    },
     "MASS": {
       "Package": "MASS",
       "Version": "7.3-61",
@@ -507,10 +518,11 @@
     },
     "psych": {
       "Package": "psych",
-      "Version": "2.4.3",
+      "Version": "2.4.6.26",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
+        "GPArotation",
         "grDevices",
         "graphics",
         "lattice",
@@ -520,7 +532,7 @@
         "parallel",
         "stats"
       ],
-      "Hash": "97169cbc91076f032a2d6df6f624f3ab"
+      "Hash": "4448d5f3ac3e2cbf79074391d494637e"
     },
     "purrr": {
       "Package": "purrr",

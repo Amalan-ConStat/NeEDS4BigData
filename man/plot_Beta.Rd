@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot_Beta}
 \alias{plot_Beta}
-\title{Plotting model parameter (Beta) outputs after subsampling}
+\title{Plotting model parameter outputs after subsampling}
 \usage{
 plot_Beta(object)
 }

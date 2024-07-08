@@ -8,12 +8,6 @@ vignette: >
 bibliography: Vignette_Ref.bib
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
-library(NeEDS4BigData)
-```
-
 <style>
 body {
 text-align: justify}
@@ -21,20 +15,21 @@ text-align: justify}
 
 ## Big data analysis
 
-Big data presents both promising opportunities and formidable challenges for data analysts and scientists.
-However, its massive scale and complexity introduces novel computational and statistical hurdles. 
+Big data presents opportunities for analysts to uncover new knowledge and gain new insights into real-world problems.
+However, its massive scale and complexity presents computational and statistical challenges. 
 These include scalability issues, storage constraints, noise accumulation, spurious correlations, incidental endogeneity and measurement errors. 
+In Figure 1, @chen2014big review the size of big data for different sectors of business.
 Addressing these challenges demands innovative approaches in both computation and statistics.
 Traditional methods, effective for small and moderate sample sizes, often falter when confronted with massive datasets.
 Thus, there is a pressing need for innovative statistical methodologies and computational tools tailored to the unique demands of big data analysis.
 
-![The continuously increasing size of big data from ``Big Data: A Survey".](../man/figures/Figure_1.webp)
+![Figure 1: The continuously increasing size of big data from ``Big Data: A Survey".](../man/figures/Figure_1.webp)
 
 ## Computational solutions for big data analysis
 
 Computer engineers often seek more powerful computing facilities to reduce computing time, leading to the rapid development of supercomputers over the past decade. 
 These supercomputers boast speeds and storage capacities hundreds or even thousands of times greater than those of general-purpose PCs. 
-However, their significant energy consumption and limited accessibility to ordinary users remain major drawbacks. 
+However, significant energy consumption and limited accessibility remain major drawbacks. 
 While cloud computing offers a partial solution by providing accessible computing resources, it faces challenges related to data transfer inefficiency, privacy and security concerns. 
 Graphic Processing Units (GPUs) have emerged as another computational facility, offering powerful parallel computing capabilities. 
 However, recent comparisons have shown that even high-end GPUs can be outperformed by general-purpose multi-core processors, primarily due to data transfer inefficiencies. 
@@ -56,7 +51,7 @@ Furthermore, when a large dataset is unnecessary to confidently answer a specifi
 
 ## Sampling algorithms for big data
 
-The literature presents two strategies to resolve the primary challenge of how to acquire an informative subset that efficiently addresses specific analytical questions and yield results consistent with analysing the large data set. 
+The literature presents two strategies to resolve the primary challenge of how to acquire an informative subset that efficiently addresses specific analytical questions to yield results consistent with analysing the large data set. 
 
 They are:
 

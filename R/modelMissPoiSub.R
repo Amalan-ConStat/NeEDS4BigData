@@ -1,8 +1,8 @@
-#' Model misspecified subsampling under Poisson regression
+#' Subsampling under Poisson regression for a potentially misspecified model
 #'
-#' Using this function subsample from big data under Poisson regression when we assumed the model that
-#' describes the data is misspecified. Subsampling probabilities are obtained based on the A- and L-
-#' optimality criterions with the LmAMSE (Loss on mean of asymptotic mean squared error).
+#' Using this function subsample from big data under Poisson regression for a potentially misspecified model.
+#' Subsampling probabilities are obtained based on the A- and L- optimality criteria
+#' with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error).
 #'
 #' @usage
 #' modelMissPoiSub(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full)
@@ -21,11 +21,11 @@
 #'
 #' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
 #' Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criterion,
-#' LmAMSE and enhanced LmAMSE(log-odds and power) subsampling methods.
+#' RLmAMSE and enhanced RLmAMSE (log-odds and power) subsampling methods.
 #'
 #' Through the estimated subsampling probabilities an subsample of size \eqn{r_2 \ge r_1} is obtained.
 #' Finally, the two samples are combined and the model parameters are estimated for A- and L-optimality,
-#' while for LmAMSE and enhanced LmAMSE (log-odds and power) only the optimal subsample is used.
+#' while for RLmAMSE and enhanced RLmAMSE (log-odds and power) only the optimal subsample is used.
 #'
 #' \strong{NOTE} :  If input parameters are not in given domain conditions
 #' necessary error messages will be provided to go further.
@@ -44,17 +44,17 @@
 #'
 #' \code{Beta_Estimates} estimated model parameters after subsampling
 #'
-#' \code{Loss_Estimates} matrix of estimated LmAMSE values after subsampling
+#' \code{AMSE_Estimates} matrix of estimated AMSE values after subsampling
 #'
 #' \code{Sample_A-Optimality} list of indexes for the initial and optimal subsamples obtained based on A-Optimality criterion
 #'
 #' \code{Sample_L-Optimality} list of indexes for the initial and optimal subsamples obtained based on L-Optimality criterion
 #'
-#' \code{Sample_LmAMSE} list of indexes for the optimal subsamples obtained based on LmAMSE
+#' \code{Sample_RLmAMSE} list of indexes for the optimal subsamples obtained based on RLmAMSE
 #'
-#' \code{Sample_LmAMSE_Log_Odds} list of indexes for the optimal subsamples obtained based on LmAMSE with Log Odds function
+#' \code{Sample_RLmAMSE_Log_Odds} list of indexes for the optimal subsamples obtained based on RLmAMSE with Log Odds function
 #'
-#' \code{Sample_LmAMSE_Power} list of indexes for the optimal subsamples obtained based on LmAMSE with Power function
+#' \code{Sample_RLmAMSE_Power} list of indexes for the optimal subsamples obtained based on RLmAMSE with Power function
 #'
 #' \code{Subsampling_Probability} matrix of calculated subsampling probabilities
 #'
@@ -84,7 +84,7 @@
 #' # parallel::stopCluster(cl)
 #'
 #' plot_Beta(Results)
-#' plot_LmAMSE(Results)
+#' plot_AMSE(Results)
 #' }
 #'
 #' @importFrom Rdpack reprompt
@@ -196,43 +196,43 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full
   L_All_Temp<-L1_r1+L2_r1
   L_All_Final<-abs(L_All_Temp-L_All)
 
-  # LmAMSE
-  PI.LmAMSE <- (max(L_All_Final) - L_All_Final) / sum(max(L_All_Final) - L_All_Final)
+  # RLmAMSE
+  PI.RLmAMSE <- (max(L_All_Final) - L_All_Final) / sum(max(L_All_Final) - L_All_Final)
 
-  # LmAMSE LO
-  PI.LmAMSE_LO<-apply(as.matrix(Alpha),1,function(Alpha,PI.LmAMSE){
-    (1+exp(-Alpha*log(PI.LmAMSE/(1-PI.LmAMSE))))^(-1)/
-      sum((1+exp(-Alpha*log(PI.LmAMSE/(1-PI.LmAMSE))))^(-1))},PI.LmAMSE)
+  # RLmAMSE LO
+  PI.RLmAMSE_LO<-apply(as.matrix(Alpha),1,function(Alpha,PI.RLmAMSE){
+    (1+exp(-Alpha*log(PI.RLmAMSE/(1-PI.RLmAMSE))))^(-1)/
+      sum((1+exp(-Alpha*log(PI.RLmAMSE/(1-PI.RLmAMSE))))^(-1))},PI.RLmAMSE)
 
-  # LmAMSE Pow
-  PI.LmAMSE_Pow<-apply(as.matrix(Alpha),1,function(Alpha,PI.LmAMSE){
-    PI.LmAMSE^Alpha/sum(PI.LmAMSE^Alpha)},PI.LmAMSE)
+  # RLmAMSE Pow
+  PI.RLmAMSE_Pow<-apply(as.matrix(Alpha),1,function(Alpha,PI.RLmAMSE){
+    PI.RLmAMSE^Alpha/sum(PI.RLmAMSE^Alpha)},PI.RLmAMSE)
 
   # For the Model with already available Sub-sampling probabilities - mMSE and mVc
   beta_mVc<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
-  Loss_Subsample_mVc<-matrix(nrow = length(r2),ncol = 4); Sample.mVc<-list();
+  AMSE_Subsample_mVc<-matrix(nrow = length(r2),ncol = 4); Sample.mVc<-list();
 
   beta_mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
-  Loss_Subsample_mMSE<-matrix(nrow = length(r2),ncol = 4); Sample.mMSE<-list();
+  AMSE_Subsample_mMSE<-matrix(nrow = length(r2),ncol = 4); Sample.mMSE<-list();
 
-  # For the Model with model robust Sub-sampling probabilities LmAMSE
-  beta_LmAMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
-  Loss_Subsample_LmAMSE<-matrix(nrow = length(r2),ncol = 4); Sample.LmAMSE<-list();
+  # For the Model with model robust Sub-sampling probabilities RLmAMSE
+  beta_RLmAMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
+  AMSE_Subsample_RLmAMSE<-matrix(nrow = length(r2),ncol = 4); Sample.RLmAMSE<-list();
 
-  # For the Model with model robust Sub-sampling probabilities LmAMSE LO
-  beta_LmAMSE_LO<-replicate(length(Alpha),array(dim=c(length(r2),ncol(X)+1)),simplify = FALSE)
-  Loss_Subsample_LmAMSE_LO<-replicate(length(Alpha),array(dim=c(length(r2),4)),simplify = FALSE)
-  Sample.LmAMSE_LO<-replicate(length(Alpha),list(rep(list(NA),length(r2)+1)));
+  # For the Model with model robust Sub-sampling probabilities RLmAMSE LO
+  beta_RLmAMSE_LO<-replicate(length(Alpha),array(dim=c(length(r2),ncol(X)+1)),simplify = FALSE)
+  AMSE_Subsample_RLmAMSE_LO<-replicate(length(Alpha),array(dim=c(length(r2),4)),simplify = FALSE)
+  Sample.RLmAMSE_LO<-replicate(length(Alpha),list(rep(list(NA),length(r2)+1)));
 
-  # For the Model with model robust Sub-sampling probabilities LmAMSE Pow
-  beta_LmAMSE_Pow<-replicate(length(Alpha),array(dim=c(length(r2),ncol(X)+1)),simplify = FALSE)
-  Loss_Subsample_LmAMSE_Pow<-replicate(length(Alpha),array(dim=c(length(r2),4)),simplify = FALSE)
-  Sample.LmAMSE_Pow<-replicate(length(Alpha),list(rep(list(NA),length(r2)+1)));
+  # For the Model with model robust Sub-sampling probabilities RLmAMSE Pow
+  beta_RLmAMSE_Pow<-replicate(length(Alpha),array(dim=c(length(r2),ncol(X)+1)),simplify = FALSE)
+  AMSE_Subsample_RLmAMSE_Pow<-replicate(length(Alpha),array(dim=c(length(r2),4)),simplify = FALSE)
+  Sample.RLmAMSE_Pow<-replicate(length(Alpha),list(rep(list(NA),length(r2)+1)));
 
-  Sample.mMSE[[1]]<-Sample.mVc[[1]]<-Sample.LmAMSE[[1]]<-idx.prop
+  Sample.mMSE[[1]]<-Sample.mVc[[1]]<-Sample.RLmAMSE[[1]]<-idx.prop
 
   for (j in 1:length(Alpha)) {
-    Sample.LmAMSE_LO[[j]][[1]]<-Sample.LmAMSE_Pow[[j]][[1]]<-idx.prop
+    Sample.RLmAMSE_LO[[j]][[1]]<-Sample.RLmAMSE_Pow[[j]][[1]]<-idx.prop
   }
 
   message("Step 1 of the algorithm completed.\n")
@@ -263,7 +263,7 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full
     L1_r1 <- psych::tr(Temp1%*%H_Tr1%*%t(Temp1))
     L2_r1 <- sum((W_r1*((x.mVc%*%H_r1%*%b_r1) - F_Estimate_Full[c(idx.mVc, idx.prop)]))^2)
 
-    Loss_Subsample_mVc[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+    AMSE_Subsample_mVc[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
 
     # mMSE
     idx.mMSE <- sample(1:N, r2[i]-r1, T, PI.mMSE)
@@ -289,136 +289,136 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full
     L1_r1 <- psych::tr(Temp1%*%H_Tr1%*%t(Temp1))
     L2_r1 <- sum((W_r1*((x.mMSE%*%H_r1%*%b_r1) - F_Estimate_Full[c(idx.mMSE, idx.prop)]))^2)
 
-    Loss_Subsample_mMSE[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+    AMSE_Subsample_mMSE[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
 
-    # LmAMSE
-    idx.LmAMSE <- sample(1:N, r2[i], T, PI.LmAMSE)
+    # RLmAMSE
+    idx.RLmAMSE <- sample(1:N, r2[i], T, PI.RLmAMSE)
 
-    x.LmAMSE <- X[c(idx.LmAMSE),]
-    y.LmAMSE <- Y[c(idx.LmAMSE)]
+    x.RLmAMSE <- X[c(idx.RLmAMSE),]
+    y.RLmAMSE <- Y[c(idx.RLmAMSE)]
 
-    fit.LmAMSE <- stats::glm(y.LmAMSE~x.LmAMSE-1,family="poisson",weights = c(1 / PI.LmAMSE[idx.LmAMSE]))
+    fit.RLmAMSE <- stats::glm(y.RLmAMSE~x.RLmAMSE-1,family="poisson",weights = c(1 / PI.RLmAMSE[idx.RLmAMSE]))
 
-    beta_LmAMSE[i,] <- c(r2[i],fit.LmAMSE$coefficients)
+    beta_RLmAMSE[i,] <- c(r2[i],fit.RLmAMSE$coefficients)
 
-    idx.LmAMSE->Sample.LmAMSE[[i+1]]
+    idx.RLmAMSE->Sample.RLmAMSE[[i+1]]
 
-    lambda_r1<-exp(x.LmAMSE%*%Beta_Estimate_Full)
+    lambda_r1<-exp(x.RLmAMSE%*%Beta_Estimate_Full)
     W_r1<-as.vector(lambda_r1)
-    H_r1 <-solve(t(x.LmAMSE) %*% (x.LmAMSE * W_r1))
-    Temp1<-(W_r1*x.LmAMSE)%*%H_r1
+    H_r1 <-solve(t(x.RLmAMSE) %*% (x.RLmAMSE * W_r1))
+    Temp1<-(W_r1*x.RLmAMSE)%*%H_r1
 
-    lambda_Tr1<-exp((x.LmAMSE %*% Beta_Estimate_Full) + F_Estimate_Full[c(idx.LmAMSE)])
+    lambda_Tr1<-exp((x.RLmAMSE %*% Beta_Estimate_Full) + F_Estimate_Full[c(idx.RLmAMSE)])
     W_Tr1<-as.vector(lambda_Tr1)
-    H_Tr1 <-(t(x.LmAMSE) %*% (x.LmAMSE * W_Tr1))
-    b_r1 <-(t(x.LmAMSE) %*% (lambda_Tr1-lambda_r1))
+    H_Tr1 <-(t(x.RLmAMSE) %*% (x.RLmAMSE * W_Tr1))
+    b_r1 <-(t(x.RLmAMSE) %*% (lambda_Tr1-lambda_r1))
     L1_r1 <- psych::tr(Temp1%*%H_Tr1%*%t(Temp1))
-    L2_r1 <- sum((W_r1*((x.LmAMSE%*%H_r1%*%b_r1) - F_Estimate_Full[c(idx.LmAMSE)]))^2)
+    L2_r1 <- sum((W_r1*((x.RLmAMSE%*%H_r1%*%b_r1) - F_Estimate_Full[c(idx.RLmAMSE)]))^2)
 
-    Loss_Subsample_LmAMSE[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+    AMSE_Subsample_RLmAMSE[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
 
     for (j in 1:length(Alpha))
     {
-      # LmAMSE Log Odds
-      idx.LmAMSE <- sample(1:N, r2[i], T, PI.LmAMSE_LO[,j])
+      # RLmAMSE Log Odds
+      idx.RLmAMSE <- sample(1:N, r2[i], T, PI.RLmAMSE_LO[,j])
 
-      x.LmAMSE <- X[c(idx.LmAMSE),]
-      y.LmAMSE <- Y[c(idx.LmAMSE)]
+      x.RLmAMSE <- X[c(idx.RLmAMSE),]
+      y.RLmAMSE <- Y[c(idx.RLmAMSE)]
 
-      fit.LmAMSE <- stats::glm(y.LmAMSE~x.LmAMSE-1,family="poisson",weights = c(1 / PI.LmAMSE_LO[idx.LmAMSE,j]))
+      fit.RLmAMSE <- stats::glm(y.RLmAMSE~x.RLmAMSE-1,family="poisson",weights = c(1 / PI.RLmAMSE_LO[idx.RLmAMSE,j]))
 
-      beta_LmAMSE_LO[[j]][i,] <- c(r2[i],fit.LmAMSE$coefficients)
+      beta_RLmAMSE_LO[[j]][i,] <- c(r2[i],fit.RLmAMSE$coefficients)
 
-      idx.LmAMSE->Sample.LmAMSE_LO[[j]][[i+1]]
+      idx.RLmAMSE->Sample.RLmAMSE_LO[[j]][[i+1]]
 
-      lambda_r1<-exp(x.LmAMSE%*%Beta_Estimate_Full)
+      lambda_r1<-exp(x.RLmAMSE%*%Beta_Estimate_Full)
       W_r1<-as.vector(lambda_r1)
-      H_r1 <-solve(t(x.LmAMSE) %*% (x.LmAMSE * W_r1))
-      Temp1<-(W_r1*x.LmAMSE)%*%H_r1
+      H_r1 <-solve(t(x.RLmAMSE) %*% (x.RLmAMSE * W_r1))
+      Temp1<-(W_r1*x.RLmAMSE)%*%H_r1
 
-      lambda_Tr1<-exp((x.LmAMSE %*% Beta_Estimate_Full) + F_Estimate_Full[c(idx.LmAMSE)])
+      lambda_Tr1<-exp((x.RLmAMSE %*% Beta_Estimate_Full) + F_Estimate_Full[c(idx.RLmAMSE)])
       W_Tr1<-as.vector(lambda_Tr1)
-      H_Tr1 <-(t(x.LmAMSE) %*% (x.LmAMSE * W_Tr1))
-      b_r1 <-(t(x.LmAMSE) %*% (lambda_Tr1-lambda_r1))
+      H_Tr1 <-(t(x.RLmAMSE) %*% (x.RLmAMSE * W_Tr1))
+      b_r1 <-(t(x.RLmAMSE) %*% (lambda_Tr1-lambda_r1))
       L1_r1 <- psych::tr(Temp1%*%H_Tr1%*%t(Temp1))
-      L2_r1 <- sum((W_r1*((x.LmAMSE%*%H_r1%*%b_r1) - F_Estimate_Full[c(idx.LmAMSE)]))^2)
+      L2_r1 <- sum((W_r1*((x.RLmAMSE%*%H_r1%*%b_r1) - F_Estimate_Full[c(idx.RLmAMSE)]))^2)
 
-      Loss_Subsample_LmAMSE_LO[[j]][i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+      AMSE_Subsample_RLmAMSE_LO[[j]][i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
 
-      # LmAMSE Power
-      idx.LmAMSE <- sample(1:N, r2[i], T, PI.LmAMSE_Pow[,j])
+      # RLmAMSE Power
+      idx.RLmAMSE <- sample(1:N, r2[i], T, PI.RLmAMSE_Pow[,j])
 
-      x.LmAMSE <- X[c(idx.LmAMSE),]
-      y.LmAMSE <- Y[c(idx.LmAMSE)]
+      x.RLmAMSE <- X[c(idx.RLmAMSE),]
+      y.RLmAMSE <- Y[c(idx.RLmAMSE)]
 
-      fit.LmAMSE <- stats::glm(y.LmAMSE~x.LmAMSE-1,family="poisson",weights = c(1 / PI.LmAMSE_Pow[idx.LmAMSE,j]))
+      fit.RLmAMSE <- stats::glm(y.RLmAMSE~x.RLmAMSE-1,family="poisson",weights = c(1 / PI.RLmAMSE_Pow[idx.RLmAMSE,j]))
 
-      beta_LmAMSE_Pow[[j]][i,] <- c(r2[i],fit.LmAMSE$coefficients)
+      beta_RLmAMSE_Pow[[j]][i,] <- c(r2[i],fit.RLmAMSE$coefficients)
 
-      idx.LmAMSE->Sample.LmAMSE_Pow[[j]][[i+1]]
+      idx.RLmAMSE->Sample.RLmAMSE_Pow[[j]][[i+1]]
 
-      lambda_r1<-exp(x.LmAMSE%*%Beta_Estimate_Full)
+      lambda_r1<-exp(x.RLmAMSE%*%Beta_Estimate_Full)
       W_r1<-as.vector(lambda_r1)
-      H_r1 <-solve(t(x.LmAMSE) %*% (x.LmAMSE * W_r1))
-      Temp1<-(W_r1*x.LmAMSE)%*%H_r1
+      H_r1 <-solve(t(x.RLmAMSE) %*% (x.RLmAMSE * W_r1))
+      Temp1<-(W_r1*x.RLmAMSE)%*%H_r1
 
-      lambda_Tr1<-exp((x.LmAMSE %*% Beta_Estimate_Full) + F_Estimate_Full[c(idx.LmAMSE)])
+      lambda_Tr1<-exp((x.RLmAMSE %*% Beta_Estimate_Full) + F_Estimate_Full[c(idx.RLmAMSE)])
       W_Tr1<-as.vector(lambda_Tr1)
-      H_Tr1 <-(t(x.LmAMSE) %*% (x.LmAMSE * W_Tr1))
-      b_r1 <-(t(x.LmAMSE) %*% (lambda_Tr1-lambda_r1))
+      H_Tr1 <-(t(x.RLmAMSE) %*% (x.RLmAMSE * W_Tr1))
+      b_r1 <-(t(x.RLmAMSE) %*% (lambda_Tr1-lambda_r1))
       L1_r1 <- psych::tr(Temp1%*%H_Tr1%*%t(Temp1))
-      L2_r1 <- sum((W_r1*((x.LmAMSE%*%H_r1%*%b_r1) - F_Estimate_Full[c(idx.LmAMSE)]))^2)
+      L2_r1 <- sum((W_r1*((x.RLmAMSE%*%H_r1%*%b_r1) - F_Estimate_Full[c(idx.RLmAMSE)]))^2)
 
-      Loss_Subsample_LmAMSE_Pow[[j]][i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+      AMSE_Subsample_RLmAMSE_Pow[[j]][i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
     }
   }
 
-  if(anyNA(beta_mVc) || anyNA(beta_mMSE) || anyNA(beta_LmAMSE) || anyNA(beta_LmAMSE_LO) || anyNA(beta_LmAMSE_Pow))
+  if(anyNA(beta_mVc) || anyNA(beta_mMSE) || anyNA(beta_RLmAMSE) || anyNA(beta_RLmAMSE_LO) || anyNA(beta_RLmAMSE_Pow))
   {
     stop("There are NA or NaN values")
   }
 
-  Full_SP<-cbind.data.frame(PI.mMSE,PI.mVc,PI.LmAMSE,PI.LmAMSE_LO,PI.LmAMSE_Pow)
-  colnames(Full_SP)<-c("A-Optimality","L-Optimality","LmAMSE",paste0("LmAMSE Log Odds ",Alpha),
-                       paste0("LmAMSE Power ",Alpha))
+  Full_SP<-cbind.data.frame(PI.mMSE,PI.mVc,PI.RLmAMSE,PI.RLmAMSE_LO,PI.RLmAMSE_Pow)
+  colnames(Full_SP)<-c("A-Optimality","L-Optimality","RLmAMSE",paste0("RLmAMSE Log Odds ",Alpha),
+                       paste0("RLmAMSE Power ",Alpha))
 
-  Subsampling_Methods<-factor(c("A-Optimality","L-Optimality","LmAMSE",paste0("LmAMSE Log Odds ",Alpha),
-                                paste0("LmAMSE Power ",Alpha)))
+  Subsampling_Methods<-factor(c("A-Optimality","L-Optimality","RLmAMSE",paste0("RLmAMSE Log Odds ",Alpha),
+                                paste0("RLmAMSE Power ",Alpha)))
 
   # Beta Data
   Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
-                              rbind(beta_mMSE,beta_mVc,beta_LmAMSE,
-                                    do.call(rbind,beta_LmAMSE_LO),
-                                    do.call(rbind,beta_LmAMSE_Pow)))
+                              rbind(beta_mMSE,beta_mVc,beta_RLmAMSE,
+                                    do.call(rbind,beta_RLmAMSE_LO),
+                                    do.call(rbind,beta_RLmAMSE_Pow)))
   colnames(Beta_Data)[-1]<-c("r2",paste0("Beta",0:(ncol(X)-1)))
 
-  # Loss Subsample Data
-  Loss_Subsample_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
-                                        rbind(Loss_Subsample_mMSE,Loss_Subsample_mVc,
-                                              Loss_Subsample_LmAMSE,
-                                              do.call(rbind,Loss_Subsample_LmAMSE_LO),
-                                              do.call(rbind,Loss_Subsample_LmAMSE_Pow)))
-  colnames(Loss_Subsample_Data)[-1]<-c("r2","Variance","Bias.2","Loss")
+  # AMSE Subsample Data
+  AMSE_Subsample_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
+                                        rbind(AMSE_Subsample_mMSE,AMSE_Subsample_mVc,
+                                              AMSE_Subsample_RLmAMSE,
+                                              do.call(rbind,AMSE_Subsample_RLmAMSE_LO),
+                                              do.call(rbind,AMSE_Subsample_RLmAMSE_Pow)))
+  colnames(AMSE_Subsample_Data)[-1]<-c("r2","Variance","Bias.2","AMSE")
 
-  Loss_Subsample_Data[,-c(1,2)]<-Loss_Subsample_Data[,-c(1,2)]/r2
+  AMSE_Subsample_Data[,-c(1,2)]<-AMSE_Subsample_Data[,-c(1,2)]/r2
 
   all_r<-c(r1,r2)
   # Sample Data
   for(j in 1:length(Alpha)){
-    names(Sample.LmAMSE_LO[[j]])<-names(Sample.LmAMSE_Pow[[j]])<-paste0("Alpha_",Alpha[j],"_",all_r)
+    names(Sample.RLmAMSE_LO[[j]])<-names(Sample.RLmAMSE_Pow[[j]])<-paste0("Alpha_",Alpha[j],"_",all_r)
   }
 
-  names(Sample.mMSE)<-names(Sample.mVc)<-names(Sample.LmAMSE)<-c(r1,r2)
+  names(Sample.mMSE)<-names(Sample.mVc)<-names(Sample.RLmAMSE)<-c(r1,r2)
 
   message("Step 2 of the algorithm completed.")
 
   ans<-list("Beta_Estimates"=Beta_Data,
-            "Loss_Estimates"=Loss_Subsample_Data,
+            "AMSE_Estimates"=AMSE_Subsample_Data,
             "Sample_A-Optimality"=Sample.mMSE,
             "Sample_L-Optimality"=Sample.mVc,
-            "Sample_LmAMSE"=Sample.LmAMSE,
-            "Sample_LmAMSE_Log_Odds"=Sample.LmAMSE_LO,
-            "Sample_LmAMSE_Power"=Sample.LmAMSE_Pow,
+            "Sample_RLmAMSE"=Sample.RLmAMSE,
+            "Sample_RLmAMSE_Log_Odds"=Sample.RLmAMSE_LO,
+            "Sample_RLmAMSE_Power"=Sample.RLmAMSE_Pow,
             "Subsampling_Probability"=Full_SP)
   class(ans)<-c("ModelMisspecified","poisson")
   return(ans)

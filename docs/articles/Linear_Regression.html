@@ -159,8 +159,11 @@ text-align: justify}
 <div class="section level2">
 <h2 id="understanding-the-electric-consumption-data">Understanding the electric consumption data<a class="anchor" aria-label="anchor" href="#understanding-the-electric-consumption-data"></a>
 </h2>
-<p>The data contains <span class="math inline">\(4\)</span> columns and
-has <span class="math inline">\(2,049,280\)</span> observations, first
+<p>``Electric power consumption’’ data <span class="citation">(Hebrail
+and Berard 2012)</span>, which contains <span class="math inline">\(2,049,280\)</span> measurements for a house
+located at Sceaux, France between December 2006 and November 2010. The
+data contains <span class="math inline">\(4\)</span> columns and has
+<span class="math inline">\(2,049,280\)</span> observations, first
 column is the response variable and the rest are covariates, however we
 only use <span class="math inline">\(5\%\)</span> of the data for this
 explanation. The response <span class="math inline">\(y\)</span> is the
@@ -342,18 +345,20 @@ X3
 <h3 id="model-robust-or-average-subsampling">Model robust or average subsampling<a class="anchor" aria-label="anchor" href="#model-robust-or-average-subsampling"></a>
 </h3>
 <p>The method <span class="math inline">\(A\)</span>- and <span class="math inline">\(L\)</span>-optimality of model robust or average
-subsampling is compared against the <span class="math inline">\(A\)</span>- and <span class="math inline">\(L\)</span>-optimality subsampling method. Here
+subsampling <span class="citation">(Mahendran, Thompson, and McGree
+2023)</span> is compared against the <span class="math inline">\(A\)</span>- and <span class="math inline">\(L\)</span>-optimality subsampling <span class="citation">(Ai et al. 2021; Yao and Wang 2021)</span> method. Here
 five different models are considered 1) main effects model (<span class="math inline">\(\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3\)</span>),
 2-4) main effects model with the squared term of each covariate (<span class="math inline">\(X^2_1 / X^2_2 / X^2_3\)</span>) and 5) main
 effects model with all the squared terms (<span class="math inline">\(\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3+\beta_4X^2_1+\beta_5X^2_2+\beta_6X^2_3\)</span>).
-For each model <span class="math inline">\(j\)</span> the mean squared
-error of the model parameters <span class="math inline">\(MSE_j(\tilde{\beta}_k,\hat{\beta})=\sum_{i=1}^M
-(\tilde{\beta}_k - \hat{\beta})^2/M\)</span> are calculated for the
-<span class="math inline">\(M=100\)</span> simulations across the
-subsample sizes <span class="math inline">\(k=(600,\ldots,1500)\)</span>
-and the initial subsample size is <span class="math inline">\(r1=300\)</span>. Here, for the <span class="math inline">\(j\)</span>-th model <span class="math inline">\(\tilde{\beta}_k\)</span> is the estimated model
+For each model <span class="math inline">\(l\)</span> the mean squared
+error of the model parameters <span class="math inline">\(MSE_l(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ}
+\sum_{i=1}^M \sum_{j=1}^J (\tilde{\beta}_{k,j} -
+\hat{\beta}_j)^2\)</span> are calculated for the <span class="math inline">\(M=100\)</span> simulations across the subsample
+sizes <span class="math inline">\(k=(600,\ldots,1500)\)</span> and the
+initial subsample size is <span class="math inline">\(r1=300\)</span>.
+Here, for the <span class="math inline">\(l\)</span>-th model <span class="math inline">\(\tilde{\beta}_k\)</span> is the estimated model
 parameters from the subsample of size <span class="math inline">\(k\)</span> and <span class="math inline">\(\hat{\beta}\)</span> is the estimated model
-parameters from the full big data.</p>
+parameters from the full big data, while <span class="math inline">\(j\)</span> is index of the model parameter.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the subsampling methods and their respective colors, shapes and line types</span></span>
 <span><span class="va">Method_Names</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A-Optimality"</span>,<span class="st">"L-Optimality"</span>,<span class="st">"A-Optimality MR"</span>,<span class="st">"L-Optimality MR"</span><span class="op">)</span></span>
@@ -455,8 +460,8 @@ approximation of the mean squared error from the predictions are
 calculated as well. Below is the code for this implementation.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the subsampling methods and their respective colors, shapes and line types</span></span>
-<span><span class="va">Method_Names</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A-Optimality"</span>,<span class="st">"L-Optimality"</span>,<span class="st">"LmAMSE"</span>,</span>
-<span>                <span class="st">"LmAMSE Log Odds 10"</span>,<span class="st">"LmAMSE Power 10"</span><span class="op">)</span></span>
+<span><span class="va">Method_Names</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A-Optimality"</span>,<span class="st">"L-Optimality"</span>,<span class="st">"RLmAMSE"</span>,</span>
+<span>                <span class="st">"RLmAMSE Log Odds 10"</span>,<span class="st">"RLmAMSE Power 10"</span><span class="op">)</span></span>
 <span><span class="va">Method_Color</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>,<span class="st">"darkred"</span>,<span class="st">"palegreen"</span>,<span class="st">"green"</span>,<span class="st">"springgreen4"</span><span class="op">)</span></span>
 <span><span class="va">Method_Shape_Types</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">8</span>,<span class="fl">2</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">Method_Line_Types</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"twodash"</span>,<span class="fl">2</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"dotted"</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
@@ -478,7 +483,7 @@ calculated as well. Below is the code for this implementation.</p>
 <span><span class="va">f_estimate</span><span class="op">&lt;-</span><span class="va">Xbeta_GAM</span> <span class="op">-</span> <span class="va">Xbeta_Final</span></span>
 <span><span class="va">Var_GAM.prop</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">-</span><span class="va">Xbeta_GAM</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">/</span><span class="va">N</span></span>
 <span></span>
-<span><span class="co"># A- and L-optimality and LmAMSE model misspecified subsampling for linear regression </span></span>
+<span><span class="co"># A- and L-optimality and RLmAMSE model misspecified subsampling for linear regression </span></span>
 <span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/modelMissLinSub.html">modelMissLinSub</a></span><span class="op">(</span>r1<span class="op">=</span><span class="fl">300</span>,r2<span class="op">=</span><span class="va">rep_k</span>,</span>
 <span>                               Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>                               X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
@@ -490,7 +495,7 @@ calculated as well. Below is the code for this implementation.</p>
 <pre><code><span><span class="co">## Step 2 of the algorithm completed.</span></span></code></pre>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Final_Beta_modelMiss</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Beta_Estimates</span></span>
-<span><span class="va">Final_Loss_modelMiss</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Loss_Estimates</span></span>
+<span><span class="va">Final_AMSE_modelMiss</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">AMSE_Estimates</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">Y</span><span class="op">~</span><span class="va">.</span><span class="op">-</span><span class="fl">1</span>,data <span class="op">=</span> <span class="va">Original_Data</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">All_Results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coefficients</a></span><span class="op">(</span><span class="va">All_Results</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">All_Beta</span></span>
@@ -498,7 +503,7 @@ calculated as well. Below is the code for this implementation.</p>
 <span>       ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Final_Beta_modelMiss</span><span class="op">[</span>,<span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>,byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">All_Beta</span></span>
 <span></span>
 <span><span class="co"># Plots for the mean squared error of the model parameter estimates </span></span>
-<span><span class="co"># and the loss for the main effects model </span></span>
+<span><span class="co"># and the AMSE for the main effects model </span></span>
 <span><span class="va">MSE_Beta_modelMiss</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="st">"Method"</span><span class="op">=</span><span class="va">Final_Beta_modelMiss</span><span class="op">$</span><span class="va">Method</span>,</span>
 <span>                               <span class="st">"Subsample"</span><span class="op">=</span><span class="va">Final_Beta_modelMiss</span><span class="op">$</span><span class="va">r2</span>,</span>
 <span>                               <span class="st">"MSE"</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">(</span><span class="va">All_Beta</span> <span class="op">-</span> </span>
@@ -514,11 +519,11 @@ calculated as well. Below is the code for this implementation.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_shape_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">Method_Shape_Types</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fu">Theme_special</span><span class="op">(</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">p1</span></span>
 <span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">Final_Loss_modelMiss</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">r2</span>,<span class="va">Method</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>       <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>meanLoss<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">Loss</span><span class="op">)</span>,.groups <span class="op">=</span><span class="st">'drop'</span><span class="op">)</span>,</span>
-<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">r2</span><span class="op">)</span>,y<span class="op">=</span><span class="va">meanLoss</span>,color<span class="op">=</span><span class="va">Method</span>,group<span class="op">=</span><span class="va">Method</span>,</span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">Final_AMSE_modelMiss</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">r2</span>,<span class="va">Method</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>       <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>meanAMSE<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">AMSE</span><span class="op">)</span>,.groups <span class="op">=</span><span class="st">'drop'</span><span class="op">)</span>,</span>
+<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">r2</span><span class="op">)</span>,y<span class="op">=</span><span class="va">meanAMSE</span>,color<span class="op">=</span><span class="va">Method</span>,group<span class="op">=</span><span class="va">Method</span>,</span>
 <span>           linetype<span class="op">=</span><span class="va">Method</span>,shape<span class="op">=</span><span class="va">Method</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Subsample size"</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Mean Loss"</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Subsample size"</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Mean AMSE"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">Method_Color</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_linetype_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="va">Method_Line_Types</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_shape_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">Method_Shape_Types</span><span class="op">)</span><span class="op">+</span></span>
@@ -526,16 +531,37 @@ calculated as well. Below is the code for this implementation.</p>
 <span></span>
 <span><span class="va">p2</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Linear_Regression_files/figure-html/Potential%20model%20misspecification%20methods-1.png" alt="Average loss for the potentially misspecified main effects model across the subsampling methods under comparison." width="576"><p class="caption">
-Average loss for the potentially misspecified main effects model across
-the subsampling methods under comparison.
+<img src="Linear_Regression_files/figure-html/Potential%20model%20misspecification%20methods-1.png" alt="AMSE for the potentially misspecified main effects model across the subsampling methods under comparison." width="576"><p class="caption">
+AMSE for the potentially misspecified main effects model across the
+subsampling methods under comparison.
 </p>
 </div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#ggarrange(p1,p2,nrow = 1,ncol = 2,labels = "auto")</span></span></code></pre></div>
-<div class="section level4">
-<h4 id="thank-you">THANK YOU<a class="anchor" aria-label="anchor" href="#thank-you"></a>
-</h4>
+</div>
+<div class="section level3">
+<h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h3>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-ai2021optimal" class="csl-entry">
+Ai, Mingyao, Jun Yu, Huiming Zhang, and HaiYing Wang. 2021.
+<span>“Optimal Subsampling Algorithms for Big Data Regressions.”</span>
+<em>Statistica Sinica</em> 31 (2): 749–72.
+</div>
+<div id="ref-hebrailindividual" class="csl-entry">
+Hebrail, G, and A Berard. 2012. <span>“Individual Household Electric
+Power Consumption.”</span> <em>UCI Machine Learning Repository</em>.
+</div>
+<div id="ref-mahendran2023model" class="csl-entry">
+Mahendran, Amalan, Helen Thompson, and James M McGree. 2023. <span>“A
+Model Robust Subsampling Approach for Generalised Linear Models in Big
+Data Settings.”</span> <em>Statistical Papers</em> 64 (4): 1137–57.
+</div>
+<div id="ref-yao2021review" class="csl-entry">
+Yao, Yaqiong, and HaiYing Wang. 2021. <span>“A Review on Optimal
+Subsampling Methods for Massive Datasets.”</span> <em>Journal of Data
+Science</em> 19 (1): 151–72.
+</div>
 </div>
 </div>
 </div>

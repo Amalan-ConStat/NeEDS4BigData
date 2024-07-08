@@ -73,13 +73,13 @@ reference:
         - LeverageSampling
         - AoptimalMCGLMSub
   - title: Model Robust Subsampling
-    desc: Subsampling algorithms when multiple models can describe the big data
+    desc: Subsampling algorithms when a set of models is considered to describe the big data
     contents:
         - modelRobustLinSub
         - modelRobustLogSub
         - modelRobustPoiSub
   - title: Model Misspecified Subsampling
-    desc: Subsampling algorithms when the given model is misspecified
+    desc: Subsampling algorithms under a potentially misspecified model
     contents:
         - modelMissLinSub
         - modelMissLogSub
@@ -88,7 +88,7 @@ reference:
     desc: Functions to plot the results from the outputs
     contents:
         - plot_Beta
-        - plot_LmAMSE
+        - plot_AMSE
 
 home:
   title: NeEDS4BigData - An R package for subsampling methods

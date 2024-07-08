@@ -159,10 +159,12 @@ text-align: justify}
 <div class="section level2">
 <h2 id="understanding-the-bike-sharing-data">Understanding the bike sharing data<a class="anchor" aria-label="anchor" href="#understanding-the-bike-sharing-data"></a>
 </h2>
-<p>The data contains <span class="math inline">\(4\)</span> columns and
-has <span class="math inline">\(17,379\)</span> observations, first
-column is the response variable and the rest are covariates. We consider
-the covariates a) temperature (<span class="math inline">\(x_1\)</span>), b) humidity (<span class="math inline">\(x_2\)</span>) and c) windspeed (<span class="math inline">\(x_3\)</span>) to model the response, the number of
+<p><span class="citation">Fanaee-T and Gama (2013)</span> collected data
+to understand the bike sharing demands under the rental and return
+process. The data contains <span class="math inline">\(4\)</span>
+columns and has <span class="math inline">\(17,379\)</span>
+observations, first column is the response variable and the rest are
+covariates. We consider the covariates a) temperature (<span class="math inline">\(x_1\)</span>), b) humidity (<span class="math inline">\(x_2\)</span>) and c) wind speed (<span class="math inline">\(x_3\)</span>) to model the response, the number of
 bikes rented hourly. The covariates are scaled to be mean of <span class="math inline">\(\mu=0\)</span> and variance of <span class="math inline">\(\sigma^2=1\)</span>. For the given data
 subsampling methods are implemented assuming the main effects model can
 describe the data.</p>
@@ -306,10 +308,11 @@ X3
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Setting the subsample sizes</span></span>
 <span><span class="va">N</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">)</span>; <span class="va">M</span><span class="op">&lt;-</span><span class="fl">250</span>; <span class="va">k</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">6</span>,<span class="fl">18</span>,by<span class="op">=</span><span class="fl">3</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span>; <span class="va">rep_k</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">k</span>,each<span class="op">=</span><span class="va">M</span><span class="op">)</span></span></code></pre></div>
-<p>We focus on assuming the main effects model with the intercept can
-appropriately describe the big data. Based on this model the methods
-random sampling, leverage sampling, <span class="math inline">\(A\)</span>- and <span class="math inline">\(L\)</span>-optimality subsampling and <span class="math inline">\(A\)</span>-optimality subsampling with response
-constraint are implemented on the big data.</p>
+<p>Based on this model the methods random sampling, leverage sampling
+<span class="citation">(Ma, Mahoney, and Yu 2014; Ma and Sun
+2015)</span>, <span class="math inline">\(A\)</span>- and <span class="math inline">\(L\)</span>-optimality subsampling <span class="citation">(Ai et al. 2021; Yao and Wang 2021)</span> and <span class="math inline">\(A\)</span>-optimality subsampling with response
+constraint <span class="citation">(Zhang, Ning, and Ruppert 2021)</span>
+are implemented on the big data.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># define colors, shapes, line types for the methods</span></span>
 <span><span class="va">Method_Names</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A-Optimality"</span>,<span class="st">"L-Optimality"</span>,<span class="st">"A-Optimality MC"</span>,</span>
@@ -323,14 +326,15 @@ constraint are implemented on the big data.</p>
 estimates are over <span class="math inline">\(M=100\)</span>
 simulations across different subsample sizes <span class="math inline">\(k=(600,\ldots,1500)\)</span>. We set the initial
 subsample size of <span class="math inline">\(r1=300\)</span> for the
-methods that requires a random sample. From the final subsamples their
-respective model parameters are estimated. These estimated model
+methods that requires a random sample. From the final subsamples, model
+parameters of the assume model are estimated. These estimated model
 parameters are compared with the estimated model parameters of the full
-big data through the mean squared error <span class="math inline">\(MSE(\tilde{\beta}_k,\hat{\beta})=\sum_{i=1}^M
-(\tilde{\beta}_k - \hat{\beta})^2/M\)</span>. Here, <span class="math inline">\(\tilde{\beta}_k\)</span> is the estimated model
-parameters from the subsample of size <span class="math inline">\(k\)</span> and <span class="math inline">\(\hat{\beta}\)</span> is the estimated model
-parameters from the full big data. Below is the code for implementing
-these subsampling methods.</p>
+big data through the mean squared error <span class="math inline">\(MSE(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ}\sum_{i=1}^M
+\sum_{j=1}^J(\tilde{\beta}_{k,j} - \hat{\beta}_j)^2\)</span>. Here,
+<span class="math inline">\(\tilde{\beta}_k\)</span> is the estimated
+model parameters from the subsample of size <span class="math inline">\(k\)</span> and <span class="math inline">\(\hat{\beta}\)</span> is the estimated model
+parameters from the full big data, while <span class="math inline">\(j\)</span> is index of the model parameter.<br>
+Below is the code for implementing these subsampling methods.</p>
 <div class="section level3">
 <h3 id="random-sampling">Random sampling<a class="anchor" aria-label="anchor" href="#random-sampling"></a>
 </h3>
@@ -451,9 +455,41 @@ Mean squared error for a) all the subsampling methods and b) without
 unweighted leverage sampling.
 </p>
 </div>
-<div class="section level4">
-<h4 id="thank-you">THANK YOU<a class="anchor" aria-label="anchor" href="#thank-you"></a>
-</h4>
+</div>
+<div class="section level3">
+<h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h3>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-ai2021optimal" class="csl-entry">
+Ai, Mingyao, Jun Yu, Huiming Zhang, and HaiYing Wang. 2021.
+<span>“Optimal Subsampling Algorithms for Big Data Regressions.”</span>
+<em>Statistica Sinica</em> 31 (2): 749–72.
+</div>
+<div id="ref-fanaee2013bike" class="csl-entry">
+Fanaee-T, Hadi, and J Gama. 2013. <span>“Bike Sharing Data Set.”</span>
+<em>UCI Machine Learning Repository</em>.
+</div>
+<div id="ref-ma2014statistical" class="csl-entry">
+Ma, Ping, Michael Mahoney, and Bin Yu. 2014. <span>“A Statistical
+Perspective on Algorithmic Leveraging.”</span> In <em>International
+Conference on Machine Learning</em>, 91–99. PMLR.
+</div>
+<div id="ref-ma2015leveraging" class="csl-entry">
+Ma, Ping, and Xiaoxiao Sun. 2015. <span>“Leveraging for Big Data
+Regression.”</span> <em>Wiley Interdisciplinary Reviews: Computational
+Statistics</em> 7 (1): 70–76.
+</div>
+<div id="ref-yao2021review" class="csl-entry">
+Yao, Yaqiong, and HaiYing Wang. 2021. <span>“A Review on Optimal
+Subsampling Methods for Massive Datasets.”</span> <em>Journal of Data
+Science</em> 19 (1): 151–72.
+</div>
+<div id="ref-zhang2021optimal" class="csl-entry">
+Zhang, Tao, Yang Ning, and David Ruppert. 2021. <span>“Optimal Sampling
+for Generalized Linear Models Under Measurement Constraints.”</span>
+<em>Journal of Computational and Graphical Statistics</em> 30 (1):
+106–14.
+</div>
 </div>
 </div>
 </div>

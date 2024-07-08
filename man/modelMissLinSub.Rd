@@ -2,7 +2,7 @@
 % Please edit documentation in R/modelMissLinSub.R
 \name{modelMissLinSub}
 \alias{modelMissLinSub}
-\title{Model misspecified subsampling under linear regression}
+\title{Subsampling under linear regression for a potentially misspecified model}
 \usage{
 modelMissLinSub(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_Full)
 }
@@ -32,35 +32,35 @@ The output of \code{modelMissLinSub} gives a list of
 
 \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon after subsampling
 
-\code{Loss_Estimates} matrix of estimated LmAMSE values after subsampling
+\code{AMSE_Estimates} matrix of estimated AMSE values after subsampling
 
 \code{Sample_A-Optimality} list of indexes for the initial and optimal subsamples obtained based on A-Optimality criterion
 
 \code{Sample_L-Optimality} list of indexes for the initial and optimal subsamples obtained based on L-Optimality criterion
 
-\code{Sample_LmAMSE} list of indexes for the optimal subsamples obtained based obtained based on LmAMSE
+\code{Sample_RLmAMSE} list of indexes for the optimal subsamples obtained based obtained based on RLmAMSE
 
-\code{Sample_LmAMSE_Log_Odds} list of indexes for the optimal subsamples obtained based on LmAMSE with Log Odds function
+\code{Sample_RLmAMSE_Log_Odds} list of indexes for the optimal subsamples obtained based on RLmAMSE with Log Odds function
 
-\code{Sample_LmAMSE_Power} list of indexes for the optimal subsamples obtained based on LmAMSE with Power function
+\code{Sample_RLmAMSE_Power} list of indexes for the optimal subsamples obtained based on RLmAMSE with Power function
 
 \code{Subsampling_Probability} matrix of calculated subsampling probabilities
 }
 \description{
-Using this function subsample from big data under linear regression when we assumed the model that
-describes the data is misspecified. Subsampling probabilities are obtained based on the A- and L-
-optimality criterions with the LmAMSE (Loss on mean of asymptotic mean squared error).
+Using this function subsample from big data under linear regression for a potentially misspecified model.
+Subsampling probabilities are obtained based on the A- and L- optimality criteria
+with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error).
 }
 \details{
 Two stage subsampling algorithm for big data under linear regression for potential model misspecification.
 
 First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
 Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criterion,
-LmAMSE and enhanced LmAMSE(log-odds and power) subsampling methods.
+RLmAMSE and enhanced RLmAMSE (log-odds and power) subsampling methods.
 
 Through the estimated subsampling probabilities an subsample of size \eqn{r_2 \ge r_1} is obtained.
 Finally, the two samples are combined and the model parameters are estimated for A- and L-optimality,
-while for LmAMSE and enhanced LmAMSE (log-odds and power) only the optimal subsample is used.
+while for RLmAMSE and enhanced RLmAMSE (log-odds and power) only the optimal subsample is used.
 
 \strong{NOTE} :  If input parameters are not in given domain conditions
 necessary error messages will be provided to go further.
@@ -97,7 +97,7 @@ Results<-modelMissLinSub(r1 = r1, r2 = r2,
 # parallel::stopCluster(cl)
 
 plot_Beta(Results)
-plot_LmAMSE(Results)
+plot_AMSE(Results)
 }
 
 }

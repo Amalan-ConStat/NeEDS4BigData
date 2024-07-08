@@ -5,7 +5,7 @@ vignette: >
   %\VignetteIndexEntry{Linear Regression : Model robust and misspecification}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-bibliography: Vig_Method_Ref.bib  
+bibliography: Vignette_Ref.bib
 ---
 
 <style>
@@ -40,6 +40,7 @@ Theme_special<-function(){
 
 # Understanding the electric consumption data
 
+``Electric power consumption'' data [@hebrailindividual], which contains $2,049,280$ measurements for a house located at Sceaux, France between December 2006 and November 2010.
 The data contains $4$ columns and has $2,049,280$ observations, first column is the response variable and the rest are covariates, however we only use $5\%$ of the data for this explanation. 
 The response $y$ is the log scaled intensity, while the covariates are active electrical energy in the a) kitchen ($X_1$), b) laundry room ($X_2$) and c) water-heater and air-conditioner ($X_3$). 
 The covariates are scaled to be mean of $\mu=0$ and variance of $\sigma^2=1$. 
@@ -69,10 +70,10 @@ N<-nrow(Original_Data); M<-250; k<-seq(6,18,by=3)*100; rep_k<-rep(k,each=M)
 
 ## Model robust or average subsampling
 
-The method $A$- and $L$-optimality of model robust or average subsampling is compared against the $A$- and $L$-optimality subsampling method. 
+The method $A$- and $L$-optimality of model robust or average subsampling [@mahendran2023model] is compared against the $A$- and $L$-optimality subsampling [@ai2021optimal;@yao2021review] method. 
 Here five different models are considered 1) main effects model ($\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3$), 2-4) main effects model with the squared term of each covariate ($X^2_1 / X^2_2 / X^2_3$) and 5) main effects model with all the squared terms ($\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3+\beta_4X^2_1+\beta_5X^2_2+\beta_6X^2_3$). 
-For each model $j$ the mean squared error of the model parameters $MSE_j(\tilde{\beta}_k,\hat{\beta})=\sum_{i=1}^M (\tilde{\beta}_k - \hat{\beta})^2/M$ are calculated for the $M=100$ simulations across the subsample sizes $k=(600,\ldots,1500)$ and the initial subsample size is $r1=300$. 
-Here, for the $j$-th model $\tilde{\beta}_k$ is the estimated model parameters from the subsample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data.
+For each model $l$ the mean squared error of the model parameters $MSE_l(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ} \sum_{i=1}^M \sum_{j=1}^J (\tilde{\beta}_{k,j} - \hat{\beta}_j)^2$ are calculated for the $M=100$ simulations across the subsample sizes $k=(600,\ldots,1500)$ and the initial subsample size is $r1=300$. 
+Here, for the $l$-th model $\tilde{\beta}_k$ is the estimated model parameters from the subsample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter.
 
 ```{r Define the methods}
 # Define the subsampling methods and their respective colors, shapes and line types
@@ -160,10 +161,10 @@ As in the above scenarios the number of simulations and the subsample sizes stay
 We compare the mean squared error of the estimated model parameters, however as we assume the model is potentially misspecified the asymptotic approximation of the mean squared error from the predictions are calculated as well.
 Below is the code for this implementation.
 
-```{r Potential model misspecification methods,fig.width=6,fig.height=6,fig.align='center', fig.cap="Average loss for the potentially misspecified main effects model across the subsampling methods under comparison."}
+```{r Potential model misspecification methods,fig.width=6,fig.height=6,fig.align='center', fig.cap="AMSE for the potentially misspecified main effects model across the subsampling methods under comparison."}
 # Define the subsampling methods and their respective colors, shapes and line types
-Method_Names<-c("A-Optimality","L-Optimality","LmAMSE",
-                "LmAMSE Log Odds 10","LmAMSE Power 10")
+Method_Names<-c("A-Optimality","L-Optimality","RLmAMSE",
+                "RLmAMSE Log Odds 10","RLmAMSE Power 10")
 Method_Color<-c("red","darkred","palegreen","green","springgreen4")
 Method_Shape_Types<-c(rep(8,2),rep(4,3))
 Method_Line_Types<-c(rep("twodash",2),rep("dotted",3))
@@ -185,7 +186,7 @@ Xbeta_GAM<-gam::predict.Gam(fit_GAM,newdata = Original_Data[,-1])
 f_estimate<-Xbeta_GAM - Xbeta_Final
 Var_GAM.prop<-sum((Original_Data[,1]-Xbeta_GAM)^2)/N
 
-# A- and L-optimality and LmAMSE model misspecified subsampling for linear regression 
+# A- and L-optimality and RLmAMSE model misspecified subsampling for linear regression 
 NeEDS4BigData::modelMissLinSub(r1=300,r2=rep_k,
                                Y=as.matrix(Original_Data[,1]),
                                X=as.matrix(Original_Data[,-1]),
@@ -194,7 +195,7 @@ NeEDS4BigData::modelMissLinSub(r1=300,r2=rep_k,
                                F_Estimate_Full = f_estimate)->Results
 
 Final_Beta_modelMiss<-Results$Beta_Estimates
-Final_Loss_modelMiss<-Results$Loss_Estimates
+Final_AMSE_modelMiss<-Results$AMSE_Estimates
 
 lm(Y~.-1,data = Original_Data)->All_Results
 coefficients(All_Results)->All_Beta
@@ -202,7 +203,7 @@ matrix(rep(All_Beta,by=nrow(Final_Beta_modelMiss)),nrow = nrow(Final_Beta_modelM
        ncol = ncol(Final_Beta_modelMiss[,-c(1,2)]),byrow = TRUE)->All_Beta
 
 # Plots for the mean squared error of the model parameter estimates 
-# and the loss for the main effects model 
+# and the AMSE for the main effects model 
 MSE_Beta_modelMiss<-data.frame("Method"=Final_Beta_modelMiss$Method,
                                "Subsample"=Final_Beta_modelMiss$r2,
                                "MSE"=rowSums((All_Beta - 
@@ -218,11 +219,11 @@ ggplot(MSE_Beta_modelMiss |> dplyr::group_by(Method,Subsample) |>
   scale_shape_manual(values = Method_Shape_Types)+
   theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p1
 
-ggplot(Final_Loss_modelMiss |> dplyr::group_by(r2,Method) |> 
-       dplyr::summarise(meanLoss=mean(Loss),.groups ='drop'),
-       aes(x=factor(r2),y=meanLoss,color=Method,group=Method,
+ggplot(Final_AMSE_modelMiss |> dplyr::group_by(r2,Method) |> 
+       dplyr::summarise(meanAMSE=mean(AMSE),.groups ='drop'),
+       aes(x=factor(r2),y=meanAMSE,color=Method,group=Method,
            linetype=Method,shape=Method)) +
-  geom_point()+geom_line()+xlab("Subsample size")+ylab("Mean Loss")+
+  geom_point()+geom_line()+xlab("Subsample size")+ylab("Mean AMSE")+
   scale_color_manual(values = Method_Color)+
   scale_linetype_manual(values=Method_Line_Types)+
   scale_shape_manual(values = Method_Shape_Types)+
@@ -232,4 +233,4 @@ p2
 #ggarrange(p1,p2,nrow = 1,ncol = 2,labels = "auto")
 ```
 
-### THANK YOU
+## References

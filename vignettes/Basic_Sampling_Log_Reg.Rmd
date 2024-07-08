@@ -5,6 +5,7 @@ vignette: >
   %\VignetteIndexEntry{Basic Sampling for Logistic Regression}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: Vignette_Ref.bib
 ---
 
 <style>
@@ -39,7 +40,8 @@ Theme_special<-function(){
 
 # Understanding the skin segmentation data
 
-The data contains $4$ columns and has $245,057$ observations, first column is the response variable and the rest are covariates, however we only use $25\%$ of the data for this explanation.
+@rajen2012skin addressed the challenge of detecting skin-like regions in images as a component of the intricate process of facial recognition.
+To achieve this goal, the ``Skin segmentation data'' was curated, this data contains $4$ columns and has $245,057$ observations, first column is the response variable and the rest are covariates, however we only use $25\%$ of the data for this demonstration.
 Aim of the logistic regression model is to classify if images are skin or not based on the a) Red, b) Green and c) Blue colour data.
 Skin presence is denoted as one and skin absence is denoted as zero.
 Each colour vector is scaled to have a mean of zero and a variance of one (initial range was between 0−255).
@@ -62,8 +64,7 @@ head(Original_Data) %>%
 N<-nrow(Original_Data); M<-250; k<-seq(6,18,by=3)*100; rep_k<-rep(k,each=M)
 ```
 
-We focus on assuming the main effects model with the intercept can appropriately describe the big data.
-Based on this model the methods random sampling, leverage sampling, local case control sampling, $A$- and $L$-optimality subsampling and $A$-optimality subsampling with response constraint are implemented on the big data.
+Based on this model the methods random sampling, leverage sampling [@ma2014statistical;@ma2015leveraging], local case control sampling [@fithian2015local], $A$- and $L$-optimality subsampling [@ai2021optimal;@yao2021review] and $A$-optimality subsampling with response constraint [@zhang2021optimal] are implemented on the big data.
 
 ```{r Define the methods}
 # define colors, shapes, line types for the methods
@@ -78,9 +79,9 @@ Method_Line_Types<-c(rep("twodash",3),rep("dotted",4),"solid")
 
 The obtained subsamples and their respective model parameter estimates are over $M=100$ simulations across different subsample sizes $k=(600,\ldots,1500)$.
 We set the initial subsample size of $r1=300$ for the methods that requires a random sample. 
-From the final subsamples their respective model parameters are estimated. 
-These estimated model parameters are compared with the estimated model parameters of the full big data through the mean squared error $MSE(\tilde{\beta}_k,\hat{\beta})=\sum_{i=1}^M (\tilde{\beta}_k - \hat{\beta})^2/M$. 
-Here, $\tilde{\beta}_k$ is the estimated model parameters from the subsample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data. 
+From the final subsamples, model parameters of the assume model are estimated.
+These estimated model parameters are compared with the estimated model parameters of the full big data through the mean squared error $MSE(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ}\sum_{i=1}^M \sum_{j=1}^J(\tilde{\beta}_{k,j} - \hat{\beta}_j)^2$. 
+Here, $\tilde{\beta}_k$ is the estimated model parameters from the subsample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter. 
 Below is the code for this implementation.
 
 ## Random sampling
@@ -202,4 +203,4 @@ ggplot(MSE_Beta[!(MSE_Beta$Method %in% c("Unweighted Leverage","Shrinkage Levera
 ggarrange(p1,p2,nrow = 2,ncol = 1,labels = "auto")
 ```
 
-### THANK YOU
+## References

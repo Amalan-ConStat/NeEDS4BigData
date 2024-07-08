@@ -27,8 +27,8 @@ issues](https://img.shields.io/github/issues/Amalan-ConStat/NeEDS4BigData.svg?st
 [![](https://img.shields.io/badge/doi-10.1007/s00362--023--01446--9-green.svg)](https://doi.org/10.1007/s00362-023-01446-9)
 <!-- badges: end -->
 
-*The R package “NeEDS4BigData” holds subsampling methods that can be
-implemented over big data.*
+*The R package “NeEDS4BigData” provides approaches to implement
+subsampling methods to analyse big data.*
 
 ### How did the name “NeEDS4BigData” came through ?
 
@@ -45,11 +45,6 @@ devtools::install_github("Amalan-ConStat/NeEDS4BigData")
 install.packages("NeEDS4BigData")
 ```
 
-### What does “NeEDS4BigData” ?
-
-Algorithms are implemented under Generalised Linear Models (GLMs) for
-big data to obtain informative subsamples.
-
 ### Subsampling Methods
 
 1.  A- and L-optimality based subsampling for GLMs.
@@ -58,12 +53,11 @@ big data to obtain informative subsamples.
 4.  Local case control sampling for logistic regression.
 5.  A-optimality based subsampling under measurement constraints for
     GLMs.
-6.  Model Robust subsampling method for GLMs.
+6.  Model robust subsampling method for GLMs.
 7.  Subsampling method for GLMs when the model is potentially
     misspecified.
 
-To explain these methods in detail $7$ articles are written and they
-are,
+These seven methods are described in the following articles
 
 1.  Introduction - explains the need for subsampling methods.
 2.  Linear Regression - Basic sampling.
@@ -73,11 +67,11 @@ are,
 6.  Poisson Regression - Basic sampling.
 7.  Poisson Regression - Model robust and misspecification.
 
-Here, for $2,4$ and $6$ we assume the main effects model can describe
-the data. While for $3,5$ and $7$ first we consider there are several
-models that can describe the big data, then later we assume the given
-main effects model is misspecified. Under these conditions from $2-7$ we
-explore subsampling for $3$ given big data sets.
+For $2,4$ and $6$ we assume the main effects model can describe the
+data. While for $3,5$ and $7$ first we consider there are several models
+that can describe the big data, then later we assume the given main
+effects model is misspecified. Under these conditions from $2-7$ we
+explore subsampling for three given big data sets.
 
 #### Thank You
 

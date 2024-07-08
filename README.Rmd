@@ -32,7 +32,7 @@ library(badger)
 `r badge_doi("10.1007/s00362-023-01446-9", "green")`
 <!-- badges: end -->
 
-_The R package "NeEDS4BigData" holds subsampling methods that can be implemented over big data._
+_The R package "NeEDS4BigData" provides approaches to implement subsampling methods to analyse big data._
 
 ### How did the name "NeEDS4BigData" came through ?
 
@@ -48,10 +48,6 @@ devtools::install_github("Amalan-ConStat/NeEDS4BigData")
 install.packages("NeEDS4BigData")
 ```
 
-### What does "NeEDS4BigData" ?
-
-Algorithms are implemented under Generalised Linear Models (GLMs) for big data to obtain informative subsamples. 
-
 ### Subsampling Methods
 
 1. A- and L-optimality based subsampling for GLMs.
@@ -59,10 +55,10 @@ Algorithms are implemented under Generalised Linear Models (GLMs) for big data t
 3. Leverage sampling for GLMs.
 4. Local case control sampling for logistic regression.
 5. A-optimality based subsampling under measurement constraints for GLMs.
-6. Model Robust subsampling method for GLMs.
+6. Model robust subsampling method for GLMs.
 7. Subsampling method for GLMs when the model is potentially misspecified.
 
-To explain these methods in detail $7$ articles are written and they are, 
+These seven methods are described in the following articles
 
 1. Introduction - explains the need for subsampling methods.
 2. Linear Regression - Basic sampling.
@@ -72,9 +68,9 @@ To explain these methods in detail $7$ articles are written and they are,
 6. Poisson Regression - Basic sampling.
 7. Poisson Regression - Model robust and misspecification.
 
-Here, for $2,4$ and $6$ we assume the main effects model can describe the data. 
+For $2,4$ and $6$ we assume the main effects model can describe the data. 
 While for $3,5$ and $7$ first we consider there are several models that can describe the big data, then later we assume the given main effects model is misspecified. 
-Under these conditions from $2-7$ we explore subsampling for $3$ given big data sets.
+Under these conditions from $2-7$ we explore subsampling for three given big data sets.
 
 #### Thank You
 
