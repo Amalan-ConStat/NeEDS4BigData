@@ -41,7 +41,7 @@ Theme_special<-function(){
 # Understanding the electric consumption data
 
 ``Electric power consumption'' data [@hebrailindividual], which contains $2,049,280$ measurements for a house located at Sceaux, France between December 2006 and November 2010.
-The data contains $4$ columns and has $2,049,280$ observations, first column is the response variable and the rest are covariates, however we only use $5\%$ of the data for this explanation. 
+The data contains $4$ columns and has $2,049,280$ observations, first column is the response variable and the rest are covariates, however we only use $1\%$ of the data for this explanation. 
 The response $y$ is the log scaled intensity, while the covariates are active electrical energy in the a) kitchen ($X_1$), b) laundry room ($X_2$) and c) water-heater and air-conditioner ($X_3$). 
 The covariates are scaled to be mean of $\mu=0$ and variance of $\sigma^2=1$. 
 
@@ -51,7 +51,7 @@ Given data is analysed under two different scenarios,
 2. subsampling method assuming the main effects model is potentially misspecified.
 
 ```{r Exploring data}
-indexes<-sample(1:nrow(Electric_consumption),nrow(Electric_consumption)*0.05)
+indexes<-sample(1:nrow(Electric_consumption),nrow(Electric_consumption)*0.01)
 Original_Data<-cbind(Electric_consumption[indexes,1],1,
                      Electric_consumption[indexes,-1])
 colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))

@@ -165,7 +165,7 @@ located at Sceaux, France between December 2006 and November 2010. The
 data contains <span class="math inline">\(4\)</span> columns and has
 <span class="math inline">\(2,049,280\)</span> observations, first
 column is the response variable and the rest are covariates, however we
-only use <span class="math inline">\(5\%\)</span> of the data for this
+only use <span class="math inline">\(1\%\)</span> of the data for this
 explanation. The response <span class="math inline">\(y\)</span> is the
 log scaled intensity, while the covariates are active electrical energy
 in the a) kitchen (<span class="math inline">\(X_1\)</span>), b) laundry
@@ -180,7 +180,7 @@ models can describe the data.</li>
 misspecified.</li>
 </ol>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">indexes</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Electric_consumption</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Electric_consumption</span><span class="op">)</span><span class="op">*</span><span class="fl">0.05</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">indexes</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Electric_consumption</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Electric_consumption</span><span class="op">)</span><span class="op">*</span><span class="fl">0.01</span><span class="op">)</span></span>
 <span><span class="va">Original_Data</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">Electric_consumption</span><span class="op">[</span><span class="va">indexes</span>,<span class="fl">1</span><span class="op">]</span>,<span class="fl">1</span>,</span>
 <span>                     <span class="va">Electric_consumption</span><span class="op">[</span><span class="va">indexes</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Y"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"X"</span>,<span class="fl">0</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -227,13 +227,13 @@ X3
 1
 </td>
 <td style="text-align:right;">
--0.1840174
+-0.1807024
 </td>
 <td style="text-align:right;">
--0.22421573
+-0.22562732
 </td>
 <td style="text-align:right;">
--0.7672092
+-0.7706940
 </td>
 </tr>
 <tr>
@@ -247,13 +247,13 @@ X3
 1
 </td>
 <td style="text-align:right;">
--0.1840174
+-0.1807024
 </td>
 <td style="text-align:right;">
--0.22421573
+-0.22562732
 </td>
 <td style="text-align:right;">
--0.6486263
+-0.6523274
 </td>
 </tr>
 <tr>
@@ -267,13 +267,13 @@ X3
 1
 </td>
 <td style="text-align:right;">
--0.1840174
+-0.1807024
 </td>
 <td style="text-align:right;">
--0.22421573
+-0.22562732
 </td>
 <td style="text-align:right;">
--0.7672092
+-0.7706940
 </td>
 </tr>
 <tr>
@@ -287,13 +287,13 @@ X3
 1
 </td>
 <td style="text-align:right;">
--0.1840174
+-0.1807024
 </td>
 <td style="text-align:right;">
--0.22421573
+-0.22562732
 </td>
 <td style="text-align:right;">
--0.7672092
+-0.7706940
 </td>
 </tr>
 <tr>
@@ -307,13 +307,13 @@ X3
 1
 </td>
 <td style="text-align:right;">
--0.1840174
+-0.1807024
 </td>
 <td style="text-align:right;">
--0.05641299
+-0.05962886
 </td>
 <td style="text-align:right;">
--0.7672092
+-0.7706940
 </td>
 </tr>
 <tr>
@@ -327,13 +327,13 @@ X3
 1
 </td>
 <td style="text-align:right;">
--0.1840174
+-0.1807024
 </td>
 <td style="text-align:right;">
--0.22421573
+-0.22562732
 </td>
 <td style="text-align:right;">
--0.7672092
+-0.7706940
 </td>
 </tr>
 </tbody>
