@@ -23,6 +23,8 @@ library(tidyr)
 library(psych)
 library(gam)
 
+set.seed(1234)
+
 # Theme for plots
 Theme_special<-function(){
   theme(legend.key.width= unit(1,"cm"),
