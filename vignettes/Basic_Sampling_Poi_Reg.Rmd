@@ -69,7 +69,7 @@ Based on this model the methods random sampling, leverage sampling [@ma2014stati
 Method_Names<-c("A-Optimality","L-Optimality","A-Optimality MC",
                 "Shrinkage Leverage","Basic Leverage","Unweighted Leverage",
                 "Random Sampling")
-Method_Color<-c("green","green4","palegreen",
+Method_Color<-c("green","green4","yellowgreen",
                 "red","darkred","maroon","black")
 Method_Shape_Types<-c(rep(8,3),rep(4,3),16)
 Method_Line_Types<-c(rep("twodash",3),rep("dotted",3),"solid")
@@ -179,9 +179,9 @@ ggplot(MSE_Beta[MSE_Beta$Method != "Unweighted Leverage",] |>
        aes(x=factor(Subsample),y=MSE,color=Method,group=Method,
            linetype=Method,shape=Method))+
   geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
-  scale_color_manual(values = Method_Color[-7])+
-  scale_linetype_manual(values=Method_Line_Types[-7])+
-  scale_shape_manual(values = Method_Shape_Types[-7])+
+  scale_color_manual(values = Method_Color[-6])+
+  scale_linetype_manual(values=Method_Line_Types[-6])+
+  scale_shape_manual(values = Method_Shape_Types[-6])+
   theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p2
 
 #save(Final_Beta,All_Beta,MSE_Beta,p1,p2,file="Poisson_Regression_Scenario_1.RData")

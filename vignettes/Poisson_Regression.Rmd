@@ -76,7 +76,7 @@ Here, for the $l$-th model $\tilde{\beta}_k$ is the estimated model parameters f
 ```{r define subsampling methods}
 # Define the subsampling methods and their respective colors, shapes and line types
 Method_Names<-c("A-Optimality","L-Optimality","A-Optimality MR","L-Optimality MR")
-Method_Color<-c("red","darkred","palegreen","springgreen4")
+Method_Color<-c("red","darkred","green","springgreen4")
 Method_Shape_Types<-c(rep(8,2),rep(4,2))
 Method_Line_Types<-c(rep("twodash",2),rep("dotted",2))
 
@@ -163,7 +163,7 @@ Below is the code for this implementation.
 # Define the subsampling methods and their respective colors, shapes and line types
 Method_Names<-c("A-Optimality","L-Optimality","RLmAMSE",
                 "RLmAMSE Log Odds 10","RLmAMSE Power 10")
-Method_Color<-c("red","darkred","palegreen","green","springgreen4")
+Method_Color<-c("red","darkred","yellowgreen","green","springgreen4")
 Method_Shape_Types<-c(rep(8,2),rep(4,3))
 Method_Line_Types<-c(rep("twodash",2),rep("dotted",3))
 

@@ -70,7 +70,7 @@ Based on this model the methods random sampling, leverage sampling [@ma2014stati
 Method_Names<-c("A-Optimality","L-Optimality","A-Optimality GauLM","A-Optimality MC",
                 "Shrinkage Leverage","Basic Leverage","Unweighted Leverage",
                 "Random Sampling")
-Method_Color<-c("green","green4","palegreen","springgreen4",
+Method_Color<-c("yellowgreen","green4","green","springgreen4",
                 "red","darkred","maroon","black")
 Method_Shape_Types<-c(rep(8,4),rep(4,3),16)
 Method_Line_Types<-c(rep("twodash",4),rep("dotted",3),"solid")
