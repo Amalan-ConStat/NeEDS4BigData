@@ -23,8 +23,6 @@ library(tidyr)
 library(psych)
 library(gam)
 
-set.seed(1234)
-
 # Theme for plots
 Theme_special<-function(){
   theme(legend.key.width= unit(1,"cm"),
@@ -43,7 +41,7 @@ Theme_special<-function(){
 # Understanding the skin segmentation data
 
 @rajen2012skin addressed the challenge of detecting skin-like regions in images as a component of the intricate process of facial recognition.
-To achieve this goal, the ``Skin segmentation data'' was curated, this data contains $4$ columns and has $245,057$ observations, first column is the response variable and the rest are covariates, however we only use $25\%$ of the data for this demonstration.
+To achieve this goal, the ``Skin segmentation data'' was curated, this data contains $4$ columns and has $245,057$ observations, first column is the response variable and the rest are covariates.
 Aim of the logistic regression model is to classify if images are skin or not based on the a) Red, b) Green and c) Blue colour data.
 Skin presence is denoted as one and skin absence is denoted as zero.
 Each colour vector is scaled to have a mean of zero and a variance of one (initial range was between 0−255).
@@ -54,7 +52,7 @@ Given data is analysed under two different scenarios,
 2. subsampling method assuming the main effects model is potentially misspecified.
 
 ```{r Exploring data}
-indexes<-sample(1:nrow(Skin_segmentation),nrow(Skin_segmentation)*0.25)
+indexes<-1:nrow(Skin_segmentation)
 Original_Data<-cbind(Skin_segmentation[indexes,1],1,Skin_segmentation[indexes,-1])
 colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
 
