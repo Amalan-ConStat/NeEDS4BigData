@@ -197,8 +197,8 @@ plot_Beta.ModelMisspecified<-function(object){
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
   label_values<-0:(length(unique(Temp_Data$Beta))-1)
   method_labels<-levels(Temp_Data$Method)
-  Log_Odds_Labels<-method_labels[startsWith(method_labels,"LmAMSE Log Odds")]
-  Power_Labels<-method_labels[startsWith(method_labels,"LmAMSE Power")]
+  Log_Odds_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Log Odds")]
+  Power_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Power")]
 
   method_colors<-c("red","pink","lightgreen",paste0("springgreen",1:length(Log_Odds_Labels)),
                    paste0("seagreen",1:length(Power_Labels)))
