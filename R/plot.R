@@ -60,7 +60,8 @@ plot_Beta.LocalCaseControl<-function(object){
     ggplot2::ylab("Frequency")+
     ggplot2::scale_fill_manual(values = method_colors)+
     ggplot2::theme_bw()+
-    ggplot2::theme(legend.position = "bottom")->plot_beta
+    ggplot2::theme(legend.position = "bottom",
+                   axis.text.x = ggplot2::element_text(angle = 30))->plot_beta
 
   return(plot_beta)
 }
@@ -85,7 +86,8 @@ plot_Beta.Leverage<-function(object){
     ggplot2::ylab("Frequency")+
     ggplot2::scale_fill_manual(values = method_colors)+
     ggplot2::theme_bw()+
-    ggplot2::theme(legend.position = "bottom")->plot_beta
+    ggplot2::theme(legend.position = "bottom",
+                   axis.text.x = ggplot2::element_text(angle = 30))->plot_beta
 
   return(plot_beta)
 }
@@ -109,7 +111,8 @@ plot_Beta.A_L_OptimalSubsampling<-function(object){
     ggplot2::ylab("Frequency")+
     ggplot2::scale_fill_manual(values = method_colors)+
     ggplot2::theme_bw()+
-    ggplot2::theme(legend.position = "bottom")->plot_beta
+    ggplot2::theme(legend.position = "bottom",
+                   axis.text.x = ggplot2::element_text(angle = 30))->plot_beta
 
   return(plot_beta)
 }
@@ -133,7 +136,8 @@ plot_Beta.AoptimalSubsampling<-function(object){
     ggplot2::ylab("Frequency")+
     ggplot2::scale_fill_manual(values = method_colors)+
     ggplot2::theme_bw()+
-    ggplot2::theme(legend.position = "bottom")->plot_beta
+    ggplot2::theme(legend.position = "bottom",
+                   axis.text.x = ggplot2::element_text(angle = 30))->plot_beta
 
   return(plot_beta)
 }
@@ -157,7 +161,8 @@ plot_Beta.A_OptimalSubsamplingMC<-function(object){
     ggplot2::ylab("Frequency")+
     ggplot2::scale_fill_manual(values = method_colors)+
     ggplot2::theme_bw()+
-    ggplot2::theme(legend.position = "bottom")->plot_beta
+    ggplot2::theme(legend.position = "bottom",
+                   axis.text.x = ggplot2::element_text(angle = 30))->plot_beta
 
   return(plot_beta)
 }
@@ -183,7 +188,8 @@ plot_Beta.ModelRobust<-function(object){
         ggplot2::scale_fill_manual(values = c("red","pink","darkgreen","green"))+
         ggplot2::ggtitle(names(object$Beta_Estimates)[i])+
         ggplot2::theme_bw()+
-        ggplot2::theme(legend.position = "bottom")->plot_beta[[i]]
+        ggplot2::theme(legend.position = "bottom",
+                       axis.text.x = ggplot2::element_text(angle = 30))->plot_beta[[i]]
     }
     names(plot_beta)<-names(object$Beta_Estimates)
     return(plot_beta)
@@ -212,7 +218,8 @@ plot_Beta.ModelMisspecified<-function(object){
     ggplot2::ylab("Frequency")+
     ggplot2::scale_fill_manual(values = method_colors)+
     ggplot2::theme_bw()+
-    ggplot2::theme(legend.position = "bottom")->plot_beta
+    ggplot2::theme(legend.position = "bottom",
+                   axis.text.x = ggplot2::element_text(angle = 30))->plot_beta
 
   return(plot_beta)
 }
@@ -273,7 +280,9 @@ plot_AMSE.ModelMisspecified<-function(object){
     ggplot2::scale_x_continuous(labels=unique(Temp_Data$r2),breaks=unique(Temp_Data$r2))+
     ggplot2::facet_wrap(~Metric,scales = "free")+
     ggplot2::theme_bw()+
-    ggplot2::theme(legend.position = "bottom")->plot_AMSE
+    ggplot2::theme(legend.position = "bottom",
+                   axis.text.x = ggplot2::element_text(angle = 30))+
+    ggplot2::guides(colour = ggplot2::guide_legend(nrow = 2))->plot_AMSE
 
   return(plot_AMSE)
 }
