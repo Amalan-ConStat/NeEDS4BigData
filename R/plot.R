@@ -219,7 +219,8 @@ plot_Beta.ModelMisspecified<-function(object){
     ggplot2::scale_fill_manual(values = method_colors)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = "bottom",
-                   axis.text.x = ggplot2::element_text(angle = 30))->plot_beta
+                   axis.text.x = ggplot2::element_text(angle = 30))+
+    ggplot2::guides(colour = ggplot2::guide_legend(nrow = 2))->plot_beta
 
   return(plot_beta)
 }
