@@ -23,7 +23,7 @@ Addressing these challenges demands innovative approaches in both computation an
 Traditional methods, effective for small and moderate sample sizes, often falter when confronted with massive datasets.
 Thus, there is a pressing need for innovative statistical methodologies and computational tools tailored to the unique demands of big data analysis.
 
-![Figure 1: The continuously increasing size of big data from ``Big Data: A Survey".](../man/figures/Figure_1.webp)
+![Figure 1: The continuously increasing size of big data from @chen2014big.](../man/figures/Figure_1.webp)
 
 ## Computational solutions for big data analysis
 

@@ -79,7 +79,7 @@ family = "logistic"
 
 Full_Data<-GenModelRobustGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,All_Models,family)
 
-r1<-300; r2<-rep(100*c(6,9,12),25); Original_Data<-Full_Data$Complete_Data;
+r1<-300; r2<-rep(100*c(6,9,12),50); Original_Data<-Full_Data$Complete_Data;
 
 modelRobustLogSub(r1 = r1, r2 = r2,
                   Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),

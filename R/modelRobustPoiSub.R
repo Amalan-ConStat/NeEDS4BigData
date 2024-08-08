@@ -60,16 +60,16 @@
 #' \insertRef{mahendran2023model}{NeEDS4BigData}
 #'
 #' @examples
-#' Dist<-"Normal"; No_Of_Var<-2; Beta<-c(-1,2,1,2); N<-10000
-#' All_Models<-list(Real_Model=c("X0","X1","X2","X1^2"),
-#'                  Assumed_Model_1=c("X0","X1","X2"),
+#' Dist<-"Normal"; No_Of_Var<-2; Beta<-c(-1,0.25,0.1); N<-10000
+#' All_Models<-list(Real_Model=c("X0","X1","X2"),
+#'                  Assumed_Model_1=c("X0","X1","X2","X1^2"),
 #'                  Assumed_Model_2=c("X0","X1","X2","X2^2"),
 #'                  Assumed_Model_3=c("X0","X1","X2","X1^2","X2^2"))
 #' family = "poisson"
 #'
 #' Full_Data<-GenModelRobustGLMdata(Dist,Dist_Par=NULL,No_Of_Var,Beta,N,All_Models,family)
 #'
-#' r1<-300; r2<-rep(100*c(6,9,12),5); Original_Data<-Full_Data$Complete_Data;
+#' r1<-300; r2<-rep(1200,50); Original_Data<-Full_Data$Complete_Data;
 #'
 #' modelRobustPoiSub(r1 = r1, r2 = r2,
 #'                   Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),

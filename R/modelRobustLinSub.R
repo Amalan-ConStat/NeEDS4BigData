@@ -70,7 +70,7 @@
 #'
 #' Full_Data<-GenModelRobustGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,All_Models,family)
 #'
-#' r1<-300; r2<-rep(100*c(6,9,12),25); Original_Data<-Full_Data$Complete_Data;
+#' r1<-300; r2<-rep(100*c(6,12),50); Original_Data<-Full_Data$Complete_Data;
 #'
 #' modelRobustLinSub(r1 = r1, r2 = r2,
 #'                   Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
@@ -545,7 +545,7 @@ GenModelRobustGLMdata<-function(Dist,Dist_Par,No_Of_Var,Beta,N,All_Models,family
     colnames(Complete_Data)<-c(paste0("X",0:ncol(X)),paste0("X",1:ncol(X),"^2"))
 
     Linear_Predictor_Data <- Complete_Data[,colnames(Complete_Data) %in% All_Models$Real_Model]%*%Beta
-    Lambda_Data <- 1-1/(1+exp(Linear_Predictor_Data))
+    Lambda_Data <- exp(Linear_Predictor_Data)
     Y <- stats::rpois(n=N,lambda = Lambda_Data)
 
     Complete_Data<-cbind(Y,Complete_Data)

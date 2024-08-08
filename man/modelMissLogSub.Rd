@@ -76,7 +76,7 @@ MisspecificationType <- "Type 2 Squared"; family <- "logistic"
 
 Full_Data<-GenModelMissGLMdata(No_Of_Var,Beta,Var_Epsilon=NULL,N,MisspecificationType,family)
 
-r1<-300; r2<-100*c(6,9); Original_Data<-Full_Data$Full_Data;
+r1<-300; r2<-rep(100*c(6,9),50); Original_Data<-Full_Data$Full_Data;
 
 # cl <- parallel::makeCluster(4)
 # doParallel::registerDoParallel(cl)

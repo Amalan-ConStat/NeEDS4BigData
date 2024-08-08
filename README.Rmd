@@ -34,7 +34,7 @@ library(badger)
 
 _The R package "NeEDS4BigData" provides approaches to implement subsampling methods to analyse big data._
 
-### How did the name "NeEDS4BigData" came through ?
+### What is “NeEDS4BigDAta” an abbreviation for?
 
 *Ne*w *E*xperimental *D*esign based *S*ubsampling methods *for Big Data*.
 

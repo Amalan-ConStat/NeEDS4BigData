@@ -53,12 +53,19 @@ plot_Beta.LocalCaseControl<-function(object){
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method))+
-    ggplot2::geom_histogram()+
+
+  Mean_Data <- Temp_Data |>
+    dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
+    dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
+    ggplot2::geom_density(alpha=0.4)+
     ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
-    ggplot2::ylab("Frequency")+
+    ggplot2::ylab("Density")+
     ggplot2::scale_fill_manual(values = method_colors)+
+    ggplot2::geom_vline(data=Mean_Data,ggplot2::aes(xintercept = .data$Mean, color = .data$Method))+
+    ggplot2::scale_color_manual(values = method_colors)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = "bottom",
                    axis.text.x = ggplot2::element_text(angle = 30))->plot_beta
@@ -79,12 +86,18 @@ plot_Beta.Leverage<-function(object){
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
 
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method))+
-    ggplot2::geom_histogram()+
+  Mean_Data <- Temp_Data |>
+    dplyr::group_by(.data$Method,.data$r,.data$Beta) |>
+    dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
+    ggplot2::geom_density(alpha=0.4)+
     ggh4x::facet_grid2(r~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
-    ggplot2::ylab("Frequency")+
+    ggplot2::ylab("Density")+
     ggplot2::scale_fill_manual(values = method_colors)+
+    ggplot2::geom_vline(data=Mean_Data,ggplot2::aes(xintercept = .data$Mean, color = .data$Method))+
+    ggplot2::scale_color_manual(values = method_colors)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = "bottom",
                    axis.text.x = ggplot2::element_text(angle = 30))->plot_beta
@@ -104,12 +117,19 @@ plot_Beta.A_L_OptimalSubsampling<-function(object){
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method))+
-    ggplot2::geom_histogram()+
+
+  Mean_Data <- Temp_Data |>
+    dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
+    dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
+    ggplot2::geom_density(alpha=0.4)+
     ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
-    ggplot2::ylab("Frequency")+
+    ggplot2::ylab("Density")+
     ggplot2::scale_fill_manual(values = method_colors)+
+    ggplot2::geom_vline(data=Mean_Data,ggplot2::aes(xintercept = .data$Mean, color = .data$Method))+
+    ggplot2::scale_color_manual(values = method_colors)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = "bottom",
                    axis.text.x = ggplot2::element_text(angle = 30))->plot_beta
@@ -129,12 +149,19 @@ plot_Beta.AoptimalSubsampling<-function(object){
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method))+
-    ggplot2::geom_histogram()+
+
+  Mean_Data <- Temp_Data |>
+    dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
+    dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
+    ggplot2::geom_density(alpha=0.4)+
     ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
-    ggplot2::ylab("Frequency")+
+    ggplot2::ylab("Density")+
     ggplot2::scale_fill_manual(values = method_colors)+
+    ggplot2::geom_vline(data=Mean_Data,ggplot2::aes(xintercept = .data$Mean, color = .data$Method))+
+    ggplot2::scale_color_manual(values = method_colors)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = "bottom",
                    axis.text.x = ggplot2::element_text(angle = 30))->plot_beta
@@ -154,12 +181,19 @@ plot_Beta.A_OptimalSubsamplingMC<-function(object){
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method))+
-    ggplot2::geom_histogram()+
+
+  Mean_Data <- Temp_Data |>
+    dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
+    dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
+    ggplot2::geom_density(alpha=0.4)+
     ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
-    ggplot2::ylab("Frequency")+
+    ggplot2::ylab("Density")+
     ggplot2::scale_fill_manual(values = method_colors)+
+    ggplot2::geom_vline(data=Mean_Data,ggplot2::aes(xintercept = .data$Mean, color = .data$Method))+
+    ggplot2::scale_color_manual(values = method_colors)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = "bottom",
                    axis.text.x = ggplot2::element_text(angle = 30))->plot_beta
@@ -176,17 +210,26 @@ plot_Beta.ModelRobust<-function(object){
       Temp_Data |>
         tidyr::pivot_longer(cols=tidyr::starts_with("beta"),names_to="Beta",values_to="Values")->Temp_Data
       label_values<-0:(length(unique(Temp_Data$Beta))-1)
+
       Temp_Data$Beta<-factor(Temp_Data$Beta,
                              levels = paste0("beta_",label_values),
                              labels = paste0("beta[",label_values,"]"))
 
-      ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method))+
-        ggplot2::geom_histogram()+
+      Mean_Data <- Temp_Data |>
+        dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
+        dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
+
+      method_colors<-c("red","pink","darkgreen","green")
+
+      ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
+        ggplot2::geom_density(alpha=0.4)+
         ggh4x::facet_grid2(r2~Beta,scales = "free",labeller = ggplot2::label_parsed)+
         ggplot2::xlab(expression(paste(beta," values")))+
-        ggplot2::ylab("Frequency")+
-        ggplot2::scale_fill_manual(values = c("red","pink","darkgreen","green"))+
+        ggplot2::ylab("Density")+
+        ggplot2::scale_fill_manual(values = method_colors)+
         ggplot2::ggtitle(names(object$Beta_Estimates)[i])+
+        ggplot2::geom_vline(data=Mean_Data,ggplot2::aes(xintercept = .data$Mean, color = .data$Method))+
+        ggplot2::scale_color_manual(values = method_colors)+
         ggplot2::theme_bw()+
         ggplot2::theme(legend.position = "bottom",
                        axis.text.x = ggplot2::element_text(angle = 30))->plot_beta[[i]]
@@ -206,17 +249,24 @@ plot_Beta.ModelMisspecified<-function(object){
   Log_Odds_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Log Odds")]
   Power_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Power")]
 
-  method_colors<-c("red","pink","lightgreen",paste0("springgreen",1:length(Log_Odds_Labels)),
-                   paste0("seagreen",1:length(Power_Labels)))
+  method_colors<-c("red","pink","lightgreen",rep("green",length(Log_Odds_Labels)),
+                   rep("darkgreen",length(Power_Labels)))
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method))+
-    ggplot2::geom_histogram()+
+
+  Mean_Data <- Temp_Data |>
+    dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
+    dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
+    ggplot2::geom_density(alpha=0.4)+
     ggh4x::facet_grid2(r2~Beta,scales = "free",independent = "x",labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
-    ggplot2::ylab("Frequency")+
+    ggplot2::ylab("Density")+
     ggplot2::scale_fill_manual(values = method_colors)+
+    ggplot2::geom_vline(data=Mean_Data,ggplot2::aes(xintercept = .data$Mean, color = .data$Method))+
+    ggplot2::scale_color_manual(values = method_colors)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = "bottom",
                    axis.text.x = ggplot2::element_text(angle = 30))+
@@ -267,8 +317,8 @@ plot_AMSE.ModelMisspecified<-function(object){
 
   Log_Odds_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Log Odds")]
   Power_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Power")]
-  method_colors<-c("red","pink","lightgreen",paste0("springgreen",1:length(Log_Odds_Labels)),
-                   paste0("seagreen",1:length(Log_Odds_Labels)))
+  method_colors<-c("red","pink","lightgreen",rep("green",length(Log_Odds_Labels)),
+                   rep("darkgreen",length(Power_Labels)))
   method_linetypes<-c(rep("dashed",2),"solid",rep("dotted",length(Log_Odds_Labels)),
                       rep("dotdash",length(Power_Labels)))
 

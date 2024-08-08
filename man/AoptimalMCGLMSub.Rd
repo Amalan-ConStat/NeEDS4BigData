@@ -64,7 +64,7 @@ Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5)
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-10000; Family<-"linear"
 Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
-r1<-300; r2<-rep(100*c(6,9,12),50); Original_Data<-Full_Data$Complete_Data;
+r1<-300; r2<-rep(100*c(6,12),50); Original_Data<-Full_Data$Complete_Data;
 
 AoptimalMCGLMSub(r1 = r1, r2 = r2,
                  Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),
@@ -77,7 +77,7 @@ Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1)
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-10000; Family<-"logistic"
 Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
-r1<-300; r2<-rep(100*c(6,9,12),50); Original_Data<-Full_Data$Complete_Data;
+r1<-300; r2<-rep(100*c(6,12),50); Original_Data<-Full_Data$Complete_Data;
 
 AoptimalMCGLMSub(r1 = r1, r2 = r2,
                  Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),
@@ -90,7 +90,7 @@ Dist<-"Normal";
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-10000; Family<-"poisson"
 Full_Data<-GenGLMdata(Dist,NULL,No_Of_Var,Beta,N,Family)
 
-r1<-300; r2<-rep(100*c(6,9,12),50); Original_Data<-Full_Data$Complete_Data;
+r1<-300; r2<-rep(100*c(6,12),50); Original_Data<-Full_Data$Complete_Data;
 
 AoptimalMCGLMSub(r1 = r1, r2 = r2,
                  Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),
