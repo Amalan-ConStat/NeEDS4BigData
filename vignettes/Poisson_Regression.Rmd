@@ -13,8 +13,12 @@ body {
 text-align: justify}
 </style>
 
-```{r load packages and theme,message=FALSE}
+```{r knitr options,include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load packages and theme,message=FALSE}
+# Load the R packages
 library(NeEDS4BigData)
 library(ggplot2)
 library(ggpubr)
@@ -43,7 +47,7 @@ Theme_special<-function(){
 @fanaee2013bike collected data to understand the bike sharing demands under the rental and return process.
 The data contains $4$ columns and has $17,379$ observations, first column is the response variable and the rest are covariates. 
 We consider the covariates a) temperature ($x_1$), b) humidity ($x_2$) and c) windspeed ($x_3$) to model the response, the number of bikes rented hourly.
-The covariates are scaled to be mean of $\mu=0$ and variance of $\sigma^2=1$.
+The covariates are scaled to be mean of zero and variance of one.
 
 Given data is analysed under two different scenarios,
 
@@ -51,6 +55,7 @@ Given data is analysed under two different scenarios,
 2. subsampling method assuming the main effects model is potentially misspecified.
 
 ```{r Exploring data}
+# Selecting 100% of the big data and prepare it
 Original_Data<-cbind(Bike_sharing[,1],1,Bike_sharing[,-1])
 colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
 

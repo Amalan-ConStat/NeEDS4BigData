@@ -13,8 +13,12 @@ body {
 text-align: justify}
 </style>
 
-```{r load packages and theme,message=FALSE}
+```{r knitr options,include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load packages and theme,message=FALSE}
+# Load the R packages
 library(NeEDS4BigData)
 library(ggplot2)
 library(ggpubr)
@@ -52,6 +56,7 @@ Given data is analysed under two different scenarios,
 2. subsampling method assuming the main effects model is potentially misspecified.
 
 ```{r Exploring data}
+# Selecting 100% of the big data and prepare it
 indexes<-1:nrow(Skin_segmentation)
 Original_Data<-cbind(Skin_segmentation[indexes,1],1,Skin_segmentation[indexes,-1])
 colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))

@@ -4,7 +4,7 @@ All_Models<-list(Real_Model=c("X0","X1","X2","X1^2"),
                  Assumed_Model_3=c("X0","X1","X2","X1^2","X2^2"))
 
 Dist<-"Normal"; No_Of_Var<-2; Beta<-c(-1,0.8,0.8,1); N<-10000; family = "poisson"
-Full_Data<-GenModelRobustGLMdata(Dist,Dist_Par=NULL,No_Of_Var,Beta,N,All_Models,family)
+Full_Data<-GenModelRobustGLMdata(Dist,Dist_Par=NULL,No_Of_Var,Beta,N,All_Models,family) |> suppressWarnings()
 r1<-300; r2<-rep(100*c(6,9,12),5); Original_Data<-Full_Data$Complete_Data;
 
 modelRobustPoiSub(r1 = r1, r2 = r2,

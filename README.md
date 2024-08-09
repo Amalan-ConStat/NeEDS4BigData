@@ -30,7 +30,7 @@ issues](https://img.shields.io/github/issues/Amalan-ConStat/NeEDS4BigData.svg?st
 *The R package “NeEDS4BigData” provides approaches to implement
 subsampling methods to analyse big data.*
 
-### What is “NeEDS4BigDAta” an abbreviation for?
+### What is “NeEDS4BigData” an abbreviation for?
 
 *Ne*w *E*xperimental *D*esign based *S*ubsampling methods *for Big
 Data*.

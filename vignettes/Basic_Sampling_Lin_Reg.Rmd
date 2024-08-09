@@ -13,8 +13,12 @@ body {
 text-align: justify}
 </style>
 
-```{r load packages and theme,message=FALSE}
+```{r knitr options,include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load packages and theme,message=FALSE}
+# Load the R packages
 library(NeEDS4BigData)
 library(ggplot2)
 library(ggpubr)
@@ -43,10 +47,11 @@ Theme_special<-function(){
 ``Electric power consumption'' data [@hebrailindividual], which contains $2,049,280$ measurements for a house located at Sceaux, France between December 2006 and November 2010.
 The data contains $4$ columns, the first column is the response variable and the rest are covariates, however we only use the first $5\%$ of the data for this demonstration. 
 The response $y$ is the log scaled intensity, while the covariates are active electrical energy in the a) kitchen ($X_1$), b) laundry room ($X_2$) and c) water-heater and air-conditioner ($X_3$). 
-The covariates are scaled to be mean of $\mu=0$ and variance of $\sigma^2=1$. 
+The covariates are scaled to be mean of zero and variance of one. 
 For the given data subsampling methods are implemented assuming the main effects model can describe the data.
 
 ```{r Exploring data}
+# Selecting 5% of the big data and prepare it
 indexes<-1:ceiling(nrow(Electric_consumption)*0.05)
 Original_Data<-cbind(Electric_consumption[indexes,1],1,Electric_consumption[indexes,-1])
 colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
@@ -81,9 +86,10 @@ We set the initial subsample size of $r1=300$ for the methods that requires a ra
 From the final subsamples, model parameters of the assume model are estimated. 
 These estimated model parameters are compared with the estimated model parameters of the full big data through the mean squared error $MSE(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ}\sum_{i=1}^M \sum_{j=1}^J(\tilde{\beta}_{k,j} - \hat{\beta}_j)^2$. 
 Here, $\tilde{\beta}_k$ is the estimated model parameters from the subsample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter. 
-Below is the code for implementing these subsampling methods.
 
 ## Random sampling
+
+Below is the code for implementing these subsampling methods.
 
 ```{r Random subsampling}
 # Random sampling

@@ -13,8 +13,12 @@ body {
 text-align: justify}
 </style>
 
-```{r load packages and theme,message=FALSE}
+```{r knitr options,include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load packages and theme,message=FALSE}
+# Load the R packages
 library(NeEDS4BigData)
 library(ggplot2)
 library(ggpubr)
@@ -48,6 +52,7 @@ Each colour vector is scaled to have a mean of zero and a variance of one (initi
 For the given data subsampling methods are implemented assuming the main effects model can describe the data.
 
 ```{r Exploring data}
+# Selecting 100% of the big data and prepare it
 indexes<-1:nrow(Skin_segmentation)
 Original_Data<-cbind(Skin_segmentation[indexes,1],1,Skin_segmentation[indexes,-1])
 colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
@@ -81,10 +86,11 @@ The obtained subsamples and their respective model parameter estimates are over 
 We set the initial subsample size of $r1=300$ for the methods that requires a random sample. 
 From the final subsamples, model parameters of the assume model are estimated.
 These estimated model parameters are compared with the estimated model parameters of the full big data through the mean squared error $MSE(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ}\sum_{i=1}^M \sum_{j=1}^J(\tilde{\beta}_{k,j} - \hat{\beta}_j)^2$. 
-Here, $\tilde{\beta}_k$ is the estimated model parameters from the subsample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter. 
-Below is the code for this implementation.
+Here, $\tilde{\beta}_k$ is the estimated model parameters from the subsample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter.
 
 ## Random sampling
+
+Below is the code for this implementation.
 
 ```{r Random sampling}
 # Random sampling

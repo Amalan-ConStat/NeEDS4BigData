@@ -48,7 +48,7 @@ test_that("names of Results$Basic",{
 })
 
 Dist<-"Normal";
-No_Of_Var<-2; Beta<-c(-1,2,1,2); N<-10000; family = "poisson"
+No_Of_Var<-2; Beta<-c(-1,0.8,0.8,1); N<-10000; family = "poisson"
 Results<-GenModelRobustGLMdata(Dist,Dist_Par=NULL,No_Of_Var,Beta,N,All_Models,family)
 
 context_start_file("Checking the GenModelRobustGLMdata function under Poisson regression")
