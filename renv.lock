@@ -136,9 +136,9 @@
     },
     "Rdpack": {
       "Package": "Rdpack",
-      "Version": "2.6",
+      "Version": "2.6.1",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "methods",
@@ -146,7 +146,7 @@
         "tools",
         "utils"
       ],
-      "Hash": "3e1384ada5d3948b392e98b11434d972"
+      "Hash": "24a964d2cf75ad25d7b843856c8d4c93"
     },
     "Rfast": {
       "Package": "Rfast",
@@ -264,7 +264,7 @@
     },
     "gam": {
       "Package": "gam",
-      "Version": "1.22-3",
+      "Version": "1.22-4",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -274,7 +274,7 @@
         "splines",
         "stats"
       ],
-      "Hash": "3ff819acc26930ea8d4ebc743ca63618"
+      "Hash": "1d00ef061ca18a5d4dc4483bb75599cb"
     },
     "generics": {
       "Package": "generics",
