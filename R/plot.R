@@ -113,7 +113,7 @@ plot_Beta.A_L_OptimalSubsampling<-function(object){
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
   label_values<-0:(length(unique(Temp_Data$Beta))-1)
 
-  method_colors<-c("red","darkred")
+  method_colors<-c("red","pink")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
