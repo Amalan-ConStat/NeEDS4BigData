@@ -113,7 +113,7 @@ plot_Beta.A_L_OptimalSubsampling<-function(object){
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
   label_values<-0:(length(unique(Temp_Data$Beta))-1)
 
-  method_colors<-c("red","pink")
+  method_colors<-c("darkred","red")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
@@ -145,7 +145,7 @@ plot_Beta.AoptimalSubsampling<-function(object){
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
   label_values<-0:(length(unique(Temp_Data$Beta))-1)
 
-  method_colors<-c("red")
+  method_colors<-c("darkred")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
@@ -177,7 +177,7 @@ plot_Beta.A_OptimalSubsamplingMC<-function(object){
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
   label_values<-0:(length(unique(Temp_Data$Beta))-1)
 
-  method_colors<-c("red")
+  method_colors<-c("darkred")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
@@ -219,7 +219,7 @@ plot_Beta.ModelRobust<-function(object){
         dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
         dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
 
-      method_colors<-c("red","pink","darkgreen","green")
+      method_colors<-c("darkred","red","darkgreen","green")
 
       ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
         ggplot2::geom_density(alpha=0.4)+
@@ -249,7 +249,7 @@ plot_Beta.ModelMisspecified<-function(object){
   Log_Odds_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Log Odds")]
   Power_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Power")]
 
-  method_colors<-c("red","pink","lightgreen",rep("green",length(Log_Odds_Labels)),
+  method_colors<-c("darkred","red","lightgreen",rep("green",length(Log_Odds_Labels)),
                    rep("darkgreen",length(Power_Labels)))
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
@@ -317,7 +317,7 @@ plot_AMSE.ModelMisspecified<-function(object){
 
   Log_Odds_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Log Odds")]
   Power_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Power")]
-  method_colors<-c("red","pink","lightgreen",rep("green",length(Log_Odds_Labels)),
+  method_colors<-c("darkred","red","lightgreen",rep("green",length(Log_Odds_Labels)),
                    rep("darkgreen",length(Power_Labels)))
   method_linetypes<-c(rep("dashed",2),"solid",rep("dotted",length(Log_Odds_Labels)),
                       rep("dotdash",length(Power_Labels)))
