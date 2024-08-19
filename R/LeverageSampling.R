@@ -240,8 +240,11 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
     if(anyNA(beta.prop)){
       stop("There are NA or NaN values in the model parameters")
     }
-
-    X_Temp<-X; XX_Inv<-solve(t(X)%*%X)
+    p.prop<-1 - 1 / (1 + exp(X%*% beta.prop))
+    w.prop<-as.vector(sqrt(p.prop*(1-p.prop)))
+    X_bar<- w.prop*X
+    XX_Inv<-solve(t(X_bar)%*%X_bar)
+    X_Temp<-X
     PP <-apply(X_Temp,1,function(X_Temp){
       P.prop  <- 1 - 1 / (1 + exp(X_Temp%*% beta.prop))
       W.prop <- sqrt(P.prop*(1-P.prop))
@@ -342,10 +345,10 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
     if(anyNA(beta.prop)){
       stop("There are NA or NaN values in the model parameters")
     }
-
-    P.prop  <- exp(X %*% beta.prop)
-
-    X_Temp<-X; XX_Inv<-solve(t(X)%*%X)
+    p.prop<-as.vector(sqrt(exp(X%*% beta.prop)))
+    X_bar<- p.prop*X
+    XX_Inv<-solve(t(X_bar)%*%X_bar)
+    X_Temp<-X;
     PP <-apply(X_Temp,1,function(X_Temp){
       P.prop  <- sqrt(exp(X_Temp%*%beta.prop))
       x_bar <- P.prop%*%X_Temp
