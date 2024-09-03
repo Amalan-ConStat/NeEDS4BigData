@@ -1,14 +1,14 @@
 #' A- and L-optimality criteria based subsampling under Generalised Linear Models
 #'
-#' Using this function subsample from big data under linear, logistic and Poisson regression
-#' to describe the data. Subsampling probabilities are obtained based on the A- and L-
+#' Using this function sample from big data under linear, logistic and Poisson regression
+#' to describe the data. Sampling probabilities are obtained based on the A- and L-
 #' optimality criteria.
 #'
 #' @usage
 #' ALoptimalGLMSub(r1,r2,Y,X,N,family)
 #'
-#' @param r1      subsample size for initial random sampling
-#' @param r2      subsample size for optimal sampling
+#' @param r1      sample size for initial random sampling
+#' @param r2      sample size for optimal sampling
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
@@ -19,9 +19,9 @@
 #' (linear, logistic and Poisson regression).
 #'
 #' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-#' Using the estimated parameters subsampling probabilities are evaluated for A- and L-optimality criteria.
+#' Using the estimated parameters sampling probabilities are evaluated for A- and L-optimality criteria.
 #'
-#' Through the estimated subsampling probabilities an optimal subsample of size \eqn{r_2 \ge r_1} is obtained.
+#' Through the estimated sampling probabilities an optimal sample of size \eqn{r_2 \ge r_1} is obtained.
 #' Finally, the two samples are combined and the model parameters are estimated.
 #'
 #' \strong{NOTE} : If input parameters are not in given domain conditions
@@ -46,11 +46,11 @@
 #'
 #' \code{Utility_Estimates} estimated log scaled Information and variance for the estimated model parameters
 #'
-#' \code{Sample_A-Optimality} list of indexes for the initial and optimal subsamples obtained based on A-Optimality criteria
+#' \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 #'
-#' \code{Sample_L-Optimality} list of indexes for the initial and optimal subsamples obtained based on L-Optimality criteria
+#' \code{Sample_L-Optimality} list of indexes for the initial and optimal samples obtained based on L-Optimality criteria
 #'
-#' \code{Subsampling_Probability} matrix of calculated subsampling probabilities for A- and L- optimality criteria
+#' \code{Sampling_Probability} matrix of calculated sampling probabilities for A- and L- optimality criteria
 #'
 #' @references
 #' \insertRef{wang2018optimal}{NeEDS4BigData}
@@ -217,7 +217,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
     Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),rbind(beta.mMSE,beta.mVc))
 
     Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
-                                       "Subsample"=rep(r2,times=length(Subsampling_Methods)),
+                                       "Sample"=rep(r2,times=length(Subsampling_Methods)),
                                        "Var Epsilon"=c(Var_Epsilon[,"A-Optimality"],
                                                        Var_Epsilon[,"L-Optimality"]))
 
@@ -229,7 +229,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
               "Variance_Epsilon_Estimates"=Var_Epsilon_Data,
               "Sample_A-Optimality"=Sample.mMSE,
               "Sample_L-Optimality"=Sample.mVc,
-              "Subsampling_Probability"=Full_SP)
+              "Sampling_Probability"=Full_SP)
     class(ans)<-c("A_L_OptimalSubsampling","linear")
     return(ans)
   }
@@ -345,7 +345,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
               "Utility_Estimates"=Utility_Data,
               "Sample_A-Optimality"=Sample.mMSE,
               "Sample_L-Optimality"=Sample.mVc,
-              "Subsampling_Probability"=Full_SP)
+              "Sampling_Probability"=Full_SP)
 
     class(ans)<-c("A_L_OptimalSubsampling","logistic")
     return(ans)
@@ -460,7 +460,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
               "Utility_Estimates"=Utility_Data,
               "Sample_A-Optimality"=Sample.mMSE,
               "Sample_L-Optimality"=Sample.mVc,
-              "Subsampling_Probability"=Full_SP)
+              "Sampling_Probability"=Full_SP)
     class(ans)<-c("A_L_OptimalSubsampling","poisson")
     return(ans)
   }
@@ -468,7 +468,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 
 #' Generate data for Generalised Linear Models
 #'
-#' Function to simulate big data under linear, logistic and Poisson regression for subsampling.
+#' Function to simulate big data under linear, logistic and Poisson regression for sampling.
 #' Covariate data X is through Normal or Uniform distribution for linear regression.
 #' Covariate data X is through Exponential or Normal or Uniform distribution for logistic regression.
 #' Covariate data X is through Normal or Uniform distribution for Poisson regression.

@@ -1,13 +1,13 @@
 #' Local case control sampling for logistic regression
 #'
-#' Using this function subsample from big data under logistic regression to describe the data.
-#' Subsampling probabilities are obtained based on local case control method.
+#' Using this function sample from big data under logistic regression to describe the data.
+#' Sampling probabilities are obtained based on local case control method.
 #'
 #' @usage
 #' LCCsampling(r1,r2,Y,X,N)
 #'
-#' @param r1      subsample size for initial random sampling
-#' @param r2      subsample size for local case control sampling
+#' @param r1      sample size for initial random sampling
+#' @param r2      sample size for local case control sampling
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
@@ -34,13 +34,13 @@
 #' @return
 #' The output of \code{LCCsampling} gives a list of
 #'
-#' \code{Beta_Estimates} estimated model parameters in a data.frame after subsampling
+#' \code{Beta_Estimates} estimated model parameters in a data.frame after sampling
 #'
 #' \code{Utility_Estimates} estimated log scaled Information and variance for the estimated model parameters
 #'
-#' \code{Sample_LCC_Sampling} list of indexes for the initial and optimal subsamples obtained based on local case control sampling
+#' \code{Sample_LCC_Sampling} list of indexes for the initial and optimal samples obtained based on local case control sampling
 #'
-#' \code{Subsampling_Probability} vector of calculated subsampling probabilities for local case control sampling
+#' \code{Sampling_Probability} vector of calculated sampling probabilities for local case control sampling
 #'
 #' @references
 #' \insertRef{fithian2015local}{NeEDS4BigData}
@@ -129,8 +129,8 @@ LCCsampling<-function(r1,r2,Y,X,N){
   Full_SP<-cbind.data.frame(PI.LCC)
   colnames(Full_SP)<-c("Local case control")
 
-  Subsampling_Methods<-factor(c("Local case control"))
-  Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),beta.LCC)
+  Sampling_Methods<-factor(c("Local case control"))
+  Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),beta.LCC)
 
   names(Sample.LCC)<-c(r1,r2)
 
@@ -138,7 +138,7 @@ LCCsampling<-function(r1,r2,Y,X,N){
 
   ans<-list("Beta_Estimates"=Beta_Data,
             "Sample_LCC_Sampling"=Sample.LCC,
-            "Subsampling_Probability"=Full_SP)
+            "Sampling_Probability"=Full_SP)
 
   class(ans)<-c("LocalCaseControl","logistic")
   return(ans)

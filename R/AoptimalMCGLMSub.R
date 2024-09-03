@@ -1,28 +1,28 @@
-#' A-optimality criteria based subsampling under measurement constraints for Generalised Linear Models
+#' A-optimality criteria based sampling under measurement constraints for Generalised Linear Models
 #'
-#' Using this function subsample from big data under linear, logistic and Poisson regression
-#' to describe the data when response \eqn{y} is partially unavailable. Subsampling probabilities are
+#' Using this function sample from big data under linear, logistic and Poisson regression
+#' to describe the data when response \eqn{y} is partially unavailable. Sampling probabilities are
 #' obtained based on the A-optimality criteria.
 #'
 #' @usage
 #' AoptimalMCGLMSub(r1,r2,Y,X,N,family)
 #'
-#' @param r1      subsample size for initial random sampling
-#' @param r2      subsample size for optimal sampling
+#' @param r1      sample size for initial random sampling
+#' @param r2      sample size for optimal sampling
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
 #' @param family  a character value for "linear", "logistic" and "poisson" regression from Generalised Linear Models
 #'
 #' @details
-#' Two stage subsampling algorithm for big data under Generalised Linear Models
+#' Two stage sampling algorithm for big data under Generalised Linear Models
 #' (linear, logistic and Poisson regression) when the response is not available for
-#' subsampling probability evaluation.
+#' sampling probability evaluation.
 #'
 #' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-#' Using the estimated parameters subsampling probabilities are evaluated for A-optimality criteria.
+#' Using the estimated parameters sampling probabilities are evaluated for A-optimality criteria.
 #'
-#' Through the estimated subsampling probabilities an optimal subsample of size \eqn{r_2 \ge r_1} is obtained.
+#' Through the estimated sampling probabilities an optimal sample of size \eqn{r_2 \ge r_1} is obtained.
 #' Finally, only the optimal sample is used and the model parameters are estimated.
 #'
 #' \strong{NOTE} : If input parameters are not in given domain conditions
@@ -41,13 +41,13 @@
 #' @return
 #' The output of \code{AoptimalMCGLMSub} gives a list of
 #'
-#' \code{Beta_Estimates} estimated model parameters in a data.frame after subsampling
+#' \code{Beta_Estimates} estimated model parameters in a data.frame after sampling
 #'
-#' \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after subsampling (valid only for linear regression)
+#' \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after sampling (valid only for linear regression)
 #'
-#' \code{Sample_A-Optimality} list of indexes for the initial and optimal subsamples obtained based on A-Optimality criteria
+#' \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 #'
-#' \code{Subsampling_Probability} matrix of calculated subsampling probabilities for A-optimality criteria
+#' \code{Sampling_Probability} matrix of calculated sampling probabilities for A-optimality criteria
 #'
 #' @references
 #' \insertRef{zhang2021optimal}{NeEDS4BigData}
@@ -181,12 +181,12 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     Full_SP<-cbind.data.frame(PI.mMSE)
     colnames(Full_SP)<-c("A-Optimality")
 
-    Subsampling_Methods<-factor(c("A-Optimality"))
+    Sampling_Methods<-factor(c("A-Optimality"))
 
-    Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),beta.mMSE)
+    Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),beta.mMSE)
 
-    Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
-                                       "Subsample"=rep(r2,times=length(Subsampling_Methods)),
+    Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
+                                       "Sample"=rep(r2,times=length(Sampling_Methods)),
                                        "Var Epsilon"=c(Var_Epsilon[,"A-Optimality"]))
 
     names(Sample.mMSE)<-c(r1,r2)
@@ -196,8 +196,8 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     ans<-list("Beta_Estimates"=Beta_Data,
               "Variance_Epsilon_Estimates"=Var_Epsilon_Data,
               "Sample_A-Optimality"=Sample.mMSE,
-              "Subsampling_Probability"=Full_SP)
-    class(ans)<-c("A_OptimalSubsamplingMC","linear")
+              "Sampling_Probability"=Full_SP)
+    class(ans)<-c("A_OptimalSamplingMC","linear")
     return(ans)
   }
   if(family %in% "logistic"){
@@ -257,9 +257,9 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     Full_SP<-cbind.data.frame(PI.mMSE)
     colnames(Full_SP)<-c("A-Optimality")
 
-    Subsampling_Methods<-factor(c("A-Optimality"))
+    Sampling_Methods<-factor(c("A-Optimality"))
 
-    Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
+    Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
                                 beta.mMSE)
 
     names(Sample.mMSE)<-c(r1,r2)
@@ -268,9 +268,9 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
 
     ans<-list("Beta_Estimates"=Beta_Data,
               "Sample_A-Optimality"=Sample.mMSE,
-              "Subsampling_Probability"=Full_SP)
+              "Sampling_Probability"=Full_SP)
 
-    class(ans)<-c("A_OptimalSubsamplingMC","logistic")
+    class(ans)<-c("A_OptimalSamplingMC","logistic")
     return(ans)
   }
   if(family %in% "poisson"){
@@ -330,9 +330,9 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     Full_SP<-cbind.data.frame(PI.mMSE)
     colnames(Full_SP)<-c("A-Optimality")
 
-    Subsampling_Methods<-factor(c("A-Optimality"))
+    Sampling_Methods<-factor(c("A-Optimality"))
 
-    Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
+    Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
                                 beta.mMSE)
 
     names(Sample.mMSE)<-c(r1,r2)
@@ -341,8 +341,8 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
 
     ans<-list("Beta_Estimates"=Beta_Data,
               "Sample_A-Optimality"=Sample.mMSE,
-              "Subsampling_Probability"=Full_SP)
-    class(ans)<-c("A_OptimalSubsamplingMC","poisson")
+              "Sampling_Probability"=Full_SP)
+    class(ans)<-c("A_OptimalSamplingMC","poisson")
     return(ans)
   }
 }

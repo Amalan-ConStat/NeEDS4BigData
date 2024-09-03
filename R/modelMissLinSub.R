@@ -1,14 +1,14 @@
-#' Subsampling under linear regression for a potentially misspecified model
+#' Sampling under linear regression for a potentially misspecified model
 #'
-#' Using this function subsample from big data under linear regression for a potentially misspecified model.
-#' Subsampling probabilities are obtained based on the A- and L- optimality criteria
+#' Using this function sample from big data under linear regression for a potentially misspecified model.
+#' Sampling probabilities are obtained based on the A- and L- optimality criteria
 #' with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error).
 #'
 #' @usage
 #' modelMissLinSub(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_Full)
 #'
-#' @param r1                subsample size for initial random sampling
-#' @param r2                subsample size for optimal sampling
+#' @param r1                sample size for initial random sampling
+#' @param r2                sample size for optimal sampling
 #' @param Y                 response data or Y
 #' @param X                 covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N                 size of the big data
@@ -18,15 +18,15 @@
 #' @param F_Estimate_Full   estimate of f that is the difference of linear predictor on GAM and linear model
 #'
 #' @details
-#' Two stage subsampling algorithm for big data under linear regression for potential model misspecification.
+#' Two stage sampling algorithm for big data under linear regression for potential model misspecification.
 #'
 #' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-#' Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria,
-#' RLmAMSE and enhanced RLmAMSE (log-odds and power) subsampling methods.
+#' Using the estimated parameters sampling probabilities are evaluated for A-, L-optimality criteria,
+#' RLmAMSE and enhanced RLmAMSE (log-odds and power) sampling methods.
 #'
-#' Through the estimated subsampling probabilities an subsample of size \eqn{r_2 \ge r_1} is obtained.
+#' Through the estimated sampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
 #' Finally, the two samples are combined and the model parameters are estimated for A- and L-optimality,
-#' while for RLmAMSE and enhanced RLmAMSE (log-odds and power) only the optimal subsample is used.
+#' while for RLmAMSE and enhanced RLmAMSE (log-odds and power) only the optimal sample is used.
 #'
 #' \strong{NOTE} :  If input parameters are not in given domain conditions
 #' necessary error messages will be provided to go further.
@@ -43,23 +43,23 @@
 #' @return
 #' The output of \code{modelMissLinSub} gives a list of
 #'
-#' \code{Beta_Estimates} estimated model parameters after subsampling
+#' \code{Beta_Estimates} estimated model parameters after sampling
 #'
-#' \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon after subsampling
+#' \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon after sampling
 #'
-#' \code{AMSE_Estimates} matrix of estimated AMSE values after subsampling
+#' \code{AMSE_Estimates} matrix of estimated AMSE values after sampling
 #'
-#' \code{Sample_A-Optimality} list of indexes for the initial and optimal subsamples obtained based on A-Optimality criteria
+#' \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 #'
-#' \code{Sample_L-Optimality} list of indexes for the initial and optimal subsamples obtained based on L-Optimality criteria
+#' \code{Sample_L-Optimality} list of indexes for the initial and optimal samples obtained based on L-Optimality criteria
 #'
-#' \code{Sample_RLmAMSE} list of indexes for the optimal subsamples obtained based obtained based on RLmAMSE
+#' \code{Sample_RLmAMSE} list of indexes for the optimal samples obtained based obtained based on RLmAMSE
 #'
-#' \code{Sample_RLmAMSE_Log_Odds} list of indexes for the optimal subsamples obtained based on RLmAMSE with Log Odds function
+#' \code{Sample_RLmAMSE_Log_Odds} list of indexes for the optimal samples obtained based on RLmAMSE with Log Odds function
 #'
-#' \code{Sample_RLmAMSE_Power} list of indexes for the optimal subsamples obtained based on RLmAMSE with Power function
+#' \code{Sample_RLmAMSE_Power} list of indexes for the optimal samples obtained based on RLmAMSE with Power function
 #'
-#' \code{Subsampling_Probability} matrix of calculated subsampling probabilities
+#' \code{Sampling_Probability} matrix of calculated sampling probabilities
 #'
 #' @references
 #' \insertRef{adewale2009robust}{NeEDS4BigData}
@@ -194,27 +194,27 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
 
   Var_Epsilon<-matrix(nrow=length(r2),ncol=4)
 
-  # For the Model with already available Sub-sampling probabilities - mVc
+  # For the Model with already available sampling probabilities - mVc
   beta_mVc<-matrix(nrow = length(r2),ncol = ncol(X)+1);
-  AMSE_Subsample_mVc<-matrix(nrow = length(r2),ncol = 4) ; Sample.mVc<-list();
+  AMSE_Sample_mVc<-matrix(nrow = length(r2),ncol = 4) ; Sample.mVc<-list();
 
-  # For the Model with already available Sub-sampling probabilities - mMSE
+  # For the Model with already available sampling probabilities - mMSE
   beta_mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1);
-  AMSE_Subsample_mMSE<-matrix(nrow = length(r2),ncol = 4) ; Sample.mMSE<-list();
+  AMSE_Sample_mMSE<-matrix(nrow = length(r2),ncol = 4) ; Sample.mMSE<-list();
 
-  # For the Real and Model with model robust Sub-sampling probabilities RLmAMSE
+  # For the Real and Model with model robust sampling probabilities RLmAMSE
   beta_RLmAMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 );
-  AMSE_Subsample_RLmAMSE<-matrix(nrow = length(r2),ncol = 4) ; Sample.RLmAMSE<-list()
+  AMSE_Sample_RLmAMSE<-matrix(nrow = length(r2),ncol = 4) ; Sample.RLmAMSE<-list()
 
-  # For the Model with model robust Sub-sampling probabilities RLmAMSE LO
+  # For the Model with model robust sampling probabilities RLmAMSE LO
   beta_RLmAMSE_LO<-replicate(length(Alpha),array(dim = c(length(r2),ncol(X)+1)),simplify = FALSE) ;
-  AMSE_Subsample_RLmAMSE_LO<-replicate(length(Alpha),array(dim = c(length(r2),4)),simplify = FALSE);
+  AMSE_Sample_RLmAMSE_LO<-replicate(length(Alpha),array(dim = c(length(r2),4)),simplify = FALSE);
   Sample.RLmAMSE_LO<-replicate(length(Alpha),list(rep(list(NA),length(r2)+1)));
   Var_RLmAMSE_LO<-matrix(nrow = length(r2),ncol=length(Alpha))
 
-  # For the Model with model robust Sub-sampling probabilities RLmAMSE Pow
+  # For the Model with model robust sampling probabilities RLmAMSE Pow
   beta_RLmAMSE_Pow<-replicate(length(Alpha),array(dim = c(length(r2),ncol(X)+1)),simplify = FALSE) ;
-  AMSE_Subsample_RLmAMSE_Pow<-replicate(length(Alpha),array(dim = c(length(r2),4)),simplify = FALSE);
+  AMSE_Sample_RLmAMSE_Pow<-replicate(length(Alpha),array(dim = c(length(r2),4)),simplify = FALSE);
   Sample.RLmAMSE_Pow<-replicate(length(Alpha),list(rep(list(NA),length(r2)+1)));
   Var_RLmAMSE_Pow<-matrix(nrow = length(r2),ncol=length(Alpha))
 
@@ -250,7 +250,7 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
     L2_r1 <- sum((Var_Full^(-1)*(Temp1%*%F_Estimate_Full[c(idx.mVc,idx.prop)] -
                                    F_Estimate_Full[c(idx.mVc, idx.prop)]))^2)
 
-    AMSE_Subsample_mVc[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+    AMSE_Sample_mVc[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
 
     idx.mVc->Sample.mVc[[i+1]]
 
@@ -273,7 +273,7 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
     L2_r1 <- sum((Var_Full^(-1)*(Temp1%*%F_Estimate_Full[c(idx.mMSE,idx.prop)]-
                                    F_Estimate_Full[c(idx.mMSE, idx.prop)]))^2)
 
-    AMSE_Subsample_mMSE[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+    AMSE_Sample_mMSE[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
 
     idx.mMSE->Sample.mMSE[[i+1]]
 
@@ -296,7 +296,7 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
     L2_r1 <- sum((Var_Full^(-1)*(Temp1%*%F_Estimate_Full[c(idx.RLmAMSE)] -
                                    F_Estimate_Full[c(idx.RLmAMSE)]))^2)
 
-    AMSE_Subsample_RLmAMSE[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+    AMSE_Sample_RLmAMSE[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
 
     idx.RLmAMSE->Sample.RLmAMSE[[i+1]] # Model robust RLmAMSE
 
@@ -321,7 +321,7 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
       L2_r1 <- sum((Var_Full^(-1)*(Temp1%*%F_Estimate_Full[c(idx.RLmAMSE)]-
                                      F_Estimate_Full[c(idx.RLmAMSE)]))^2)
 
-      AMSE_Subsample_RLmAMSE_LO[[j]][i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+      AMSE_Sample_RLmAMSE_LO[[j]][i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
 
       idx.RLmAMSE->Sample.RLmAMSE_LO[[j]][[i+1]] # Model robust RLmAMSE
 
@@ -344,7 +344,7 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
       L2_r1 <- sum((Var_Full^(-1)*(Temp1%*%F_Estimate_Full[c(idx.RLmAMSE)] -
                                      F_Estimate_Full[c(idx.RLmAMSE)]))^2)
 
-      AMSE_Subsample_RLmAMSE_Pow[[j]][i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+      AMSE_Sample_RLmAMSE_Pow[[j]][i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
 
       idx.RLmAMSE->Sample.RLmAMSE_Pow[[j]][[i+1]] # Model robust RLmAMSE
     }
@@ -359,11 +359,11 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
   colnames(Full_SP)<-c("A-Optimality","L-Optimality","RLmAMSE",paste0("RLmAMSE Log Odds ",Alpha),
                        paste0("RLmAMSE Power ",Alpha))
 
-  Subsampling_Methods<-factor(c("A-Optimality","L-Optimality","RLmAMSE",paste0("RLmAMSE Log Odds ",Alpha),
-                                paste0("RLmAMSE Power ",Alpha)))
+  Sampling_Methods<-factor(c("A-Optimality","L-Optimality","RLmAMSE",paste0("RLmAMSE Log Odds ",Alpha),
+                             paste0("RLmAMSE Power ",Alpha)))
 
   # Beta Data
-  Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
+  Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
                               rbind(beta_mMSE,beta_mVc,beta_RLmAMSE,
                                     do.call(rbind,beta_RLmAMSE_LO),
                                     do.call(rbind,beta_RLmAMSE_Pow)))
@@ -377,15 +377,15 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
                            paste0("RLmAMSE Log Odds ",Alpha),
                            paste0("RLmAMSE Power ",Alpha))
 
-  # AMSE Subsample Data
-  AMSE_Subsample_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
-                                        rbind(AMSE_Subsample_mMSE,AMSE_Subsample_mVc,
-                                              AMSE_Subsample_RLmAMSE,
-                                              do.call(rbind,AMSE_Subsample_RLmAMSE_LO),
-                                              do.call(rbind,AMSE_Subsample_RLmAMSE_Pow)))
-  colnames(AMSE_Subsample_Data)[-1]<-c("r2","Variance","Bias.2","AMSE")
+  # AMSE Sample Data
+  AMSE_Sample_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
+                                        rbind(AMSE_Sample_mMSE,AMSE_Sample_mVc,
+                                              AMSE_Sample_RLmAMSE,
+                                              do.call(rbind,AMSE_Sample_RLmAMSE_LO),
+                                              do.call(rbind,AMSE_Sample_RLmAMSE_Pow)))
+  colnames(AMSE_Sample_Data)[-1]<-c("r2","Variance","Bias.2","AMSE")
 
-  AMSE_Subsample_Data[,-c(1,2)]<-AMSE_Subsample_Data[,-c(1,2)]/r2
+  AMSE_Sample_Data[,-c(1,2)]<-AMSE_Sample_Data[,-c(1,2)]/r2
 
   all_r<-c(r1,r2)
   # Sample Data
@@ -399,13 +399,13 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
 
   ans<-list("Beta_Estimates"=Beta_Data,
             "Variance_Epsilon_Estimates"=Var_Data,
-            "AMSE_Estimates"=AMSE_Subsample_Data,
+            "AMSE_Estimates"=AMSE_Sample_Data,
             "Sample_A-Optimality"=Sample.mMSE,
             "Sample_L-Optimality"=Sample.mVc,
             "Sample_RLmAMSE"=Sample.RLmAMSE,
             "Sample_RLmAMSE_Log_Odds"=Sample.RLmAMSE_LO,
             "Sample_RLmAMSE_Power"=Sample.RLmAMSE_Pow,
-            "Subsampling_Probability"=Full_SP)
+            "Sampling_Probability"=Full_SP)
   class(ans)<-c("ModelMisspecified","linear")
   return(ans)
 }

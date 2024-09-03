@@ -1,32 +1,32 @@
-#' Plotting model parameter outputs after subsampling
+#' Plotting model parameter outputs after sampling
 #'
-#' After using the subsampling methods we mostly obtain the estimated model parameter
+#' After using the sampling methods we mostly obtain the estimated model parameter
 #' estimates. Here, they are summarised as histogram plots.
 #'
 #' @usage
 #' plot_Beta(object)
 #'
-#' @param object Any object after subsampling from our subsampling functions
+#' @param object Any object after sampling from our sampling functions
 #'
 #' @details
-#' For local case control sampling the facets are for subsample sizes and beta values.
+#' For local case control sampling the facets are for sample sizes and beta values.
 #'
-#' For leverage sampling the facets are for subsample sizes and beta values.
+#' For leverage sampling the facets are for sample sizes and beta values.
 #'
 #' For A- and L-optimality criteria subsampling under Generalised Linear Models
-#' the facets are for subsample sizes and beta values.
+#' the facets are for sample sizes and beta values.
 #'
 #' For A-optimality criteria subsampling under Gaussian Linear Models
-#' the facets are for subsample sizes and beta values.
+#' the facets are for sample sizes and beta values.
 #'
-#' For A-optimality criteria subsampling under Generalised Linear Models
-#' with response variable not inclusive the facets are for subsample sizes and beta values.
+#' For A-optimality criteria sampling under Generalised Linear Models
+#' with response variable not inclusive the facets are for sample sizes and beta values.
 #'
 #' For A- and L-optimality criteria subsampling under Generalised Linear Models
-#' where multiple models can describe the data the facets are for subsample sizes and beta values.
+#' where multiple models can describe the data the facets are for sample sizes and beta values.
 #'
-#' For A- and L-optimality criteria and LmAMSE subsampling under Generalised Linear Models
-#' with potential model misspecification the facets are for subsample sizes and beta values.
+#' For A- and L-optimality criteria and LmAMSE sampling under Generalised Linear Models
+#' with potential model misspecification the facets are for sample sizes and beta values.
 #'
 #' @return
 #' The output is a faceted ggplot result
@@ -169,9 +169,9 @@ plot_Beta.AoptimalSubsampling<-function(object){
   return(plot_beta)
 }
 
-#' @method plot_Beta A_OptimalSubsamplingMC
+#' @method plot_Beta A_OptimalSamplingMC
 #' @export
-plot_Beta.A_OptimalSubsamplingMC<-function(object){
+plot_Beta.A_OptimalSamplingMC<-function(object){
   Temp_Data<-data.frame(object$Beta_Estimates)
   Temp_Data |>
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
@@ -275,18 +275,18 @@ plot_Beta.ModelMisspecified<-function(object){
   return(plot_beta)
 }
 
-#' Plotting AMSE outputs for the subsamples under model misspecification
+#' Plotting AMSE outputs for the samples under model misspecification
 #'
-#' After using the subsampling methods under potential model misspecification we obtain
+#' After using the sampling methods under potential model misspecification we obtain
 #' their respective AMSE values for the predictions. They are summarised as plots here.
 #'
 #' @usage
 #' plot_AMSE(object)
 #'
-#' @param object Any object after subsampling from our subsampling function under potential model misspecification
+#' @param object Any object after sampling from our sampling function under potential model misspecification
 #'
 #' @details
-#' For A- and L-optimality criteria and RLmAMSE subsampling under Generalised Linear Models
+#' For A- and L-optimality criteria and RLmAMSE sampling under Generalised Linear Models
 #' with potential model misspecification the facets are for variance and bias^2 of AMSE values.
 #'
 #' @return

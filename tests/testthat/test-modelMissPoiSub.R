@@ -22,27 +22,27 @@ test_that("dimension of the Beta Estimates",{
   expect_equal(dim(Results$Beta_Estimates),c(length(r2)*5,length(Beta)-1+2))
 })
 
-test_that("dimension of the subsampling probability",{
-  expect_equal(dim(Results$Subsampling_Probability),c(N,5))
+test_that("dimension of the sampling probability",{
+  expect_equal(dim(Results$Sampling_Probability),c(N,5))
 })
 
-test_that("dimension of the A-optimality subsample",{
+test_that("dimension of the A-optimality sample",{
   expect_equal(length(Results$`Sample_A-Optimality`),c(length(r2)+1))
 })
 
-test_that("dimension of the L-optimality subsample",{
+test_that("dimension of the L-optimality sample",{
   expect_equal(length(Results$`Sample_L-Optimality`),c(length(r2)+1))
 })
 
-test_that("dimension of the RLmAMSE subsample",{
+test_that("dimension of the RLmAMSE sample",{
   expect_equal(length(Results$Sample_RLmAMSE),c(length(r2)+1))
 })
 
-test_that("dimension of the RLmAMSE Log Odds subsample",{
+test_that("dimension of the RLmAMSE Log Odds sample",{
   expect_equal(length(Results$Sample_RLmAMSE_Log_Odds[[1]]),c(length(r2)+1))
 })
 
-test_that("dimension of the RLmAMSE Power subsample",{
+test_that("dimension of the RLmAMSE Power sample",{
   expect_equal(length(Results$Sample_RLmAMSE_Power[[1]]),c(length(r2)+1))
 })
 

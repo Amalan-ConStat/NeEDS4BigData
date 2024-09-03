@@ -2,7 +2,7 @@
 
 S3method(plot_AMSE,ModelMisspecified)
 S3method(plot_Beta,A_L_OptimalSubsampling)
-S3method(plot_Beta,A_OptimalSubsamplingMC)
+S3method(plot_Beta,A_OptimalSamplingMC)
 S3method(plot_Beta,AoptimalSubsampling)
 S3method(plot_Beta,Leverage)
 S3method(plot_Beta,LocalCaseControl)

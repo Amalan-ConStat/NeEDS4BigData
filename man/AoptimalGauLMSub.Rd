@@ -7,9 +7,9 @@
 AoptimalGauLMSub(r1,r2,Y,X,N)
 }
 \arguments{
-\item{r1}{subsample size for initial random sampling}
+\item{r1}{sample size for initial random sampling}
 
-\item{r2}{subsample size for optimal sampling}
+\item{r2}{sample size for optimal sampling}
 
 \item{Y}{response data or Y}
 
@@ -24,21 +24,21 @@ The output of \code{AoptimalGauLMSub} gives a list of
 
 \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after subsampling
 
-\code{Sample_A-Optimality} list of indexes for the initial and optimal subsamples obtained based on A-Optimality criteria
+\code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 
-\code{Subsampling_Probability} matrix of calculated subsampling probabilities for A-optimality criteria
+\code{Sampling_Probability} matrix of calculated sampling probabilities for A-optimality criteria
 }
 \description{
-Using this function subsample from big data under Gaussian linear regression models
-to describe the data. Subsampling probabilities are obtained based on the A-optimality criteria.
+Using this function sample from big data under Gaussian linear regression models
+to describe the data. Sampling probabilities are obtained based on the A-optimality criteria.
 }
 \details{
 Two stage subsampling algorithm for big data under Gaussian Linear Model.
 
 First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-Using the estimated parameters subsampling probabilities are evaluated for A-optimality criteria.
+Using the estimated parameters sampling probabilities are evaluated for A-optimality criteria.
 
-Through the estimated subsampling probabilities an optimal subsample of size \eqn{r_2 \ge r_1} is obtained.
+Through the estimated sampling probabilities an optimal sample of size \eqn{r_2 \ge r_1} is obtained.
 Finally, the two samples are combined and the model parameters are estimated.
 
 \strong{NOTE} : If input parameters are not in given domain conditions

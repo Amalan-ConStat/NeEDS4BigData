@@ -2,14 +2,14 @@
 % Please edit documentation in R/AoptimalMCGLMSub.R
 \name{AoptimalMCGLMSub}
 \alias{AoptimalMCGLMSub}
-\title{A-optimality criteria based subsampling under measurement constraints for Generalised Linear Models}
+\title{A-optimality criteria based sampling under measurement constraints for Generalised Linear Models}
 \usage{
 AoptimalMCGLMSub(r1,r2,Y,X,N,family)
 }
 \arguments{
-\item{r1}{subsample size for initial random sampling}
+\item{r1}{sample size for initial random sampling}
 
-\item{r2}{subsample size for optimal sampling}
+\item{r2}{sample size for optimal sampling}
 
 \item{Y}{response data or Y}
 
@@ -22,28 +22,28 @@ AoptimalMCGLMSub(r1,r2,Y,X,N,family)
 \value{
 The output of \code{AoptimalMCGLMSub} gives a list of
 
-\code{Beta_Estimates} estimated model parameters in a data.frame after subsampling
+\code{Beta_Estimates} estimated model parameters in a data.frame after sampling
 
-\code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after subsampling (valid only for linear regression)
+\code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after sampling (valid only for linear regression)
 
-\code{Sample_A-Optimality} list of indexes for the initial and optimal subsamples obtained based on A-Optimality criteria
+\code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 
-\code{Subsampling_Probability} matrix of calculated subsampling probabilities for A-optimality criteria
+\code{Sampling_Probability} matrix of calculated sampling probabilities for A-optimality criteria
 }
 \description{
-Using this function subsample from big data under linear, logistic and Poisson regression
-to describe the data when response \eqn{y} is partially unavailable. Subsampling probabilities are
+Using this function sample from big data under linear, logistic and Poisson regression
+to describe the data when response \eqn{y} is partially unavailable. Sampling probabilities are
 obtained based on the A-optimality criteria.
 }
 \details{
-Two stage subsampling algorithm for big data under Generalised Linear Models
+Two stage sampling algorithm for big data under Generalised Linear Models
 (linear, logistic and Poisson regression) when the response is not available for
-subsampling probability evaluation.
+sampling probability evaluation.
 
 First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-Using the estimated parameters subsampling probabilities are evaluated for A-optimality criteria.
+Using the estimated parameters sampling probabilities are evaluated for A-optimality criteria.
 
-Through the estimated subsampling probabilities an optimal subsample of size \eqn{r_2 \ge r_1} is obtained.
+Through the estimated sampling probabilities an optimal sample of size \eqn{r_2 \ge r_1} is obtained.
 Finally, only the optimal sample is used and the model parameters are estimated.
 
 \strong{NOTE} : If input parameters are not in given domain conditions

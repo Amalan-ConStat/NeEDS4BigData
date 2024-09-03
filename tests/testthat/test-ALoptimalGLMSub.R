@@ -26,15 +26,15 @@ test_that("dimension of the Var Epsilon Estimates",{
   expect_equal(dim(Results$Variance_Epsilon_Estimates),c(length(r2)*2,3))
 })
 
-test_that("dimension of the subsampling probability",{
-  expect_equal(dim(Results$Subsampling_Probability),c(N,2))
+test_that("dimension of the sampling probability",{
+  expect_equal(dim(Results$Sampling_Probability),c(N,2))
 })
 
-test_that("dimension of the A-optimality subsample",{
+test_that("dimension of the A-optimality sample",{
   expect_equal(length(Results$`Sample_A-Optimality`),c(length(r2)+1))
 })
 
-test_that("dimension of the L-optimality subsample",{
+test_that("dimension of the L-optimality sample",{
   expect_equal(length(Results$`Sample_L-Optimality`),c(length(r2)+1))
 })
 
@@ -66,15 +66,15 @@ test_that("dimension of the Utility Estimates",{
   expect_equal(dim(Results$Utility_Estimates),c(length(r2)*2,4))
 })
 
-test_that("dimension of the subsampling probability",{
-  expect_equal(dim(Results$Subsampling_Probability),c(N,2))
+test_that("dimension of the sampling probability",{
+  expect_equal(dim(Results$Sampling_Probability),c(N,2))
 })
 
-test_that("dimension of the A-optimality subsample",{
+test_that("dimension of the A-optimality sample",{
   expect_equal(length(Results$`Sample_A-Optimality`),c(length(r2)+1))
 })
 
-test_that("dimension of the L-optimality subsample",{
+test_that("dimension of the L-optimality sample",{
   expect_equal(length(Results$`Sample_L-Optimality`),c(length(r2)+1))
 })
 

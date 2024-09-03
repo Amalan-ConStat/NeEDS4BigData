@@ -26,15 +26,15 @@ test_that("dimension of the Var Epsilon Estimates",{
   expect_equal(dim(Results$Variance_Epsilon_Estimates),c(length(r)*3,3))
 })
 
-test_that("dimension of the subsampling probability",{
-  expect_equal(dim(Results$Subsampling_Probability),c(N,2))
+test_that("dimension of the sampling probability",{
+  expect_equal(dim(Results$Sampling_Probability),c(N,2))
 })
 
-test_that("dimension of the Basic Leverage subsample",{
+test_that("dimension of the Basic Leverage sample",{
   expect_equal(length(Results$Sample_Basic_Leverage),length(r))
 })
 
-test_that("dimension of the Shrinkage Leverage subsample",{
+test_that("dimension of the Shrinkage Leverage sample",{
   expect_equal(length(Results$Sample_Shrinkage_Leverage),length(r))
 })
 
@@ -62,15 +62,15 @@ test_that("dimension of the Beta Estimates",{
   expect_equal(dim(Results$Beta_Estimates),c(length(r)*3,length(Beta)+2))
 })
 
-test_that("dimension of the subsampling probability",{
-  expect_equal(dim(Results$Subsampling_Probability),c(N,2))
+test_that("dimension of the sampling probability",{
+  expect_equal(dim(Results$Sampling_Probability),c(N,2))
 })
 
-test_that("dimension of the Basic Leverage subsample",{
+test_that("dimension of the Basic Leverage sample",{
   expect_equal(length(Results$Sample_Basic_Leverage),length(r))
 })
 
-test_that("dimension of the Shrinkage Leverage subsample",{
+test_that("dimension of the Shrinkage Leverage sample",{
   expect_equal(length(Results$Sample_Shrinkage_Leverage),length(r))
 })
 

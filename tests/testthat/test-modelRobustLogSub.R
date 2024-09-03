@@ -33,23 +33,23 @@ test_that("dim of the Model 1 Beta Estimates",{
   expect_equal(dim(Results$Beta_Estimates$Model_1),c(length(r2)*4,2+length(All_Models$Real_Model)))
 })
 
-test_that("dimension of the subsampling probability",{
-  expect_equal(dim(Results$Subsampling_Probability),c(N,length(All_Models)*2+2))
+test_that("dimension of the sampling probability",{
+  expect_equal(dim(Results$Sampling_Probability),c(N,length(All_Models)*2+2))
 })
 
-test_that("dimension of the Model 1 A-optimality subsample",{
+test_that("dimension of the Model 1 A-optimality sample",{
   expect_equal(length(Results$`Sample_A-Optimality`$Model_1),length(r2)+1)
 })
 
-test_that("dimension of the Model 1 L-optimality subsample",{
+test_that("dimension of the Model 1 L-optimality sample",{
   expect_equal(length(Results$`Sample_L-Optimality`$Model_1),length(r2)+1)
 })
 
-test_that("dimension of the Model 1 MR A-optimality subsample",{
+test_that("dimension of the Model 1 MR A-optimality sample",{
   expect_equal(length(Results$`Sample_A-Optimality_MR`$Model_1),length(r2)+1)
 })
 
-test_that("dimension of the Model 1 MR L-optimality subsample",{
+test_that("dimension of the Model 1 MR L-optimality sample",{
   expect_equal(length(Results$`Sample_L-Optimality_MR`$Model_1),length(r2)+1)
 })
 

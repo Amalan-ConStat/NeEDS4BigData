@@ -7,9 +7,9 @@
 LCCsampling(r1,r2,Y,X,N)
 }
 \arguments{
-\item{r1}{subsample size for initial random sampling}
+\item{r1}{sample size for initial random sampling}
 
-\item{r2}{subsample size for local case control sampling}
+\item{r2}{sample size for local case control sampling}
 
 \item{Y}{response data or Y}
 
@@ -20,17 +20,17 @@ LCCsampling(r1,r2,Y,X,N)
 \value{
 The output of \code{LCCsampling} gives a list of
 
-\code{Beta_Estimates} estimated model parameters in a data.frame after subsampling
+\code{Beta_Estimates} estimated model parameters in a data.frame after sampling
 
 \code{Utility_Estimates} estimated log scaled Information and variance for the estimated model parameters
 
-\code{Sample_LCC_Sampling} list of indexes for the initial and optimal subsamples obtained based on local case control sampling
+\code{Sample_LCC_Sampling} list of indexes for the initial and optimal samples obtained based on local case control sampling
 
-\code{Subsampling_Probability} vector of calculated subsampling probabilities for local case control sampling
+\code{Sampling_Probability} vector of calculated sampling probabilities for local case control sampling
 }
 \description{
-Using this function subsample from big data under logistic regression to describe the data.
-Subsampling probabilities are obtained based on local case control method.
+Using this function sample from big data under logistic regression to describe the data.
+Sampling probabilities are obtained based on local case control method.
 }
 \details{
 Two stage sampling algorithm for big data under logistic regression.

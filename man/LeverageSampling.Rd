@@ -7,7 +7,7 @@
 LeverageSampling(r,Y,X,N,alpha,family)
 }
 \arguments{
-\item{r}{subsample size}
+\item{r}{sample size}
 
 \item{Y}{response data or Y}
 
@@ -22,19 +22,19 @@ LeverageSampling(r,Y,X,N,alpha,family)
 \value{
 The output of \code{LeverageSampling} gives a list of
 
-\code{Beta_Estimates} estimated model parameters in a data.frame after subsampling
+\code{Beta_Estimates} estimated model parameters in a data.frame after sampling
 
-\code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after subsampling (valid only for linear regression)
+\code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after sampling (valid only for linear regression)
 
-\code{Sample_Basic_Leverage} list of indexes for the optimal subsamples obtained based on basic leverage
+\code{Sample_Basic_Leverage} list of indexes for the optimal samples obtained based on basic leverage
 
-\code{Sample_Shrinkage_Leverage} list of indexes for the optimal subsamples obtained based on shrinkage leverage
+\code{Sample_Shrinkage_Leverage} list of indexes for the optimal samples obtained based on shrinkage leverage
 
-\code{Subsampling_Probability} matrix of calculated subsampling probabilities for basic and shrinkage leverage
+\code{Sampling_Probability} matrix of calculated sampling probabilities for basic and shrinkage leverage
 }
 \description{
-Using this function subsample from big data under linear, logistic and Poisson regression to describe the data.
-Subsampling probabilities are obtained based on the basic and shrinkage leverage method.
+Using this function sample from big data under linear, logistic and Poisson regression to describe the data.
+Sampling probabilities are obtained based on the basic and shrinkage leverage method.
 }
 \details{
 Leverage sampling algorithm for big data under Generalised Linear Models (linear, logistic and Poisson regression).

@@ -27,7 +27,7 @@ The output of \code{GenGLMData} gives a list of
 \code{Complete_Data} a matrix for Y and X
 }
 \description{
-Function to simulate big data under linear, logistic and Poisson regression for subsampling.
+Function to simulate big data under linear, logistic and Poisson regression for sampling.
 Covariate data X is through Normal or Uniform distribution for linear regression.
 Covariate data X is through Exponential or Normal or Uniform distribution for logistic regression.
 Covariate data X is through Normal or Uniform distribution for Poisson regression.

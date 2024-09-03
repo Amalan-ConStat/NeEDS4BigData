@@ -26,11 +26,11 @@ test_that("dimension of the Var Epsilon Estimates",{
   expect_equal(dim(Results$Variance_Epsilon_Estimates),c(length(r2),3))
 })
 
-test_that("dimension of the subsampling probability",{
-  expect_equal(dim(Results$Subsampling_Probability),c(N,1))
+test_that("dimension of the sampling probability",{
+  expect_equal(dim(Results$Sampling_Probability),c(N,1))
 })
 
-test_that("dimension of the A-optimality subsample",{
+test_that("dimension of the A-optimality sample",{
   expect_equal(length(Results$`Sample_A-Optimality`),c(length(r2)+1))
 })
 
@@ -58,11 +58,11 @@ test_that("dimension of the Beta Estimates",{
   expect_equal(dim(Results$Beta_Estimates),c(length(r2),length(Beta)+2))
 })
 
-test_that("dimension of the subsampling probability",{
-  expect_equal(dim(Results$Subsampling_Probability),c(N,1))
+test_that("dimension of the sampling probability",{
+  expect_equal(dim(Results$Sampling_Probability),c(N,1))
 })
 
-test_that("dimension of the A-optimality subsample",{
+test_that("dimension of the A-optimality sample",{
   expect_equal(length(Results$`Sample_A-Optimality`),c(length(r2)+1))
 })
 

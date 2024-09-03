@@ -2,14 +2,14 @@
 % Please edit documentation in R/modelMissLogSub.R
 \name{modelMissLogSub}
 \alias{modelMissLogSub}
-\title{Subsampling under logistic regression for a potentially misspecified model}
+\title{Sampling under logistic regression for a potentially misspecified model}
 \usage{
 modelMissLogSub(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full)
 }
 \arguments{
-\item{r1}{subsample size for initial random sampling}
+\item{r1}{sample size for initial random sampling}
 
-\item{r2}{subsample size for optimal sampling}
+\item{r2}{sample size for optimal sampling}
 
 \item{Y}{response data or Y}
 
@@ -26,37 +26,37 @@ modelMissLogSub(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full)
 \value{
 The output of \code{modelMissLogSub} gives a list of
 
-\code{Beta_Estimates} estimated model parameters after subsampling
+\code{Beta_Estimates} estimated model parameters after sampling
 
-\code{AMSE_Estimates} matrix of estimated AMSE values after subsampling
+\code{AMSE_Estimates} matrix of estimated AMSE values after sampling
 
-\code{Sample_A-Optimality} list of indexes for the initial and optimal subsamples obtained based on A-Optimality criteria
+\code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 
-\code{Sample_L-Optimality} list of indexes for the initial and optimal subsamples obtained based on L-Optimality criteria
+\code{Sample_L-Optimality} list of indexes for the initial and optimal samples obtained based on L-Optimality criteria
 
-\code{Sample_RLmAMSE} list of indexes for the optimal subsamples obtained based on RLmAMSE
+\code{Sample_RLmAMSE} list of indexes for the optimal samples obtained based on RLmAMSE
 
-\code{Sample_RLmAMSE_Log_Odds} list of indexes for the optimal subsamples obtained based on RLmAMSE with Log Odds function
+\code{Sample_RLmAMSE_Log_Odds} list of indexes for the optimal samples obtained based on RLmAMSE with Log Odds function
 
-\code{Sample_RLmAMSE_Power} list of indexes for the optimal subsamples obtained based on RLmAMSE with Power function
+\code{Sample_RLmAMSE_Power} list of indexes for the optimal samples obtained based on RLmAMSE with Power function
 
-\code{Subsampling_Probability} matrix of calculated subsampling probabilities
+\code{Sampling_Probability} matrix of calculated sampling probabilities
 }
 \description{
-Using this function subsample from big data under logistic regression for a potentially misspecified model.
-Subsampling probabilities are obtained based on the A- and L- optimality criteria
+Using this function sample from big data under logistic regression for a potentially misspecified model.
+Sampling probabilities are obtained based on the A- and L- optimality criteria
 with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error).
 }
 \details{
-Two stage subsampling algorithm for big data under logistic regression for potential model misspecification.
+Two stage sampling algorithm for big data under logistic regression for potential model misspecification.
 
 First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria,
-RLmAMSE and enhanced RLmAMSE(log-odds and power) subsampling methods.
+Using the estimated parameters sampling probabilities are evaluated for A-, L-optimality criteria,
+RLmAMSE and enhanced RLmAMSE(log-odds and power) sampling methods.
 
-Through the estimated subsampling probabilities an subsample of size \eqn{r_2 \ge r_1} is obtained.
+Through the estimated sampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
 Finally, the two samples are combined and the model parameters are estimated for A- and L-optimality,
-while for RLmAMSE and enhanced RLmAMSE (log-odds and power) only the optimal subsample is used.
+while for RLmAMSE and enhanced RLmAMSE (log-odds and power) only the optimal sample is used.
 
 \strong{NOTE} :  If input parameters are not in given domain conditions
 necessary error messages will be provided to go further.

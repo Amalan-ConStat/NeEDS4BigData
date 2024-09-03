@@ -1,12 +1,12 @@
 #' Basic and shrinkage leverage sampling for Generalised Linear Models
 #'
-#' Using this function subsample from big data under linear, logistic and Poisson regression to describe the data.
-#' Subsampling probabilities are obtained based on the basic and shrinkage leverage method.
+#' Using this function sample from big data under linear, logistic and Poisson regression to describe the data.
+#' Sampling probabilities are obtained based on the basic and shrinkage leverage method.
 #'
 #' @usage
 #' LeverageSampling(r,Y,X,N,alpha,family)
 #'
-#' @param r       subsample size
+#' @param r       sample size
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
@@ -40,15 +40,15 @@
 #' @return
 #' The output of \code{LeverageSampling} gives a list of
 #'
-#' \code{Beta_Estimates} estimated model parameters in a data.frame after subsampling
+#' \code{Beta_Estimates} estimated model parameters in a data.frame after sampling
 #'
-#' \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after subsampling (valid only for linear regression)
+#' \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after sampling (valid only for linear regression)
 #'
-#' \code{Sample_Basic_Leverage} list of indexes for the optimal subsamples obtained based on basic leverage
+#' \code{Sample_Basic_Leverage} list of indexes for the optimal samples obtained based on basic leverage
 #'
-#' \code{Sample_Shrinkage_Leverage} list of indexes for the optimal subsamples obtained based on shrinkage leverage
+#' \code{Sample_Shrinkage_Leverage} list of indexes for the optimal samples obtained based on shrinkage leverage
 #'
-#' \code{Subsampling_Probability} matrix of calculated subsampling probabilities for basic and shrinkage leverage
+#' \code{Sampling_Probability} matrix of calculated sampling probabilities for basic and shrinkage leverage
 #'
 #' @references
 #' \insertRef{ma2014statistical}{NeEDS4BigData}
@@ -137,7 +137,7 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
     message("Basic and shrinkage leverage probabilities calculated.\n")
 
     for (i in 1:length(r)) {
-      # basic leverage subsampling
+      # basic leverage sampling
       idx.blev <- sample.int(N, size = r[i], replace = TRUE, PI.blev)
 
       x.blev <- as.matrix(X[idx.blev,])
@@ -159,7 +159,7 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
         stop("There are NA or NaN values in the model parameters")
       }
 
-      # unweighted leverage subsampling
+      # unweighted leverage sampling
       lm.uwlev <- stats::lm(y ~ . - 1, data = Temp_Data[,-ncol(Temp_Data)])
 
       beta.prop<-stats::coefficients(lm.uwlev)
@@ -174,7 +174,7 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
         stop("There are NA or NaN values in the model parameters")
       }
 
-      # shrinkage leverage subsampling
+      # shrinkage leverage sampling
       idx.slev <- sample.int(N, size = r[i], replace = TRUE, PI.slev)
 
       x.slev <- as.matrix(X[idx.slev,])
@@ -200,26 +200,26 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
     Full_SP<-cbind.data.frame(PI.blev,PI.slev)
     colnames(Full_SP)<-c("Basic Leverage","Shrinkage Leverage")
 
-    Subsampling_Methods<-factor(c("Basic Leverage","Unweighted Leverage","Shrinkage Leverage"))
+    Sampling_Methods<-factor(c("Basic Leverage","Unweighted Leverage","Shrinkage Leverage"))
 
-    Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r)),
+    Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
                                 rbind(beta.blev,beta.uwlev,beta.slev))
 
-    Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r)),
-                                       "Subsample"=rep(r,times=length(Subsampling_Methods)),
+    Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
+                                       "Sample"=rep(r,times=length(Sampling_Methods)),
                                        "Var Epsilon"=c(Var_Epsilon[,"Basic Leverage"],
                                                        Var_Epsilon[,"Unweighted Leverage"],
                                                        Var_Epsilon[,"Shrinkage Leverage"]))
 
     names(Sample.blev)<-names(Sample.uwlev)<-names(Sample.slev)<-r
 
-    message("Subsampling completed.")
+    message("Sampling completed.")
 
     ans<-list("Beta_Estimates"=Beta_Data,
               "Variance_Epsilon_Estimates"=Var_Epsilon_Data,
               "Sample_Basic_Leverage"=Sample.blev,
               "Sample_Shrinkage_Leverage"=Sample.slev,
-              "Subsampling_Probability"=Full_SP)
+              "Sampling_Probability"=Full_SP)
     class(ans)<-c("Leverage","linear")
     return(ans)
   }
@@ -264,7 +264,7 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
     message("Basic and shrinkage leverage probabilities calculated.\n")
 
     for (i in 1:length(r)) {
-      # basic leverage subsampling
+      # basic leverage sampling
       idx.blev <- sample.int(N, size = r[i], replace = TRUE, PI.blev)
 
       x.blev <- as.matrix(X[idx.blev,])
@@ -281,7 +281,7 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
         stop("There are NA or NaN values in the model parameters")
       }
 
-      # unweighted leverage subsampling
+      # unweighted leverage sampling
       fit.uwlev <- .getMLE(x=x.blev, y=as.vector(y.blev), w=N)
       beta.prop<-fit.uwlev$par
 
@@ -292,7 +292,7 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
         stop("There are NA or NaN values in the model parameters")
       }
 
-      # shrinkage leverage subsampling
+      # shrinkage leverage sampling
       idx.slev <- sample.int(N, size = r[i], replace = TRUE, PI.slev)
 
       x.slev <- as.matrix(X[idx.slev,])
@@ -313,19 +313,19 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
     Full_SP<-cbind.data.frame(PI.blev,PI.slev)
     colnames(Full_SP)<-c("Basic Leverage","Shrinkage Leverage")
 
-    Subsampling_Methods<-factor(c("Basic Leverage","Unweighted Leverage","Shrinkage Leverage"))
+    Sampling_Methods<-factor(c("Basic Leverage","Unweighted Leverage","Shrinkage Leverage"))
 
-    Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r)),
+    Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
                                 rbind(beta.blev,beta.uwlev,beta.slev))
 
     names(Sample.blev)<-names(Sample.uwlev)<-names(Sample.slev)<-r
 
-    message("Subsampling completed.")
+    message("Sampling completed.")
 
     ans<-list("Beta_Estimates"=Beta_Data,
               "Sample_Basic_Leverage"=Sample.blev,
               "Sample_Shrinkage_Leverage"=Sample.slev,
-              "Subsampling_Probability"=Full_SP)
+              "Sampling_Probability"=Full_SP)
     class(ans)<-c("Leverage","linear")
     return(ans)
   }
@@ -367,7 +367,7 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
     message("Basic and shrinkage leverage probabilities calculated.\n")
 
     for (i in 1:length(r)) {
-      # basic leverage subsampling
+      # basic leverage sampling
       idx.blev <- sample.int(N, size = r[i], replace = TRUE, PI.blev)
 
       x.blev <- as.matrix(X[idx.blev,])
@@ -384,7 +384,7 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
         stop("There are NA or NaN values in the model parameters")
       }
 
-      # unweighted leverage subsampling
+      # unweighted leverage sampling
       fit.uwlev <- stats::glm(y.blev~x.blev-1, family = "poisson")
       beta.prop<-fit.uwlev$coefficients
 
@@ -395,7 +395,7 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
         stop("There are NA or NaN values in the model parameters")
       }
 
-      # shrinkage leverage subsampling
+      # shrinkage leverage sampling
       idx.slev <- sample.int(N, size = r[i], replace = TRUE, PI.slev)
 
       x.slev <- as.matrix(X[idx.slev,])
@@ -416,19 +416,19 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
     Full_SP<-cbind.data.frame(PI.blev,PI.slev)
     colnames(Full_SP)<-c("Basic Leverage","Shrinkage Leverage")
 
-    Subsampling_Methods<-factor(c("Basic Leverage","Unweighted Leverage","Shrinkage Leverage"))
+    Sampling_Methods<-factor(c("Basic Leverage","Unweighted Leverage","Shrinkage Leverage"))
 
-    Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r)),
+    Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
                                 rbind(beta.blev,beta.uwlev,beta.slev))
 
     names(Sample.blev)<-names(Sample.uwlev)<-names(Sample.slev)<-r
 
-    message("Subsampling completed.")
+    message("Sampling completed.")
 
     ans<-list("Beta_Estimates"=Beta_Data,
               "Sample_Basic_Leverage"=Sample.blev,
               "Sample_Shrinkage_Leverage"=Sample.slev,
-              "Subsampling_Probability"=Full_SP)
+              "Sampling_Probability"=Full_SP)
     class(ans)<-c("Leverage","poisson")
     return(ans)
   }

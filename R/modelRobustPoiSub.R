@@ -1,18 +1,18 @@
 #' Model robust optimal subsampling for A- and L- optimality criteria under Poisson regression
 #'
-#' Using this function subsample from big data under Poisson regression when there are more than
-#' one model to describe the data. Subsampling probabilities are obtained based on the A- and L-
+#' Using this function sample from big data under Poisson regression when there are more than
+#' one model to describe the data. Sampling probabilities are obtained based on the A- and L-
 #' optimality criteria.
 #'
 #' @usage
 #' modelRobustPoiSub(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates)
 #'
-#' @param r1      subsample size for initial random sampling
-#' @param r2      subsample size for optimal sampling
+#' @param r1      sample size for initial random sampling
+#' @param r2      sample size for optimal sampling
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
-#' @param Alpha   vector of alpha values that are used to obtain the model robust subsampling probabilities
+#' @param Alpha   vector of alpha values that are used to obtain the model robust sampling probabilities
 #' @param All_Combinations list of possible models that can describe the data
 #' @param All_Covariates all the covariates in the models
 #'
@@ -21,10 +21,10 @@
 #' describe the big data.
 #'
 #' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters for all models.
-#' Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria and
+#' Using the estimated parameters sampling probabilities are evaluated for A-, L-optimality criteria and
 #' model averaging A-, L-optimality subsampling methods.
 #'
-#' Through the estimated subsampling probabilities an subsample of size \eqn{r_2 \ge r_1} is obtained.
+#' Through the estimated sampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
 #' Finally, the two samples are combined and the model parameters are estimated for all the models.
 #'
 #' \strong{NOTE} :  If input parameters are not in given domain conditions
@@ -46,15 +46,15 @@
 #'
 #' \code{Utility_Data} estimated Variance and Information of the model parameters after subsampling
 #'
-#' \code{Sample_L-optimality} list of indexes for the initial and optimal subsamples obtained based on L-optimality criteria
+#' \code{Sample_L-optimality} list of indexes for the initial and optimal samples obtained based on L-optimality criteria
 #'
-#' \code{Sample_L-optimality_MR} list of indexes for the initial and model robust optimal subsamples obtained based on L-optimality criteria
+#' \code{Sample_L-optimality_MR} list of indexes for the initial and model robust optimal samples obtained based on L-optimality criteria
 #'
-#' \code{Sample_A-optimality} list of indexes for the initial and optimal subsamples obtained based on A-optimality criteria
+#' \code{Sample_A-optimality} list of indexes for the initial and optimal samples obtained based on A-optimality criteria
 #'
-#' \code{Sample_A-optimality_MR} list of indexes for the initial and model robust optimal subsamples obtained based on A-optimality criteria
+#' \code{Sample_A-optimality_MR} list of indexes for the initial and model robust optimal samples obtained based on A-optimality criteria
 #'
-#' \code{Subsampling_Probability} matrix of calculated subsampling probabilities for A- and L- optimality criteria
+#' \code{Sampling_Probability} matrix of calculated sampling probabilities for A- and L- optimality criteria
 #'
 #' @references
 #' \insertRef{mahendran2023model}{NeEDS4BigData}
@@ -376,7 +376,7 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates)
             "Sample_A-Optimality_MR"=Sample.mMSE_MR,
             "Sample_L-Optimality"=Sample.mVc_Single,
             "Sample_L-Optimality_MR"=Sample.mVc_MR,
-            "Subsampling_Probability"=Full_SP)
+            "Sampling_Probability"=Full_SP)
   class(ans)<-c("ModelRobust","poisson")
   return(ans)
 }
