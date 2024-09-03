@@ -27,13 +27,12 @@ issues](https://img.shields.io/github/issues/Amalan-ConStat/NeEDS4BigData.svg?st
 [![](https://img.shields.io/badge/doi-10.1007/s00362--023--01446--9-green.svg)](https://doi.org/10.1007/s00362-023-01446-9)
 <!-- badges: end -->
 
-*The R package “NeEDS4BigData” provides approaches to implement
-subsampling methods to analyse big data.*
+*The R package “NeEDS4BigData” provides approaches to implement sampling
+methods to analyse big data.*
 
 ### What is “NeEDS4BigData” an abbreviation for?
 
-*Ne*w *E*xperimental *D*esign based *S*ubsampling methods *for Big
-Data*.
+*Ne*w *E*xperimental *D*esign based *S*ampling methods *for Big Data*.
 
 ### How to engage with “NeEDS4BigData” the first time ?
 
@@ -45,33 +44,31 @@ devtools::install_github("Amalan-ConStat/NeEDS4BigData")
 install.packages("NeEDS4BigData")
 ```
 
-### Subsampling Methods
+### Sampling Methods
 
 1.  A- and L-optimality based subsampling for GLMs.
 2.  A-optimality based subsampling for Gaussian Linear Models.
 3.  Leverage sampling for GLMs.
 4.  Local case control sampling for logistic regression.
-5.  A-optimality based subsampling under measurement constraints for
-    GLMs.
+5.  A-optimality based sampling under measurement constraints for GLMs.
 6.  Model robust subsampling method for GLMs.
-7.  Subsampling method for GLMs when the model is potentially
-    misspecified.
+7.  Sampling method for GLMs when the model is potentially misspecified.
 
 These seven methods are described in the following articles
 
-1.  Introduction - explains the need for subsampling methods.
-2.  Linear Regression - Basic sampling.
+1.  Introduction - explains the need for sampling methods.
+2.  Linear Regression - Model based sampling.
 3.  Linear Regression - Model robust and misspecification.
-4.  Logistic Regression - Basic sampling.
+4.  Logistic Regression - Model based sampling.
 5.  Logistic Regression - Model robust and misspecification.
-6.  Poisson Regression - Basic sampling.
+6.  Poisson Regression - Model based sampling.
 7.  Poisson Regression - Model robust and misspecification.
 
 For $2,4$ and $6$ we assume the main effects model can describe the
 data. While for $3,5$ and $7$ first we consider there are several models
 that can describe the big data, then later we assume the given main
 effects model is misspecified. Under these conditions from $2-7$ we
-explore subsampling for three given big data sets.
+explore sampling for three given big data sets.
 
 #### Thank You
 

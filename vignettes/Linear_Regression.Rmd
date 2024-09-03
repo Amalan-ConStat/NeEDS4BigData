@@ -53,7 +53,7 @@ The covariates are scaled to be mean of zero and variance of one.
 Given data is analysed under two different scenarios,
 
 1. model robust or average subsampling methods assuming that a set of models can describe the data.
-2. subsampling method assuming the main effects model is potentially misspecified.
+2. sampling method assuming the main effects model is potentially misspecified.
 
 ```{r Exploring data}
 # Selecting 1% of the big data and prepare it
@@ -70,7 +70,7 @@ head(Original_Data) %>%
   kable(format = "html",
         caption = "First five observations of the electric consumption data.")
 
-# Setting the subsample sizes
+# Setting the sample sizes
 N<-nrow(Original_Data); M<-250; k<-seq(6,18,by=3)*100; rep_k<-rep(k,each=M)
 ```
 
@@ -78,13 +78,13 @@ N<-nrow(Original_Data); M<-250; k<-seq(6,18,by=3)*100; rep_k<-rep(k,each=M)
 
 The method $A$- and $L$-optimality of model robust or average subsampling [@mahendran2023model] is compared against the $A$- and $L$-optimality subsampling [@ai2021optimal;@yao2021review] method. 
 Here five different models are considered 1) main effects model ($\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3$), 2-4) main effects model with the squared term of each covariate ($X^2_1 / X^2_2 / X^2_3$) and 5) main effects model with all the squared terms ($\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3+\beta_4X^2_1+\beta_5X^2_2+\beta_6X^2_3$). 
-For each model $l$ the mean squared error of the model parameters $MSE_l(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ} \sum_{i=1}^M \sum_{j=1}^J (\tilde{\beta}_{k,j} - \hat{\beta}_j)^2$ are calculated for the $M=100$ simulations across the subsample sizes $k=(600,\ldots,1500)$ and the initial subsample size is $r1=300$. 
-Here, for the $l$-th model $\tilde{\beta}_k$ is the estimated model parameters from the subsample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter.
+For each model $l$ the mean squared error of the model parameters $MSE_l(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ} \sum_{i=1}^M \sum_{j=1}^J (\tilde{\beta}_{k,j} - \hat{\beta}_j)^2$ are calculated for the $M=100$ simulations across the sample sizes $k=(600,\ldots,1500)$ and the initial sample size is $r1=300$. 
+Here, for the $l$-th model $\tilde{\beta}_k$ is the estimated model parameters from the sample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter.
 
 ```{r Define the methods}
-# Define the subsampling methods and their respective colors, shapes and line types
+# Define the sampling methods and their respective colours, shapes and line types
 Method_Names<-c("A-Optimality","L-Optimality","A-Optimality MR","L-Optimality MR")
-Method_Color<-c("red","darkred","green","springgreen4")
+Method_Colour<-c("red","darkred","green","springgreen4")
 Method_Shape_Types<-c(rep(8,2),rep(4,2))
 Method_Line_Types<-c(rep("twodash",2),rep("dotted",2))
 
@@ -138,16 +138,16 @@ for (i in 1:length(All_Models)) {
          ncol = ncol(Final_Beta_modelRobust[[i]][,-c(1,2)]),byrow = TRUE)->All_Beta
   
   data.frame("Method"=Final_Beta_modelRobust[[i]]$Method,
-             "Subsample"=Final_Beta_modelRobust[[i]]$r2,
+             "Sample"=Final_Beta_modelRobust[[i]]$r2,
              "MSE"=rowSums((All_Beta-Final_Beta_modelRobust[[i]][,-c(1,2)])^2))->
     MSE_Beta_MR[[i]]
   
-  ggplot(MSE_Beta_MR[[i]] |> dplyr::group_by(Method,Subsample) |>
+  ggplot(MSE_Beta_MR[[i]] |> dplyr::group_by(Method,Sample) |>
          dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
-         aes(x=factor(Subsample),y=MSE,color=Method,group=Method,
+         aes(x=factor(Sample),y=MSE,color=Method,group=Method,
              linetype=Method,shape=Method))+
-    geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
-    scale_color_manual(values = Method_Color)+
+    geom_point()+geom_line()+xlab("Sample size")+ylab("MSE")+
+    scale_color_manual(values = Method_Colour)+
     ggtitle(paste0("Model ",i))+
     scale_linetype_manual(values=Method_Line_Types)+
     scale_shape_manual(values= Method_Shape_Types)+
@@ -161,17 +161,17 @@ ggarrange(plotlist = plot_list_MR,nrow = 3,ncol = 2,labels = "auto",
 
 ## Main effects model is potentially misspecified
 
-The final scenario is for comparison of the subsampling method under the assumption that the main effects model is potentially misspecified against the $A$- and $L$-optimality subsampling method. 
-Under the subsampling method that accounts for potential model misspecification we take the scaling factor of $\alpha=10$. 
-As in the above scenarios the number of simulations and the subsample sizes stay the same. 
+The final scenario is for comparison of the sampling method under the assumption that the main effects model is potentially misspecified against the $A$- and $L$-optimality subsampling method. 
+Under the sampling method that accounts for potential model misspecification we take the scaling factor of $\alpha=10$. 
+As in the above scenarios the number of simulations and the sample sizes stay the same. 
 We compare the mean squared error of the estimated model parameters, however as we assume the model is potentially misspecified the asymptotic approximation of the mean squared error from the predictions are calculated as well.
 Below is the code for this implementation.
 
-```{r Potential model misspecification methods,fig.width=6,fig.height=6,fig.align='center', fig.cap="AMSE for the potentially misspecified main effects model across the subsampling methods under comparison."}
-# Define the subsampling methods and their respective colors, shapes and line types
+```{r Potential model misspecification methods,fig.width=6,fig.height=6,fig.align='center', fig.cap="AMSE for the potentially misspecified main effects model across the sampling methods under comparison."}
+# Define the sampling methods and their respective colours, shapes and line types
 Method_Names<-c("A-Optimality","L-Optimality","RLmAMSE",
                 "RLmAMSE Log Odds 10","RLmAMSE Power 10")
-Method_Color<-c("red","darkred","yellowgreen","green","springgreen4")
+Method_Colour<-c("red","darkred","yellowgreen","green","springgreen4")
 Method_Shape_Types<-c(rep(8,2),rep(4,3))
 Method_Line_Types<-c(rep("twodash",2),rep("dotted",3))
 
@@ -192,7 +192,7 @@ Xbeta_GAM<-gam::predict.Gam(fit_GAM,newdata = Original_Data[,-1])
 f_estimate<-Xbeta_GAM - Xbeta_Final
 Var_GAM.prop<-sum((Original_Data[,1]-Xbeta_GAM)^2)/N
 
-# A- and L-optimality and RLmAMSE model misspecified subsampling for linear regression 
+# A- and L-optimality and RLmAMSE model misspecified sampling for linear regression 
 NeEDS4BigData::modelMissLinSub(r1=300,r2=rep_k,
                                Y=as.matrix(Original_Data[,1]),
                                X=as.matrix(Original_Data[,-1]),
@@ -211,16 +211,16 @@ matrix(rep(All_Beta,by=nrow(Final_Beta_modelMiss)),nrow = nrow(Final_Beta_modelM
 # Plots for the mean squared error of the model parameter estimates 
 # and the AMSE for the main effects model 
 MSE_Beta_modelMiss<-data.frame("Method"=Final_Beta_modelMiss$Method,
-                               "Subsample"=Final_Beta_modelMiss$r2,
+                               "Sample"=Final_Beta_modelMiss$r2,
                                "MSE"=rowSums((All_Beta - 
                                               Final_Beta_modelMiss[,-c(1,2)])^2))
 
-ggplot(MSE_Beta_modelMiss |> dplyr::group_by(Method,Subsample) |> 
+ggplot(MSE_Beta_modelMiss |> dplyr::group_by(Method,Sample) |> 
        dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
-       aes(x=factor(Subsample),y=MSE,color=Method,group=Method,
+       aes(x=factor(Sample),y=MSE,color=Method,group=Method,
            linetype=Method,shape=Method))+
-  geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
-  scale_color_manual(values = Method_Color)+
+  geom_point()+geom_line()+xlab("Sample size")+ylab("MSE")+
+  scale_color_manual(values = Method_Colour)+
   scale_linetype_manual(values=Method_Line_Types)+
   scale_shape_manual(values = Method_Shape_Types)+
   theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p1
@@ -229,8 +229,8 @@ ggplot(Final_AMSE_modelMiss |> dplyr::group_by(r2,Method) |>
        dplyr::summarise(meanAMSE=mean(AMSE),.groups ='drop'),
        aes(x=factor(r2),y=meanAMSE,color=Method,group=Method,
            linetype=Method,shape=Method)) +
-  geom_point()+geom_line()+xlab("Subsample size")+ylab("Mean AMSE")+
-  scale_color_manual(values = Method_Color)+
+  geom_point()+geom_line()+xlab("Sample size")+ylab("Mean AMSE")+
+  scale_color_manual(values = Method_Colour)+
   scale_linetype_manual(values=Method_Line_Types)+
   scale_shape_manual(values = Method_Shape_Types)+
   theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p2

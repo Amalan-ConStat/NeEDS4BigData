@@ -1,8 +1,8 @@
 ---
-title: "Basic Sampling for Logistic Regression"
+title: "Model based Sampling for Logistic Regression"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Basic Sampling for Logistic Regression}
+  %\VignetteIndexEntry{Model based Sampling for Logistic Regression}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: Vignette_Ref.bib
@@ -49,7 +49,7 @@ To achieve this goal, the ``Skin segmentation data'' was curated, this data cont
 Aim of the logistic regression model is to classify if images are skin or not based on the a) Red, b) Green and c) Blue colour data.
 Skin presence is denoted as one and skin absence is denoted as zero.
 Each colour vector is scaled to have a mean of zero and a variance of one (initial range was between 0−255).
-For the given data subsampling methods are implemented assuming the main effects model can describe the data.
+For the given data sampling methods are implemented assuming the main effects model can describe the data.
 
 ```{r Exploring data}
 # Selecting 100% of the big data and prepare it
@@ -65,28 +65,28 @@ head(Original_Data) %>%
   kable(format = "html",
         caption = "First five observations of the skin segmentation data.")
 
-# Setting the subsample sizes
+# Setting the sample sizes
 N<-nrow(Original_Data); M<-250; k<-seq(6,18,by=3)*100; rep_k<-rep(k,each=M)
 ```
 
-Based on this model the methods random sampling, leverage sampling [@ma2014statistical;@ma2015leveraging], local case control sampling [@fithian2015local], $A$- and $L$-optimality subsampling [@ai2021optimal;@yao2021review] and $A$-optimality subsampling with response constraint [@zhang2021optimal] are implemented on the big data.
+Based on this model the methods random sampling, leverage sampling [@ma2014statistical;@ma2015leveraging], local case control sampling [@fithian2015local], $A$- and $L$-optimality subsampling [@ai2021optimal;@yao2021review] and $A$-optimality sampling with response constraint [@zhang2021optimal] are implemented on the big data.
 
 ```{r Define the methods}
-# define colors, shapes, line types for the methods
+# define colours, shapes, line types for the methods
 Method_Names<-c("A-Optimality","L-Optimality","A-Optimality MC",
                 "Local case control sampling","Shrinkage Leverage",
                 "Basic Leverage","Unweighted Leverage","Random sampling")
-Method_Color<-c("green","green4","yellowgreen",
-                "maroon","red","darkred","firebrick","black")
+Method_Colour<-c("green","green4","yellowgreen",
+                 "maroon","red","darkred","firebrick","black")
 Method_Shape_Types<-c(rep(8,3),rep(4,4),16)
 Method_Line_Types<-c(rep("twodash",3),rep("dotted",4),"solid")
 ```
 
-The obtained subsamples and their respective model parameter estimates are over $M=100$ simulations across different subsample sizes $k=(600,\ldots,1500)$.
-We set the initial subsample size of $r1=300$ for the methods that requires a random sample. 
-From the final subsamples, model parameters of the assume model are estimated.
+The obtained samples and their respective model parameter estimates are over $M=100$ simulations across different sample sizes $k=(600,\ldots,1500)$.
+We set the initial sample size of $r1=300$ for the methods that requires a random sample. 
+From the final samples, model parameters of the assume model are estimated.
 These estimated model parameters are compared with the estimated model parameters of the full big data through the mean squared error $MSE(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ}\sum_{i=1}^M \sum_{j=1}^J(\tilde{\beta}_{k,j} - \hat{\beta}_j)^2$. 
-Here, $\tilde{\beta}_k$ is the estimated model parameters from the subsample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter.
+Here, $\tilde{\beta}_k$ is the estimated model parameters from the sample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter.
 
 ## Random sampling
 
@@ -102,7 +102,7 @@ for (i in 1:length(rep_k)) {
   if(i==length(rep_k)){print("All simulations completed for random sampling")}
 }
 Final_Beta_RS<-cbind.data.frame("Random sampling",Final_Beta_RS)
-colnames(Final_Beta_RS)<-c("Method","Subsample",paste0("Beta",0:3))
+colnames(Final_Beta_RS)<-c("Method","Sample",paste0("Beta",0:3))
 ```
 
 ## Leverage sampling
@@ -114,7 +114,7 @@ NeEDS4BigData::LeverageSampling(r=rep_k,Y=as.matrix(Original_Data[,1]),
                                 X=as.matrix(Original_Data[,-1]),N=N,
                                 alpha = 0.9,family = "logistic")->Results
 Final_Beta_LS<-Results$Beta_Estimates
-colnames(Final_Beta_LS)<-c("Method","Subsample",paste0("Beta",0:3))
+colnames(Final_Beta_LS)<-c("Method","Sample",paste0("Beta",0:3))
 ```
 
 ## Local case control sampling
@@ -127,7 +127,7 @@ NeEDS4BigData::LCCsampling(r1=300,r2=rep_k,
                            N=N)->Results
 Final_Beta_LCCS<-Results$Beta_Estimates
 Final_Beta_LCCS$Method<-rep("Local case control sampling",nrow(Final_Beta_LCCS))
-colnames(Final_Beta_LCCS)<-c("Method","Subsample",paste0("Beta",0:3))
+colnames(Final_Beta_LCCS)<-c("Method","Sample",paste0("Beta",0:3))
 ```
 
 ## A- and L-optimality subsampling
@@ -139,20 +139,20 @@ NeEDS4BigData::ALoptimalGLMSub(r1=300,r2=rep_k,
                                X=as.matrix(Original_Data[,-1]),
                                N=N,family = "logistic")->Results
 Final_Beta_ALoptGLM<-Results$Beta_Estimates
-colnames(Final_Beta_ALoptGLM)<-c("Method","Subsample",paste0("Beta",0:3))
+colnames(Final_Beta_ALoptGLM)<-c("Method","Sample",paste0("Beta",0:3))
 ```
 
-## A-optimality subsampling under measurement constraints
+## A-optimality sampling under measurement constraints
 
-```{r A-optimality subsampling under measurement constraints}
-# A-optimality subsampling for without response
+```{r A-optimality sampling under measurement constraints}
+# A-optimality sampling for without response
 NeEDS4BigData::AoptimalMCGLMSub(r1=300,r2=rep_k,
                                 Y=as.matrix(Original_Data[,1]),
                                 X=as.matrix(Original_Data[,-1]),
                                 N=N,family="logistic")->Results
 Final_Beta_AoptMCGLM<-Results$Beta_Estimates
 Final_Beta_AoptMCGLM$Method<-rep("A-Optimality MC",nrow(Final_Beta_AoptMCGLM))
-colnames(Final_Beta_AoptMCGLM)<-c("Method","Subsample",paste0("Beta",0:3))
+colnames(Final_Beta_AoptMCGLM)<-c("Method","Sample",paste0("Beta",0:3))
 ```
 
 ## Summary
@@ -174,21 +174,21 @@ remove(Final_Beta_RS,Final_Beta_LS,Final_Beta_LCCS,Final_Beta_ALoptGLM,
 
 The mean squared error is plotted below.
 
-```{r Model parameter estimates,fig.width=7,fig.height=12,fig.align='center',fig.cap="Mean squared error for a) all the subsampling methods and b) without unweighted leverage sampling."}
+```{r Model parameter estimates,fig.width=7,fig.height=12,fig.align='center',fig.cap="Mean squared error for a) all the sampling methods and b) without unweighted leverage sampling."}
 # Obtain the mean squared error for the model parameter estimates
 MSE_Beta<-data.frame("Method"=Final_Beta$Method,
-                     "Subsample"=Final_Beta$Subsample,
+                     "Sample"=Final_Beta$Sample,
                      "MSE"=rowSums((All_Beta - Final_Beta[,-c(1,2)])^2)) 
 
 MSE_Beta$Method<-factor(MSE_Beta$Method,levels = Method_Names,labels = Method_Names)
 
 # Plot for the mean squared error with all methods
-ggplot(MSE_Beta |> dplyr::group_by(Method,Subsample) |> 
+ggplot(MSE_Beta |> dplyr::group_by(Method,Sample) |> 
        dplyr::summarise(MSE=mean(MSE), .groups = 'drop'),
-    aes(x=factor(Subsample),y=MSE,color=Method,group=Method,
+    aes(x=factor(Sample),y=MSE,color=Method,group=Method,
         linetype=Method,shape=Method))+
-  geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
-  scale_color_manual(values = Method_Color)+
+  geom_point()+geom_line()+xlab("Sample size")+ylab("MSE")+
+  scale_color_manual(values = Method_Colour)+
   scale_linetype_manual(values=Method_Line_Types)+
   scale_shape_manual(values = Method_Shape_Types)+
   theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p1
@@ -196,12 +196,12 @@ ggplot(MSE_Beta |> dplyr::group_by(Method,Subsample) |>
 # Plot for the mean squared error with all methods except unweighted leverage
 ggplot(MSE_Beta[!(MSE_Beta$Method %in% c("Unweighted Leverage","Shrinkage Leverage",
                                          "Basic Leverage")),] |> 
-       dplyr::group_by(Method,Subsample) |> 
+       dplyr::group_by(Method,Sample) |> 
        dplyr::summarise(MSE=mean(MSE),.groups = 'drop'),
-    aes(x=factor(Subsample),y=MSE,color=Method,group=Method,
+    aes(x=factor(Sample),y=MSE,color=Method,group=Method,
         linetype=Method,shape=Method))+
-  geom_point()+geom_line()+xlab("Subsample size")+ylab("MSE")+
-  scale_color_manual(values = Method_Color[-7])+
+  geom_point()+geom_line()+xlab("Sample size")+ylab("MSE")+
+  scale_color_manual(values = Method_Colour[-7])+
   scale_linetype_manual(values=Method_Line_Types[-7])+
   scale_shape_manual(values = Method_Shape_Types[-7])+
   theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p2
