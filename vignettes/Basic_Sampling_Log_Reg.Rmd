@@ -63,7 +63,7 @@ for (j in 3:5) {
 }
 head(Original_Data) %>% 
   kable(format = "html",
-        caption = "First five observations of the skin segmentation data.")
+        caption = "First few observations of the skin segmentation data.")
 
 # Setting the sample sizes
 N<-nrow(Original_Data); M<-250; k<-seq(6,18,by=3)*100; rep_k<-rep(k,each=M)

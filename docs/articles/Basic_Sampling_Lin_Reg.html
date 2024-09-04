@@ -183,10 +183,10 @@ model can describe the data.</p>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>format <span class="op">=</span> <span class="st">"html"</span>,</span>
-<span>        caption <span class="op">=</span> <span class="st">"First five observations of the electric consumption data."</span><span class="op">)</span></span></code></pre></div>
+<span>        caption <span class="op">=</span> <span class="st">"First few observations of the electric consumption data."</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>
-First five observations of the electric consumption data.
+First few observations of the electric consumption data.
 </caption>
 <thead><tr>
 <th style="text-align:right;">
@@ -369,7 +369,7 @@ parameters from the full big data, while <span class="math inline">\(j\)</span> 
 <span>                                X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,N<span class="op">=</span><span class="va">N</span>,</span>
 <span>                                alpha <span class="op">=</span> <span class="fl">0.9</span>,family <span class="op">=</span> <span class="st">"linear"</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>
 <pre><code><span><span class="co">## Basic and shrinkage leverage probabilities calculated.</span></span></code></pre>
-<pre><code><span><span class="co">## Subsampling completed.</span></span></code></pre>
+<pre><code><span><span class="co">## Sampling completed.</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Final_Beta_LS</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Beta_Estimates</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Final_Beta_LS</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>,<span class="st">"Sample"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Beta"</span>,<span class="fl">0</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
