@@ -32,11 +32,11 @@ The output of \code{ALoptimalGLMSub} gives a list of
 
 \code{Sample_L-Optimality} list of indexes for the initial and optimal samples obtained based on L-Optimality criteria
 
-\code{Sampling_Probability} matrix of calculated sampling probabilities for A- and L- optimality criteria
+\code{Subsampling_Probability} matrix of calculated subsampling probabilities for A- and L- optimality criteria
 }
 \description{
 Using this function sample from big data under linear, logistic and Poisson regression
-to describe the data. Sampling probabilities are obtained based on the A- and L-
+to describe the data. Subsampling probabilities are obtained based on the A- and L-
 optimality criteria.
 }
 \details{
@@ -44,9 +44,9 @@ Two stage subsampling algorithm for big data under Generalised Linear Models
 (linear, logistic and Poisson regression).
 
 First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-Using the estimated parameters sampling probabilities are evaluated for A- and L-optimality criteria.
+Using the estimated parameters subsampling probabilities are evaluated for A- and L-optimality criteria.
 
-Through the estimated sampling probabilities an optimal sample of size \eqn{r_2 \ge r_1} is obtained.
+Through the estimated subsampling probabilities an optimal sample of size \eqn{r_2 \ge r_1} is obtained.
 Finally, the two samples are combined and the model parameters are estimated.
 
 \strong{NOTE} : If input parameters are not in given domain conditions

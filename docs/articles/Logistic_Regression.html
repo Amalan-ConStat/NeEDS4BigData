@@ -55,11 +55,11 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-examples">Examples</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-examples">
     <a class="dropdown-item" href="../articles/Introduction.html">Introduction</a>
-    <a class="dropdown-item" href="../articles/Basic_Sampling_Lin_Reg.html">Linear Regression - Model based sampling</a>
+    <a class="dropdown-item" href="../articles/Basic_Sampling_Lin_Reg.html">Linear Regression - Model based subsampling</a>
     <a class="dropdown-item" href="../articles/Linear_Regression.html">Linear Regression - Model robust and misspecification</a>
-    <a class="dropdown-item" href="../articles/Basic_Sampling_Log_Reg.html">Logistic Regression - Model based sampling</a>
+    <a class="dropdown-item" href="../articles/Basic_Sampling_Log_Reg.html">Logistic Regression - Model based subsampling</a>
     <a class="dropdown-item" href="../articles/Logistic_Regression.html">Logistic Regression - Model robust and misspecification</a>
-    <a class="dropdown-item" href="../articles/Basic_Sampling_Poi_Reg.html">Poisson Regression - Model based sampling</a>
+    <a class="dropdown-item" href="../articles/Basic_Sampling_Poi_Reg.html">Poisson Regression - Model based subsampling</a>
     <a class="dropdown-item" href="../articles/Poisson_Regression.html">Poisson Regression - Model robust and misspecification</a>
   </div>
 </li>
@@ -173,7 +173,7 @@ have a mean of zero and a variance of one (initial range was between
 <ol style="list-style-type: decimal">
 <li>model robust or average subsampling methods assuming that a set of
 models can describe the data.</li>
-<li>sampling method assuming the main effects model is potentially
+<li>subsampling method assuming the main effects model is potentially
 misspecified.</li>
 </ol>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -426,11 +426,11 @@ to e for Model 1 to 5 across the subsampling methods under comparison.
 <div class="section level3">
 <h3 id="main-effects-model-is-potentially-misspecified">Main effects model is potentially misspecified<a class="anchor" aria-label="anchor" href="#main-effects-model-is-potentially-misspecified"></a>
 </h3>
-<p>The final and third scenario is for comparison of the sampling method
-under the assumption that the main effects model is potentially
+<p>The final and third scenario is for comparison of the subsampling
+method under the assumption that the main effects model is potentially
 misspecified against the <span class="math inline">\(A\)</span>- and
 <span class="math inline">\(L\)</span>-optimality subsampling method.
-Under the sampling method that accounts for potential model
+Under the subsampling method that accounts for potential model
 misspecification we take the scaling factor of <span class="math inline">\(\alpha=10\)</span>. As in scenario one an two the
 number of simulations and the sample sizes stay the same. We compare the
 mean squared error of the estimated model parameters, however as we
@@ -438,7 +438,7 @@ assume the model is potentially misspecified the asymptotic
 approximation of the mean squared error from the predictions are
 calculated as well. Below is the code for this implementation.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Define the sampling methods and their respective colours, shapes and line types</span></span>
+<code class="sourceCode R"><span><span class="co"># Define the subsampling methods and their respective colours, shapes and line types</span></span>
 <span><span class="va">Method_Names</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A-Optimality"</span>,<span class="st">"L-Optimality"</span>,<span class="st">"RLmAMSE"</span>,</span>
 <span>                <span class="st">"RLmAMSE Log Odds 10"</span>,<span class="st">"RLmAMSE Power 10"</span><span class="op">)</span></span>
 <span><span class="va">Method_Colour</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>,<span class="st">"darkred"</span>,<span class="st">"yellowgreen"</span>,<span class="st">"green"</span>,<span class="st">"springgreen4"</span><span class="op">)</span></span>
@@ -460,7 +460,7 @@ calculated as well. Below is the code for this implementation.</p>
 <span><span class="va">Xbeta_GAM</span><span class="op">&lt;-</span><span class="fu">gam</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gam/man/predict.gam.html" class="external-link">predict.Gam</a></span><span class="op">(</span><span class="va">fit_GAM</span>,newdata <span class="op">=</span> <span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">f_estimate</span><span class="op">&lt;-</span><span class="va">Xbeta_GAM</span> <span class="op">-</span> <span class="va">Xbeta_Final</span></span>
 <span></span>
-<span><span class="co"># A- and L-optimality and RLmAMSE model misspecified sampling for logistic regression </span></span>
+<span><span class="co"># A- and L-optimality and RLmAMSE model misspecified subsampling for logistic regression </span></span>
 <span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/modelMissLogSub.html">modelMissLogSub</a></span><span class="op">(</span>r1<span class="op">=</span><span class="fl">300</span>,r2<span class="op">=</span><span class="va">rep_k</span>,</span>
 <span>                               Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>                               X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
@@ -506,9 +506,9 @@ calculated as well. Below is the code for this implementation.</p>
 <span><span class="co">#           legend = "bottom",common.legend = TRUE)</span></span>
 <span><span class="va">p2</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Logistic_Regression_files/figure-html/Potential%20model%20misspecification%20methods-1.png" alt="AMSE for the potentially misspecified main effects model across the sampling methods under comparison." width="576"><p class="caption">
+<img src="Logistic_Regression_files/figure-html/Potential%20model%20misspecification%20methods-1.png" alt="AMSE for the potentially misspecified main effects model across the subsampling methods under comparison." width="576"><p class="caption">
 AMSE for the potentially misspecified main effects model across the
-sampling methods under comparison.
+subsampling methods under comparison.
 </p>
 </div>
 </div>

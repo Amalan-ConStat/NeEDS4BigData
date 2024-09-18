@@ -1,8 +1,8 @@
 ---
-title: "Model based Sampling for Linear Regression"
+title: "Model based Subsampling for Linear Regression"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Model based Sampling for Linear Regression}
+  %\VignetteIndexEntry{Model based Subsampling for Linear Regression}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: Vignette_Ref.bib
@@ -48,7 +48,7 @@ Theme_special<-function(){
 The data contains $4$ columns, the first column is the response variable and the rest are covariates, however we only use the first $5\%$ of the data for this demonstration. 
 The response $y$ is the log scaled intensity, while the covariates are active electrical energy in the a) kitchen ($X_1$), b) laundry room ($X_2$) and c) water-heater and air-conditioner ($X_3$). 
 The covariates are scaled to be mean of zero and variance of one. 
-For the given data sampling methods are implemented assuming the main effects model can describe the data.
+For the given data subsampling methods are implemented assuming the main effects model can describe the data.
 
 ```{r Exploring data}
 # Selecting 5% of the big data and prepare it
@@ -68,9 +68,9 @@ head(Original_Data) %>%
 N<-nrow(Original_Data); M<-250; k<-seq(6,18,by=3)*100; rep_k<-rep(k,each=M)
 ```
 
-Based on this model the methods random sampling, leverage sampling [@ma2014statistical;@ma2015leveraging], $A$-optimality sampling with Gaussian Linear Model [@lee2022sampling], $A$- and $L$-optimality subsampling [@ai2021optimal;@yao2021review] and $A$-optimality sampling with response constraint [@zhang2021optimal] are implemented on the big data.
+Based on this model the methods random sampling, leverage sampling [@ma2014statistical;@ma2015leveraging], $A$-optimality subsampling with Gaussian Linear Model [@lee2022sampling], $A$- and $L$-optimality subsampling [@ai2021optimal;@yao2021review] and $A$-optimality subsampling with response constraint [@zhang2021optimal] are implemented on the big data.
 
-```{r Define the sampling methods}
+```{r Define the methods}
 # define colours, shapes, line types for the methods
 Method_Names<-c("A-Optimality","L-Optimality","A-Optimality GauLM","A-Optimality MC",
                 "Shrinkage Leverage","Basic Leverage","Unweighted Leverage",
@@ -89,7 +89,7 @@ Here, $\tilde{\beta}_k$ is the estimated model parameters from the sample of siz
 
 ## Random sampling
 
-Below is the code for implementing these sampling methods.
+Below is the code for this implementation.
 
 ```{r Random sampling}
 # Random sampling
@@ -140,10 +140,10 @@ Final_Beta_ALoptGLM<-Results$Beta_Estimates
 colnames(Final_Beta_ALoptGLM)<-c("Method","Sample",paste0("Beta",0:3))
 ```
 
-## A-optimality sampling with measurement constraints
+## A-optimality subsampling with measurement constraints
 
-```{r A-optimality sampling with measurement constraints}
-# A-optimality sampling for without response
+```{r A-optimality subsampling with measurement constraints}
+# A-optimality subsampling for without response
 NeEDS4BigData::AoptimalMCGLMSub(r1=300,r2=rep_k,
                                 Y=as.matrix(Original_Data[,1]),
                                 X=as.matrix(Original_Data[,-1]),
@@ -173,7 +173,7 @@ remove(Final_Beta_RS,Final_Beta_LS,Final_Beta_AoptGauLM,Final_Beta_ALoptGLM,
 
 The mean squared error is plotted below.
 
-```{r Model parameter estimates,fig.width=7,fig.height=12,fig.align='center',fig.cap="Mean squared error for a) all the sampling methods and b) without unweighted leverage sampling."}
+```{r Model parameter estimates,fig.width=7,fig.height=12,fig.align='center',fig.cap="Mean squared error for a) all the subsampling methods and b) without unweighted leverage sampling."}
 # Obtain the mean squared error for the model parameter estimates
 MSE_Beta<-data.frame("Method"=Final_Beta$Method,
                      "Sample"=Final_Beta$Sample,

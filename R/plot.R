@@ -1,12 +1,12 @@
-#' Plotting model parameter outputs after sampling
+#' Plotting model parameter outputs after subsampling
 #'
-#' After using the sampling methods we mostly obtain the estimated model parameter
+#' After using the subsampling methods we mostly obtain the estimated model parameter
 #' estimates. Here, they are summarised as histogram plots.
 #'
 #' @usage
 #' plot_Beta(object)
 #'
-#' @param object Any object after sampling from our sampling functions
+#' @param object Any object after subsampling from our subsampling functions
 #'
 #' @details
 #' For local case control sampling the facets are for sample sizes and beta values.
@@ -19,13 +19,13 @@
 #' For A-optimality criteria subsampling under Gaussian Linear Models
 #' the facets are for sample sizes and beta values.
 #'
-#' For A-optimality criteria sampling under Generalised Linear Models
+#' For A-optimality criteria subsampling under Generalised Linear Models
 #' with response variable not inclusive the facets are for sample sizes and beta values.
 #'
 #' For A- and L-optimality criteria subsampling under Generalised Linear Models
 #' where multiple models can describe the data the facets are for sample sizes and beta values.
 #'
-#' For A- and L-optimality criteria and LmAMSE sampling under Generalised Linear Models
+#' For A- and L-optimality criteria and LmAMSE subsampling under Generalised Linear Models
 #' with potential model misspecification the facets are for sample sizes and beta values.
 #'
 #' @return
@@ -277,16 +277,16 @@ plot_Beta.ModelMisspecified<-function(object){
 
 #' Plotting AMSE outputs for the samples under model misspecification
 #'
-#' After using the sampling methods under potential model misspecification we obtain
+#' After using the subsampling methods under potential model misspecification we obtain
 #' their respective AMSE values for the predictions. They are summarised as plots here.
 #'
 #' @usage
 #' plot_AMSE(object)
 #'
-#' @param object Any object after sampling from our sampling function under potential model misspecification
+#' @param object Any object after subsampling from our subsampling function under potential model misspecification
 #'
 #' @details
-#' For A- and L-optimality criteria and RLmAMSE sampling under Generalised Linear Models
+#' For A- and L-optimality criteria and RLmAMSE subsampling under Generalised Linear Models
 #' with potential model misspecification the facets are for variance and bias^2 of AMSE values.
 #'
 #' @return

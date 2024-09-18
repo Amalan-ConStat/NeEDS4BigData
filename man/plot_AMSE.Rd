@@ -7,16 +7,16 @@
 plot_AMSE(object)
 }
 \arguments{
-\item{object}{Any object after sampling from our sampling function under potential model misspecification}
+\item{object}{Any object after subsampling from our subsampling function under potential model misspecification}
 }
 \value{
 The output is a faceted ggplot result
 }
 \description{
-After using the sampling methods under potential model misspecification we obtain
+After using the subsampling methods under potential model misspecification we obtain
 their respective AMSE values for the predictions. They are summarised as plots here.
 }
 \details{
-For A- and L-optimality criteria and RLmAMSE sampling under Generalised Linear Models
+For A- and L-optimality criteria and RLmAMSE subsampling under Generalised Linear Models
 with potential model misspecification the facets are for variance and bias^2 of AMSE values.
 }

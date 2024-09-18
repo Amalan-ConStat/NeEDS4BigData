@@ -55,17 +55,17 @@ The literature presents two strategies to resolve the primary challenge of how t
 
 They are:
 
-1. Sample randomly from the large dataset using sampling probabilities determined via an assumed statistical model and objective (e.g., prediction and/or parameter estimation) [@wang2018optimal;@yao2019softmax;@ai2020quantile;@ai2021optimal;@lee2021fast;@zhang2021optimal;@lee2022sampling]
+1. Sample randomly from the large dataset using subsampling probabilities determined via an assumed statistical model and objective (e.g., prediction and/or parameter estimation) [@wang2018optimal;@yao2019softmax;@ai2020quantile;@ai2021optimal;@lee2021fast;@zhang2021optimal;@lee2022sampling]
 2. Select samples based on an experimental design [@drovandi2017principles;@wang2019information;@cheng2020information;@hou2023generalized;@reuter2023optimal;@yu2023information].
 
-As of now in this package we focus on the sampling methods
+As of now in this package we focus on the subsampling methods
 
 1. Leverage sampling by @ma2014statistical and @ma2015leveraging.
 2. Local case control sampling by @fithian2015local.
 3. A- and L-optimality based subsampling methods for Generalised Linear Models by @wang2018optimal and @ai2021optimal.
 4. A-optimality based subsampling for Gaussian Linear Model by @lee2021fast.
-5. A- and L-optimality based sampling methods for Generalised Linear Models under response not involved in probability calculation by @zhang2021optimal.
+5. A- and L-optimality based subsampling methods for Generalised Linear Models under response not involved in probability calculation by @zhang2021optimal.
 6. A- and L-optimality based model robust/average subsampling methods for Generalised Linear Models by @mahendran2023model.
-7. Sampling for Generalised Linear Models under potential model misspecification as by @adewale2009robust and @adewale2010robust.
+7. Subsampling for Generalised Linear Models under potential model misspecification as by @adewale2009robust and @adewale2010robust.
 
 ## References

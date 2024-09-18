@@ -22,8 +22,8 @@ test_that("dimension of the Beta Estimates",{
   expect_equal(dim(Results$Beta_Estimates),c(length(r2)*5,length(Beta)-1+2))
 })
 
-test_that("dimension of the sampling probability",{
-  expect_equal(dim(Results$Sampling_Probability),c(N,5))
+test_that("dimension of the subsampling probability",{
+  expect_equal(dim(Results$Subsampling_Probability),c(N,5))
 })
 
 test_that("dimension of the A-optimality sample",{

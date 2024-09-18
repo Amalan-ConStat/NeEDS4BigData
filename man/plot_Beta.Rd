@@ -2,18 +2,18 @@
 % Please edit documentation in R/plot.R
 \name{plot_Beta}
 \alias{plot_Beta}
-\title{Plotting model parameter outputs after sampling}
+\title{Plotting model parameter outputs after subsampling}
 \usage{
 plot_Beta(object)
 }
 \arguments{
-\item{object}{Any object after sampling from our sampling functions}
+\item{object}{Any object after subsampling from our subsampling functions}
 }
 \value{
 The output is a faceted ggplot result
 }
 \description{
-After using the sampling methods we mostly obtain the estimated model parameter
+After using the subsampling methods we mostly obtain the estimated model parameter
 estimates. Here, they are summarised as histogram plots.
 }
 \details{
@@ -27,12 +27,12 @@ the facets are for sample sizes and beta values.
 For A-optimality criteria subsampling under Gaussian Linear Models
 the facets are for sample sizes and beta values.
 
-For A-optimality criteria sampling under Generalised Linear Models
+For A-optimality criteria subsampling under Generalised Linear Models
 with response variable not inclusive the facets are for sample sizes and beta values.
 
 For A- and L-optimality criteria subsampling under Generalised Linear Models
 where multiple models can describe the data the facets are for sample sizes and beta values.
 
-For A- and L-optimality criteria and LmAMSE sampling under Generalised Linear Models
+For A- and L-optimality criteria and LmAMSE subsampling under Generalised Linear Models
 with potential model misspecification the facets are for sample sizes and beta values.
 }

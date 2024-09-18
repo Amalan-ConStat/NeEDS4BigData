@@ -53,7 +53,7 @@ The covariates are scaled to be mean of zero and variance of one.
 Given data is analysed under two different scenarios,
 
 1. model robust or average subsampling methods assuming that a set of models can describe the data.
-2. sampling method assuming the main effects model is potentially misspecified.
+2. subsampling method assuming the main effects model is potentially misspecified.
 
 ```{r Exploring data}
 # Selecting 1% of the big data and prepare it
@@ -82,7 +82,7 @@ For each model $l$ the mean squared error of the model parameters $MSE_l(\tilde{
 Here, for the $l$-th model $\tilde{\beta}_k$ is the estimated model parameters from the sample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter.
 
 ```{r Define the methods}
-# Define the sampling methods and their respective colours, shapes and line types
+# Define the subsampling methods and their respective colours, shapes and line types
 Method_Names<-c("A-Optimality","L-Optimality","A-Optimality MR","L-Optimality MR")
 Method_Colour<-c("red","darkred","green","springgreen4")
 Method_Shape_Types<-c(rep(8,2),rep(4,2))
@@ -161,14 +161,14 @@ ggarrange(plotlist = plot_list_MR,nrow = 3,ncol = 2,labels = "auto",
 
 ## Main effects model is potentially misspecified
 
-The final scenario is for comparison of the sampling method under the assumption that the main effects model is potentially misspecified against the $A$- and $L$-optimality subsampling method. 
-Under the sampling method that accounts for potential model misspecification we take the scaling factor of $\alpha=10$. 
+The final scenario is for comparison of the subsampling method under the assumption that the main effects model is potentially misspecified against the $A$- and $L$-optimality subsampling method. 
+Under the subsampling method that accounts for potential model misspecification we take the scaling factor of $\alpha=10$. 
 As in the above scenarios the number of simulations and the sample sizes stay the same. 
 We compare the mean squared error of the estimated model parameters, however as we assume the model is potentially misspecified the asymptotic approximation of the mean squared error from the predictions are calculated as well.
 Below is the code for this implementation.
 
-```{r Potential model misspecification methods,fig.width=6,fig.height=6,fig.align='center', fig.cap="AMSE for the potentially misspecified main effects model across the sampling methods under comparison."}
-# Define the sampling methods and their respective colours, shapes and line types
+```{r Potential model misspecification methods,fig.width=6,fig.height=6,fig.align='center', fig.cap="AMSE for the potentially misspecified main effects model across the subsampling methods under comparison."}
+# Define the subsampling methods and their respective colours, shapes and line types
 Method_Names<-c("A-Optimality","L-Optimality","RLmAMSE",
                 "RLmAMSE Log Odds 10","RLmAMSE Power 10")
 Method_Colour<-c("red","darkred","yellowgreen","green","springgreen4")
@@ -192,7 +192,7 @@ Xbeta_GAM<-gam::predict.Gam(fit_GAM,newdata = Original_Data[,-1])
 f_estimate<-Xbeta_GAM - Xbeta_Final
 Var_GAM.prop<-sum((Original_Data[,1]-Xbeta_GAM)^2)/N
 
-# A- and L-optimality and RLmAMSE model misspecified sampling for linear regression 
+# A- and L-optimality and RLmAMSE model misspecified subsampling for linear regression 
 NeEDS4BigData::modelMissLinSub(r1=300,r2=rep_k,
                                Y=as.matrix(Original_Data[,1]),
                                X=as.matrix(Original_Data[,-1]),

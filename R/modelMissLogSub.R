@@ -1,7 +1,7 @@
-#' Sampling under logistic regression for a potentially misspecified model
+#' Subsampling under logistic regression for a potentially misspecified model
 #'
 #' Using this function sample from big data under logistic regression for a potentially misspecified model.
-#' Sampling probabilities are obtained based on the A- and L- optimality criteria
+#' Subsampling probabilities are obtained based on the A- and L- optimality criteria
 #' with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error).
 #'
 #' @usage
@@ -17,13 +17,13 @@
 #' @param F_Estimate_Full    estimate of f that is the difference of linear predictor on GAM and logistic model
 #'
 #' @details
-#' Two stage sampling algorithm for big data under logistic regression for potential model misspecification.
+#' Two stage subsampling algorithm for big data under logistic regression for potential model misspecification.
 #'
 #' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-#' Using the estimated parameters sampling probabilities are evaluated for A-, L-optimality criteria,
-#' RLmAMSE and enhanced RLmAMSE(log-odds and power) sampling methods.
+#' Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria,
+#' RLmAMSE and enhanced RLmAMSE(log-odds and power) subsampling methods.
 #'
-#' Through the estimated sampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
+#' Through the estimated subsampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
 #' Finally, the two samples are combined and the model parameters are estimated for A- and L-optimality,
 #' while for RLmAMSE and enhanced RLmAMSE (log-odds and power) only the optimal sample is used.
 #'
@@ -42,9 +42,9 @@
 #' @return
 #' The output of \code{modelMissLogSub} gives a list of
 #'
-#' \code{Beta_Estimates} estimated model parameters after sampling
+#' \code{Beta_Estimates} estimated model parameters after subsampling
 #'
-#' \code{AMSE_Estimates} matrix of estimated AMSE values after sampling
+#' \code{AMSE_Estimates} matrix of estimated AMSE values after subsampling
 #'
 #' \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 #'
@@ -56,7 +56,7 @@
 #'
 #' \code{Sample_RLmAMSE_Power} list of indexes for the optimal samples obtained based on RLmAMSE with Power function
 #'
-#' \code{Sampling_Probability} matrix of calculated sampling probabilities
+#' \code{Subsampling_Probability} matrix of calculated subsampling probabilities
 #'
 #' @references
 #' \insertRef{adewale2009robust}{NeEDS4BigData}
@@ -419,7 +419,7 @@ modelMissLogSub <- function(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full
             "Sample_RLmAMSE"=Sample.RLmAMSE,
             "Sample_RLmAMSE_Log_Odds"=Sample.RLmAMSE_LO,
             "Sample_RLmAMSE_Power"=Sample.RLmAMSE_Pow,
-            "Sampling_Probability"=Full_SP)
+            "Subsampling_Probability"=Full_SP)
   class(ans)<-c("ModelMisspecified","logistic")
   return(ans)
 }

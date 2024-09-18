@@ -55,11 +55,11 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-examples">Examples</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-examples">
     <a class="dropdown-item" href="../articles/Introduction.html">Introduction</a>
-    <a class="dropdown-item" href="../articles/Basic_Sampling_Lin_Reg.html">Linear Regression - Model based sampling</a>
+    <a class="dropdown-item" href="../articles/Basic_Sampling_Lin_Reg.html">Linear Regression - Model based subsampling</a>
     <a class="dropdown-item" href="../articles/Linear_Regression.html">Linear Regression - Model robust and misspecification</a>
-    <a class="dropdown-item" href="../articles/Basic_Sampling_Log_Reg.html">Logistic Regression - Model based sampling</a>
+    <a class="dropdown-item" href="../articles/Basic_Sampling_Log_Reg.html">Logistic Regression - Model based subsampling</a>
     <a class="dropdown-item" href="../articles/Logistic_Regression.html">Logistic Regression - Model robust and misspecification</a>
-    <a class="dropdown-item" href="../articles/Basic_Sampling_Poi_Reg.html">Poisson Regression - Model based sampling</a>
+    <a class="dropdown-item" href="../articles/Basic_Sampling_Poi_Reg.html">Poisson Regression - Model based subsampling</a>
     <a class="dropdown-item" href="../articles/Poisson_Regression.html">Poisson Regression - Model robust and misspecification</a>
   </div>
 </li>
@@ -212,18 +212,17 @@ addresses specific analytical questions to yield results consistent with
 analysing the large data set.</p>
 <p>They are:</p>
 <ol style="list-style-type: decimal">
-<li>Sample randomly from the large dataset using sampling probabilities
-determined via an assumed statistical model and objective (e.g.,
-prediction and/or parameter estimation) <span class="citation">(Wang,
-Zhu, and Ma 2018; Yao and Wang 2019; Ai, Wang, et al. 2021; Ai, Yu, et
-al. 2021; Lee, Schifano, and Wang 2021, 2022; Zhang, Ning, and Ruppert
-2021)</span>
+<li>Sample randomly from the large dataset using subsampling
+probabilities determined via an assumed statistical model and objective
+(e.g., prediction and/or parameter estimation) <span class="citation">(Wang, Zhu, and Ma 2018; Yao and Wang 2019; Ai, Wang,
+et al. 2021; Ai, Yu, et al. 2021; Lee, Schifano, and Wang 2021, 2022;
+Zhang, Ning, and Ruppert 2021)</span>
 </li>
 <li>Select samples based on an experimental design <span class="citation">(Drovandi et al. 2017; Wang, Yang, and Stufken 2019;
 Cheng, Wang, and Yang 2020; Hou-Liu and Browne 2023; Reuter and Schwabe
 2023; Yu, Liu, and Wang 2023)</span>.</li>
 </ol>
-<p>As of now in this package we focus on the sampling methods</p>
+<p>As of now in this package we focus on the subsampling methods</p>
 <ol style="list-style-type: decimal">
 <li>Leverage sampling by <span class="citation">Ma, Mahoney, and Yu
 (2014)</span> and <span class="citation">Ma and Sun (2015)</span>.</li>
@@ -233,12 +232,12 @@ Hastie (2015)</span>.</li>
 Models by <span class="citation">Wang, Zhu, and Ma (2018)</span> and
 <span class="citation">Ai, Yu, et al. (2021)</span>.</li>
 <li>A-optimality based subsampling for Gaussian Linear Model by <span class="citation">Lee, Schifano, and Wang (2021)</span>.</li>
-<li>A- and L-optimality based sampling methods for Generalised Linear
+<li>A- and L-optimality based subsampling methods for Generalised Linear
 Models under response not involved in probability calculation by <span class="citation">Zhang, Ning, and Ruppert (2021)</span>.</li>
 <li>A- and L-optimality based model robust/average subsampling methods
 for Generalised Linear Models by <span class="citation">Mahendran,
 Thompson, and McGree (2023)</span>.</li>
-<li>Sampling for Generalised Linear Models under potential model
+<li>Subsampling for Generalised Linear Models under potential model
 misspecification as by <span class="citation">Adewale and Wiens
 (2009)</span> and <span class="citation">Adewale and Xu
 (2010)</span>.</li>

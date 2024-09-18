@@ -1,7 +1,7 @@
 #' A-optimality criteria based subsampling under Gaussian Linear Models
 #'
 #' Using this function sample from big data under Gaussian linear regression models
-#' to describe the data. Sampling probabilities are obtained based on the A-optimality criteria.
+#' to describe the data. Subsampling probabilities are obtained based on the A-optimality criteria.
 #'
 #' @usage
 #' AoptimalGauLMSub(r1,r2,Y,X,N)
@@ -16,9 +16,9 @@
 #' Two stage subsampling algorithm for big data under Gaussian Linear Model.
 #'
 #' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-#' Using the estimated parameters sampling probabilities are evaluated for A-optimality criteria.
+#' Using the estimated parameters subsampling probabilities are evaluated for A-optimality criteria.
 #'
-#' Through the estimated sampling probabilities an optimal sample of size \eqn{r_2 \ge r_1} is obtained.
+#' Through the estimated subsampling probabilities an optimal sample of size \eqn{r_2 \ge r_1} is obtained.
 #' Finally, the two samples are combined and the model parameters are estimated.
 #'
 #' \strong{NOTE} : If input parameters are not in given domain conditions
@@ -40,7 +40,7 @@
 #'
 #' \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 #'
-#' \code{Sampling_Probability} matrix of calculated sampling probabilities for A-optimality criteria
+#' \code{Subsampling_Probability} matrix of calculated subsampling probabilities for A-optimality criteria
 #'
 #' @references
 #' \insertRef{lee2021fast}{NeEDS4BigData}
@@ -157,7 +157,7 @@ AoptimalGauLMSub <- function(r1,r2,Y,X,N){
   ans<-list("Beta_Estimates"=Beta_Data,
             "Variance_Epsilon_Estimates"=Var_Epsilon_Data,
             "Sample_A-Optimality"=Sample.mMSE,
-            "Sampling_Probability"=Full_SP)
+            "Subsampling_Probability"=Full_SP)
   class(ans)<-c("AoptimalSubsampling","linear")
   return(ans)
 }

@@ -1,7 +1,7 @@
 #' Model robust optimal subsampling for A- and L- optimality criteria under Poisson regression
 #'
 #' Using this function sample from big data under Poisson regression when there are more than
-#' one model to describe the data. Sampling probabilities are obtained based on the A- and L-
+#' one model to describe the data. Subsampling probabilities are obtained based on the A- and L-
 #' optimality criteria.
 #'
 #' @usage
@@ -12,7 +12,7 @@
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
-#' @param Alpha   vector of alpha values that are used to obtain the model robust sampling probabilities
+#' @param Alpha   vector of alpha values that are used to obtain the model robust subsampling probabilities
 #' @param All_Combinations list of possible models that can describe the data
 #' @param All_Covariates all the covariates in the models
 #'
@@ -21,10 +21,10 @@
 #' describe the big data.
 #'
 #' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters for all models.
-#' Using the estimated parameters sampling probabilities are evaluated for A-, L-optimality criteria and
+#' Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria and
 #' model averaging A-, L-optimality subsampling methods.
 #'
-#' Through the estimated sampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
+#' Through the estimated subsampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
 #' Finally, the two samples are combined and the model parameters are estimated for all the models.
 #'
 #' \strong{NOTE} :  If input parameters are not in given domain conditions
@@ -54,7 +54,7 @@
 #'
 #' \code{Sample_A-optimality_MR} list of indexes for the initial and model robust optimal samples obtained based on A-optimality criteria
 #'
-#' \code{Sampling_Probability} matrix of calculated sampling probabilities for A- and L- optimality criteria
+#' \code{Subsampling_Probability} matrix of calculated subsampling probabilities for A- and L- optimality criteria
 #'
 #' @references
 #' \insertRef{mahendran2023model}{NeEDS4BigData}
@@ -376,7 +376,7 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates)
             "Sample_A-Optimality_MR"=Sample.mMSE_MR,
             "Sample_L-Optimality"=Sample.mVc_Single,
             "Sample_L-Optimality_MR"=Sample.mVc_MR,
-            "Sampling_Probability"=Full_SP)
+            "Subsampling_Probability"=Full_SP)
   class(ans)<-c("ModelRobust","poisson")
   return(ans)
 }

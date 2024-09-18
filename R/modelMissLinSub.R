@@ -1,7 +1,7 @@
-#' Sampling under linear regression for a potentially misspecified model
+#' Subsampling under linear regression for a potentially misspecified model
 #'
 #' Using this function sample from big data under linear regression for a potentially misspecified model.
-#' Sampling probabilities are obtained based on the A- and L- optimality criteria
+#' Subsampling probabilities are obtained based on the A- and L- optimality criteria
 #' with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error).
 #'
 #' @usage
@@ -18,13 +18,13 @@
 #' @param F_Estimate_Full   estimate of f that is the difference of linear predictor on GAM and linear model
 #'
 #' @details
-#' Two stage sampling algorithm for big data under linear regression for potential model misspecification.
+#' Two stage subsampling algorithm for big data under linear regression for potential model misspecification.
 #'
 #' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-#' Using the estimated parameters sampling probabilities are evaluated for A-, L-optimality criteria,
-#' RLmAMSE and enhanced RLmAMSE (log-odds and power) sampling methods.
+#' Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria,
+#' RLmAMSE and enhanced RLmAMSE (log-odds and power) subsampling methods.
 #'
-#' Through the estimated sampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
+#' Through the estimated subsampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
 #' Finally, the two samples are combined and the model parameters are estimated for A- and L-optimality,
 #' while for RLmAMSE and enhanced RLmAMSE (log-odds and power) only the optimal sample is used.
 #'
@@ -43,11 +43,11 @@
 #' @return
 #' The output of \code{modelMissLinSub} gives a list of
 #'
-#' \code{Beta_Estimates} estimated model parameters after sampling
+#' \code{Beta_Estimates} estimated model parameters after subsampling
 #'
-#' \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon after sampling
+#' \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon after subsampling
 #'
-#' \code{AMSE_Estimates} matrix of estimated AMSE values after sampling
+#' \code{AMSE_Estimates} matrix of estimated AMSE values after subsampling
 #'
 #' \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 #'
@@ -59,7 +59,7 @@
 #'
 #' \code{Sample_RLmAMSE_Power} list of indexes for the optimal samples obtained based on RLmAMSE with Power function
 #'
-#' \code{Sampling_Probability} matrix of calculated sampling probabilities
+#' \code{Subsampling_Probability} matrix of calculated subsampling probabilities
 #'
 #' @references
 #' \insertRef{adewale2009robust}{NeEDS4BigData}
@@ -194,25 +194,25 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
 
   Var_Epsilon<-matrix(nrow=length(r2),ncol=4)
 
-  # For the Model with already available sampling probabilities - mVc
+  # For the Model with already available subsampling probabilities - mVc
   beta_mVc<-matrix(nrow = length(r2),ncol = ncol(X)+1);
   AMSE_Sample_mVc<-matrix(nrow = length(r2),ncol = 4) ; Sample.mVc<-list();
 
-  # For the Model with already available sampling probabilities - mMSE
+  # For the Model with already available subsampling probabilities - mMSE
   beta_mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1);
   AMSE_Sample_mMSE<-matrix(nrow = length(r2),ncol = 4) ; Sample.mMSE<-list();
 
-  # For the Real and Model with model robust sampling probabilities RLmAMSE
+  # For the Real and Model with model robust subsampling probabilities RLmAMSE
   beta_RLmAMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 );
   AMSE_Sample_RLmAMSE<-matrix(nrow = length(r2),ncol = 4) ; Sample.RLmAMSE<-list()
 
-  # For the Model with model robust sampling probabilities RLmAMSE LO
+  # For the Model with model robust subsampling probabilities RLmAMSE LO
   beta_RLmAMSE_LO<-replicate(length(Alpha),array(dim = c(length(r2),ncol(X)+1)),simplify = FALSE) ;
   AMSE_Sample_RLmAMSE_LO<-replicate(length(Alpha),array(dim = c(length(r2),4)),simplify = FALSE);
   Sample.RLmAMSE_LO<-replicate(length(Alpha),list(rep(list(NA),length(r2)+1)));
   Var_RLmAMSE_LO<-matrix(nrow = length(r2),ncol=length(Alpha))
 
-  # For the Model with model robust sampling probabilities RLmAMSE Pow
+  # For the Model with model robust subsampling probabilities RLmAMSE Pow
   beta_RLmAMSE_Pow<-replicate(length(Alpha),array(dim = c(length(r2),ncol(X)+1)),simplify = FALSE) ;
   AMSE_Sample_RLmAMSE_Pow<-replicate(length(Alpha),array(dim = c(length(r2),4)),simplify = FALSE);
   Sample.RLmAMSE_Pow<-replicate(length(Alpha),list(rep(list(NA),length(r2)+1)));
@@ -405,7 +405,7 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
             "Sample_RLmAMSE"=Sample.RLmAMSE,
             "Sample_RLmAMSE_Log_Odds"=Sample.RLmAMSE_LO,
             "Sample_RLmAMSE_Power"=Sample.RLmAMSE_Pow,
-            "Sampling_Probability"=Full_SP)
+            "Subsampling_Probability"=Full_SP)
   class(ans)<-c("ModelMisspecified","linear")
   return(ans)
 }

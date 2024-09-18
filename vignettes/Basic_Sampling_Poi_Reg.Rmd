@@ -1,8 +1,8 @@
 ---
-title: "Model based Sampling for Poisson Regression"
+title: "Model based Subsampling for Poisson Regression"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Model based Sampling for Poisson Regression}
+  %\VignetteIndexEntry{Model based Subsampling for Poisson Regression}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: Vignette_Ref.bib
@@ -67,9 +67,9 @@ head(Original_Data) %>%
 N<-nrow(Original_Data); M<-250; k<-seq(6,18,by=3)*100; rep_k<-rep(k,each=M)
 ```
 
-Based on this model the methods random sampling, leverage sampling [@ma2014statistical;@ma2015leveraging], $A$- and $L$-optimality subsampling [@ai2021optimal;@yao2021review] and $A$-optimality sampling with response constraint [@zhang2021optimal] are implemented on the big data.
+Based on this model the methods random sampling, leverage sampling [@ma2014statistical;@ma2015leveraging], $A$- and $L$-optimality subsampling [@ai2021optimal;@yao2021review] and $A$-optimality subsampling with response constraint [@zhang2021optimal] are implemented on the big data.
 
-```{r define sampling methods}
+```{r Define the methods}
 # define colors, shapes, line types for the methods
 Method_Names<-c("A-Optimality","L-Optimality","A-Optimality MC",
                 "Shrinkage Leverage","Basic Leverage","Unweighted Leverage",
@@ -88,7 +88,7 @@ Here, $\tilde{\beta}_k$ is the estimated model parameters from the sample of siz
 
 ## Random sampling
 
-Below is the code for implementing these sampling methods.
+Below is the code for this implementation.
 
 ```{r Random sampling}
 # Random sampling
@@ -127,10 +127,10 @@ Final_Beta_ALoptGLM<-Results$Beta_Estimates
 colnames(Final_Beta_ALoptGLM)<-c("Method","Sample",paste0("Beta",0:3))
 ```
 
-## A-optimality sampling with measurement constraints
+## A-optimality subsampling with measurement constraints
 
-```{r A-optimality sampling with measurement constraints}
-# A-optimality sampling without response
+```{r A-optimality subsampling with measurement constraints}
+# A-optimality subsampling without response
 NeEDS4BigData::AoptimalMCGLMSub(r1=300,r2=rep_k,
                                 Y=as.matrix(Original_Data[,1]),
                                 X=as.matrix(Original_Data[,-1]),
@@ -159,7 +159,7 @@ remove(Final_Beta_RS,Final_Beta_LS,Final_Beta_ALoptGLM,
 
 The mean squared error is plotted below.
 
-```{r First scenario model parameter estimates,fig.width=7,fig.height=12,fig.align='center',fig.cap="Mean squared error for a) all the sampling methods and b) without unweighted leverage sampling."}
+```{r First scenario model parameter estimates,fig.width=7,fig.height=12,fig.align='center',fig.cap="Mean squared error for a) all the subsampling methods and b) without unweighted leverage sampling."}
 # Obtain the mean squared error for the model parameter estimates
 MSE_Beta<-data.frame("Method"=Final_Beta$Method,
                      "Sample"=Final_Beta$Sample,

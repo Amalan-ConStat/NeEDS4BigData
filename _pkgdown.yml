@@ -23,15 +23,15 @@ navbar:
       menu:
         - text: Introduction
           href: articles/Introduction.html
-        - text: Linear Regression - Model based sampling
+        - text: Linear Regression - Model based subsampling
           href: articles/Basic_Sampling_Lin_Reg.html
         - text: Linear Regression - Model robust and misspecification
           href: articles/Linear_Regression.html
-        - text: Logistic Regression - Model based sampling
+        - text: Logistic Regression - Model based subsampling
           href: articles/Basic_Sampling_Log_Reg.html
         - text: Logistic Regression - Model robust and misspecification
           href: articles/Logistic_Regression.html
-        - text: Poisson Regression - Model based sampling
+        - text: Poisson Regression - Model based subsampling
           href: articles/Basic_Sampling_Poi_Reg.html
         - text: Poisson Regression - Model robust and misspecification
           href: articles/Poisson_Regression.html
@@ -64,8 +64,8 @@ reference:
         - GenGLMdata
         - GenModelRobustGLMdata
         - GenModelMissGLMdata
-  - title: Sampling
-    desc: Model based Sampling Algorithms
+  - title: Subsampling
+    desc: Model based Subsampling Algorithms
     contents:
         - AoptimalGauLMSub
         - LCCsampling
@@ -78,8 +78,8 @@ reference:
         - modelRobustLinSub
         - modelRobustLogSub
         - modelRobustPoiSub
-  - title: Model Misspecified Sampling
-    desc: Sampling algorithms under a potentially misspecified model
+  - title: Model Misspecified Subsampling
+    desc: Subsampling algorithms under a potentially misspecified model
     contents:
         - modelMissLinSub
         - modelMissLogSub
@@ -91,8 +91,8 @@ reference:
         - plot_AMSE
 
 home:
-  title: NeEDS4BigData - An R package for sampling methods
-  description: New Experimental Design Based Sampling Methods for Big Data.
+  title: NeEDS4BigData - An R package for subsampling methods
+  description: New Experimental Design Based Subsampling Methods for Big Data.
   sidebar:
     structure: [links, license, community, citation, authors, dev]
 

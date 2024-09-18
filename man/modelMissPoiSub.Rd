@@ -2,7 +2,7 @@
 % Please edit documentation in R/modelMissPoiSub.R
 \name{modelMissPoiSub}
 \alias{modelMissPoiSub}
-\title{Sampling under Poisson regression for a potentially misspecified model}
+\title{Subsampling under Poisson regression for a potentially misspecified model}
 \usage{
 modelMissPoiSub(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full)
 }
@@ -26,9 +26,9 @@ modelMissPoiSub(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full)
 \value{
 The output of \code{modelMissPoiSub} gives a list of
 
-\code{Beta_Estimates} estimated model parameters after sampling
+\code{Beta_Estimates} estimated model parameters after subsampling
 
-\code{AMSE_Estimates} matrix of estimated AMSE values after sampling
+\code{AMSE_Estimates} matrix of estimated AMSE values after subsampling
 
 \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 
@@ -40,21 +40,21 @@ The output of \code{modelMissPoiSub} gives a list of
 
 \code{Sample_RLmAMSE_Power} list of indexes for the optimal samples obtained based on RLmAMSE with Power function
 
-\code{Sampling_Probability} matrix of calculated sampling probabilities
+\code{Subsampling_Probability} matrix of calculated subsampling probabilities
 }
 \description{
 Using this function sample from big data under Poisson regression for a potentially misspecified model.
-Sampling probabilities are obtained based on the A- and L- optimality criteria
+Subsampling probabilities are obtained based on the A- and L- optimality criteria
 with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error).
 }
 \details{
-Two stage sampling algorithm for big data under Poisson regression for potential model misspecification.
+Two stage subsampling algorithm for big data under Poisson regression for potential model misspecification.
 
 First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-Using the estimated parameters sampling probabilities are evaluated for A-, L-optimality criteria,
-RLmAMSE and enhanced RLmAMSE (log-odds and power) sampling methods.
+Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria,
+RLmAMSE and enhanced RLmAMSE (log-odds and power) subsampling methods.
 
-Through the estimated sampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
+Through the estimated subsampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
 Finally, the two samples are combined and the model parameters are estimated for A- and L-optimality,
 while for RLmAMSE and enhanced RLmAMSE (log-odds and power) only the optimal sample is used.
 
