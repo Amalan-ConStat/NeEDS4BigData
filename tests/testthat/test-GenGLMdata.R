@@ -7,17 +7,10 @@ test_that("type of the Results output",{
   expect_type(Results,"list")
 })
 test_that("length of Results output",{
-  expect_equal(length(Results),2)
-})
-test_that("length of Results$Basic output",{
-  expect_equal(length(Results$Basic),7)
+  expect_equal(length(Results),1)
 })
 test_that("dimension of Results$Complete_Data",{
   expect_equal(dim(Results$Complete_Data),c(N,length(Beta)+1))
-})
-test_that("names of Results$Basic",{
-  expect_equal(names(Results$Basic),c("N","Beta","Beta_Estimates","Variance_Epsilon_Estimates",
-                                      "Distribution","Distribution_Parameter","No_Of_Variables"))
 })
 
 Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1)
@@ -29,17 +22,10 @@ test_that("type of the Results output",{
   expect_type(Results,"list")
 })
 test_that("length of Results output",{
-  expect_equal(length(Results),2)
-})
-test_that("length of Results$Basic output",{
-  expect_equal(length(Results$Basic),6)
+  expect_equal(length(Results),1)
 })
 test_that("dimension of Results$Complete_Data",{
   expect_equal(dim(Results$Complete_Data),c(N,length(Beta)+1))
-})
-test_that("names of Results$Basic",{
-  expect_equal(names(Results$Basic),c("N","Beta","Beta_Estimates","Distribution",
-                                      "Distribution_Parameter","No_Of_Variables"))
 })
 
 Dist<-"Normal";
@@ -51,17 +37,10 @@ test_that("type of the Results output",{
   expect_type(Results,"list")
 })
 test_that("length of Results output",{
-  expect_equal(length(Results),2)
-})
-test_that("length of Results$Basic output",{
-  expect_equal(length(Results$Basic),6)
+  expect_equal(length(Results),1)
 })
 test_that("dimension of Results$Complete_Data",{
   expect_equal(dim(Results$Complete_Data),c(N,length(Beta)+1))
-})
-test_that("names of Results$Basic",{
-  expect_equal(names(Results$Basic),c("N","Beta","Beta_Estimates","Distribution",
-                                      "Distribution_Parameter","No_Of_Variables"))
 })
 
 Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5)

@@ -110,7 +110,7 @@ All_Models<-All_Models[-c(5:7)]
 names(All_Models)<-paste0("Model_",1:length(All_Models))
 ```
 
-### Apriori probabilities are equal 
+### A priori probabilities are equal 
 
 Consider for $Q=5$ each model has an equal a priori probability (i.e $\alpha_q=1/5,q=1,\ldots,5$). 
 Below is the code of implementation for this scenario.
@@ -121,7 +121,7 @@ All_Covariates<-colnames(Original_Data_ModelRobust)[-1]
 NeEDS4BigData::modelRobustLogSub(r1=300,r2=rep_k,
                                  Y=as.matrix(Original_Data_ModelRobust[,1]),
                                  X=as.matrix(Original_Data_ModelRobust[,-1]),
-                                 N=N,Alpha=rep(1/length(All_Models),length(All_Models)),
+                                 N=N,Apriori_alpha=rep(1/length(All_Models),length(All_Models)),
                                  All_Combinations = All_Models,
                                  All_Covariates = All_Covariates)->Results
 Final_Beta_modelRobust<-Results$Beta_Estimates
@@ -175,32 +175,19 @@ Method_Colour<-c("red","darkred","yellowgreen","green","springgreen4")
 Method_Shape_Types<-c(rep(8,2),rep(4,3))
 Method_Line_Types<-c(rep("twodash",2),rep("dotted",3))
 
-# For the big data fit the main effects model and estimate the contamination
-interaction_terms <- combn(colnames(Original_Data[,-1])[-1],2,
-                           FUN=function(x)paste(x,collapse="*"))
-as.formula(paste("Y ~ ",
-                 paste(paste0("s(X",1:ncol(Original_Data[,-c(1,2)]),")"),
-                       collapse="+"),"+",paste(paste0("s(",interaction_terms,")"),
-                                               collapse=" + ")))->my_formula
-
-glm(Y~.-1,data=Original_Data,family="binomial")->Results
-beta.prop<-coefficients(Results)
-Xbeta_Final<-as.vector(as.matrix(Original_Data[,-1])%*%beta.prop)
-fit_GAM<-gam::gam(formula = my_formula,data=Original_Data,family="binomial")
-Xbeta_GAM<-gam::predict.Gam(fit_GAM,newdata = Original_Data[,-1])
-f_estimate<-Xbeta_GAM - Xbeta_Final
-
 # A- and L-optimality and RLmAMSE model misspecified subsampling for logistic regression 
 NeEDS4BigData::modelMissLogSub(r1=300,r2=rep_k,
                                Y=as.matrix(Original_Data[,1]),
                                X=as.matrix(Original_Data[,-1]),
-                               N=N,Alpha=10, Beta_Estimate_Full = beta.prop,
-                               F_Estimate_Full = f_estimate)->Results
+                               N=N,Alpha=10, proportion = 0.8)->Results
 
 Final_Beta_modelMiss<-Results$Beta_Estimates
 Final_AMSE_modelMiss<-Results$AMSE_Estimates
 
-matrix(rep(beta.prop,by=nrow(Final_Beta_modelMiss)),nrow = nrow(Final_Beta_modelMiss),
+glm(Y~.-1,data=Original_Data,family="binomial")->All_Results
+All_Beta<-coefficients(All_Results)
+
+matrix(rep(All_Beta,by=nrow(Final_Beta_modelMiss)),nrow = nrow(Final_Beta_modelMiss),
        ncol = ncol(Final_Beta_modelMiss[,-c(1,2)]),byrow = TRUE)->All_Beta
 
 # Plots for the mean squared error of the model parameter estimates 

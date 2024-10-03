@@ -5,7 +5,7 @@
 #' with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error).
 #'
 #' @usage
-#' modelMissLinSub(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_Full)
+#' modelMissLinSub(r1,r2,Y,X,N,Alpha,proportion)
 #'
 #' @param r1                sample size for initial random sampling
 #' @param r2                sample size for optimal sampling
@@ -13,9 +13,7 @@
 #' @param X                 covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N                 size of the big data
 #' @param Alpha             scaling factor when using Log Odds or Power functions to magnify the probabilities
-#' @param Var_GAM_Full      estimate of Var_Epsilon after fitting the GAM model
-#' @param Var_Full          estimate of Var_Epsilon after fitting the linear regression model
-#' @param F_Estimate_Full   estimate of f that is the difference of linear predictor on GAM and linear model
+#' @param proportion        a proportion of the big data is used to help estimate the AMSE values from the subsamples
 #'
 #' @details
 #' Two stage subsampling algorithm for big data under linear regression for potential model misspecification.
@@ -39,6 +37,8 @@
 #' if they are not aligned an error message will be produced.
 #'
 #' If \eqn{\alpha > 1} for the scaling factor is not satisfied an error message will be produced.
+#'
+#' If proportion is not in the region of \eqn{(0,1]} an error message will be produced.
 #'
 #' @return
 #' The output of \code{modelMissLinSub} gives a list of
@@ -66,12 +66,16 @@
 #' \insertRef{adewale2010robust}{NeEDS4BigData}
 #'
 #' @examples
-#' No_Of_Var<-2; Beta<-c(-1,2,2,1); Var_Epsilon<-0.5; N<-10000;
-#' MisspecificationType <- "Type 2 Squared"; family <- "linear"
+#' Beta<-c(-1,0.75,0.75,1); Var_Epsilon<-0.5; family <- "linear"; N<-10000
+#' X_1 <- replicate(2,stats::runif(n=N,min = -1,max = 1))
 #'
-#' Full_Data<-GenModelMissGLMdata(No_Of_Var,Beta,Var_Epsilon,N,MisspecificationType,family)
+#' Temp<-Rfast::rowprods(X_1)
+#' Misspecification <- (Temp-mean(Temp))/sqrt(mean(Temp^2)-mean(Temp)^2)
+#' X_Data <- cbind(X0=1,X_1);
+#' Full_Data<-GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon,family)
 #'
-#' r1<-300; r2<-rep(100*c(6,9),50); Original_Data<-Full_Data$Full_Data;
+#' r1<-300; r2<-rep(100*c(6,9),50);
+#' Original_Data<-Full_Data$Complete_Data[,-ncol(Full_Data$Complete_Data)];
 #'
 #' # cl <- parallel::makeCluster(4)
 #' # doParallel::registerDoParallel(cl)
@@ -79,11 +83,7 @@
 #' Results<-modelMissLinSub(r1 = r1, r2 = r2,
 #'                          Y = as.matrix(Original_Data[,1]),
 #'                          X = as.matrix(Original_Data[,-1]),
-#'                          N = Full_Data$N,
-#'                          Alpha = 10 ,
-#'                          Var_GAM_Full = Full_Data$Variance_Epsilon$Real_GAM,
-#'                          Var_Full = Full_Data$Variance_Epsilon$Estimate,
-#'                          F_Estimate_Full = Full_Data$f$Real_GAM)
+#'                          N = N, Alpha = 10, proportion = 0.3)
 #'
 #' # parallel::stopCluster(cl)
 #'
@@ -98,9 +98,9 @@
 #' @importFrom Rfast rowprods
 #' @importFrom psych tr
 #' @export
-modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_Full){
-  if(any(is.na(c(r1,r2,N,Alpha))) | any(is.nan(c(r1,r2,N,Alpha)))){
-    stop("NA or Infinite or NAN values in the r1,r2,N or Alpha")
+modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion){
+  if(any(is.na(c(r1,r2,N,Alpha,proportion))) | any(is.nan(c(r1,r2,N,Alpha,proportion)))){
+    stop("NA or Infinite or NAN values in the r1,r2,N,Alpha or proportion")
   }
 
   if((N != nrow(X)) | (N != nrow(Y)) | nrow(X) != nrow(Y)){
@@ -117,6 +117,13 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
 
   if(Alpha <= 1 | length(Alpha) > 1){
     stop("Scaling factor alpha is not greater than one or the length is more than one")
+  }
+
+  if(proportion >1 | proportion <=0){
+    stop("Proportion should be a value higher than zero and less than or equal one")
+  }
+  if(proportion >= 0.5){
+    warning("50% of the big data is used to help find the AMSE for the desings, this could take some time.")
   }
 
   idx.prop <- sample(1:N, r1, T)
@@ -142,12 +149,24 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
   f_estimate<-Xbeta_GAM-Xbeta.prop
   Var_GAM.prop<-sum((Y-Xbeta_GAM)^2)/N
 
-  if(is.null(Var_GAM_Full) || is.null(Var_Full) || is.null(F_Estimate_Full) ||
-     anyNA(Var_GAM_Full) || anyNA(Var_Full) || anyNA(F_Estimate_Full)){
+  if(proportion*N != r1){
+    idx.proportion <- sample(1:N, ceiling(proportion*N), T)
+    Y_proportion<-Y[idx.proportion]
+    X_proportion<-X[idx.proportion,]
 
+    Proportion_Data<-data.frame(Y=Y_proportion,X_proportion)
+    fit_GAM_Proportion<-gam::gam(my_formula,data=Proportion_Data)
+    Xbeta_GAM_Proportion<-gam::predict.Gam(fit_GAM_Proportion,newdata = data.frame(X))
+
+    beta_proportion<-solve(a=t(X_proportion)%*%X_proportion,b=t(X_proportion)%*%Y_proportion)
+    Xbeta_proportion<-X%*%beta_proportion
+
+    Var_GAM_Full<-sum((Y-Xbeta_GAM_Proportion)^2)/N
+    Var_Full<-sum((Y-Xbeta_proportion)^2)/N
+    F_Estimate_Full<-Xbeta_GAM_Proportion-Xbeta_proportion
+  }
+  else{
     Var_GAM_Full<-Var_GAM.prop ; Var_Full<-Var.prop ; F_Estimate_Full<-f_estimate
-    message("Var_GAM_Full, Var_Full and F_Estimate_Full from the initial sample is used.\n")
-
   }
 
   # mVc
@@ -408,236 +427,4 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_F
             "Subsampling_Probability"=Full_SP)
   class(ans)<-c("ModelMisspecified","linear")
   return(ans)
-}
-
-#' Generate data for Generalised Linear Models under model misspecification scenario
-#'
-#' Function to simulate big data under Generalised Linear Models for the model misspecification scenario through
-#' any misspecification type.
-#'
-#' @usage
-#' GenModelMissGLMdata(No_Of_Var,Beta,Var_Epsilon,N,MisspecificationType,family)
-#'
-#' @param No_Of_Var               number of variables
-#' @param Beta                    a vector for the model parameters, including the intercept
-#' @param Var_Epsilon             variance value for the residuals
-#' @param N                       the big data size
-#' @param MisspecificationType    a character vector referring to different types of misspecification
-#' @param family                  a character vector for "linear", "logistic" and "poisson" regression from Generalised Linear Models
-#'
-#' @details
-#' Big data for the Generalised Linear Models are generated by the "linear", "logistic" and "poisson"
-#' regression types under model misspecification.
-#'
-#' We have limited the covariate data generation through uniform distribution of limits \eqn{(-1,1)}.
-#'
-#' Different type of misspecifications are "Type 1", "Type 2 Squared", "Type 2 Interaction",
-#' "Type 3 Squared" or "Type 3 Interaction".
-#'
-#' @return
-#' The output of \code{GenModelMissGLMdata} gives a list of
-#'
-#' \code{N} the big data size
-#' \code{Beta} a list of outputs(real and estimated) for the beta values
-#' \code{Variance_Epsilon} a list of outputs(real and estimated) for the variance epsilon
-#' \code{Xbeta} a list of outputs(real and estimated) for the linear predictor
-#' \code{f} a list of outputs(real and estimated) misspecification
-#' \code{Real_Full_Data} a matrix for Y,X and f(x)
-#' \code{Full_Data} a matrix for Y and X
-#'
-#'
-#' @examples
-#' No_Of_Var<-2; Beta<-c(-1,2,2,1); Var_Epsilon<-0.5; N<-10000;
-#' MisspecificationType <- "Type 2 Squared"; family <- "linear"
-#'
-#' Results<-GenModelMissGLMdata(No_Of_Var,Beta,Var_Epsilon,N,MisspecificationType,family)
-#'
-#' No_Of_Var<-2; Beta<-c(-1,2,2,1); N<-10000;
-#' MisspecificationType <- "Type 2 Squared"; family <- "logistic"
-#'
-#' Results<-GenModelMissGLMdata(No_Of_Var,Beta,Var_Epsilon=NULL,N,MisspecificationType,family)
-#'
-#' No_Of_Var<-2; Beta<-c(-1,2,2,1); N<-10000;
-#' MisspecificationType <- "Type 2 Squared"; family <- "poisson"
-#'
-#' Results<-GenModelMissGLMdata(No_Of_Var,Beta,Var_Epsilon=NULL,N,MisspecificationType,family)
-#'
-#' @import stats
-#' @importFrom gam s
-#' @export
-GenModelMissGLMdata<-function(No_Of_Var,Beta,Var_Epsilon,N,MisspecificationType,family)
-{
-  if(any(is.na(c(No_Of_Var,Beta,Var_Epsilon,N,MisspecificationType,family))) |
-     any(is.nan(c(No_Of_Var,Beta,Var_Epsilon,N,MisspecificationType,family)))){
-    stop("NA or Infinite or NAN values in the No_Of_Var,Beta,Var_Epsilon,N,MisspecificationType or family")
-  }
-
-  if(!any(family %in% c("linear","logistic","poisson"))){
-    stop("Only the regression types 'linear','logistic' or 'poisson' are allowed")
-  }
-
-  if(!any(MisspecificationType == c("Type 1","Type 2 Squared","Type 2 Interaction",
-                                    "Type 3 Squared","Type 3 Interaction"))){
-    stop("Only the misspecification types 'Type 1', 'Type 2 Squared', 'Type 2 Interaction', \n 'Type 3 Squared', 'Type 3 Interaction' are allowed")
-  }
-
-  X_1<-replicate(No_Of_Var,stats::runif(n=N,min = -1,max = 1))
-  X_Data <- cbind(X0=1,X_1);
-  colnames(X_Data)[-1]<-paste0("X",1:ncol(X_Data[,-1]))
-
-  if(MisspecificationType == "Type 1"){
-    X_Data_Real <- cbind(X_Data,"f(x)"=0)
-  }
-  if(MisspecificationType == "Type 2 Squared"){
-    Temp<-rowSums(X_1^2)
-    X_Data_Real <- cbind(X_Data,"f(x)"=(Temp-mean(Temp))/sqrt(mean(Temp^2)-mean(Temp)^2))
-  }
-  if(MisspecificationType == "Type 2 Interaction"){
-    Temp<-Rfast::rowprods(X_1)
-    X_Data_Real <- cbind(X_Data,"f(x)"=(Temp-mean(Temp))/sqrt(mean(Temp^2)-mean(Temp)^2))
-  }
-  if(MisspecificationType == "Type 3 Squared"){
-    Temp<-rowSums(X_1^2)
-    beta_dist<-stats::runif(1,min = 0.75,max = 1.25)
-    X_Data_Real <- cbind(X_Data,"f(x)"=beta_dist*(Temp-mean(Temp))/sqrt(mean(Temp^2)-mean(Temp)^2))
-  }
-  if(MisspecificationType == "Type 3 Interaction"){
-    Temp<-Rfast::rowprods(X_1)
-    beta_dist<-stats::runif(1,min = 0.75,max = 1.25)
-    X_Data_Real <- cbind(X_Data,"f(x)"=beta_dist*(Temp-mean(Temp))/sqrt(mean(Temp^2)-mean(Temp)^2))
-  }
-
-  if(family == "linear"){
-    Y_Data <- X_Data_Real%*%Beta + stats::rnorm(n = N,mean = 0,sd = sqrt(Var_Epsilon))
-
-    if(MisspecificationType == "Type 1"){
-      beta.prop_Real<-solve(a=t(X_Data_Real[,-ncol(X_Data_Real)])%*%X_Data_Real[,-ncol(X_Data_Real)],
-                            b=t(X_Data_Real[,-ncol(X_Data_Real)])%*%Y_Data)
-      Xbeta_Final_Real<-as.vector(X_Data_Real[,-ncol(X_Data_Real)]%*%beta.prop_Real)
-      Var.prop_Real<-sum((Y_Data-Xbeta_Final_Real)^2)/N
-    } else {
-      beta.prop_Real<-solve(a=t(X_Data_Real)%*%X_Data_Real,b=t(X_Data_Real)%*%Y_Data)
-      Xbeta_Final_Real<-as.vector(X_Data_Real%*%beta.prop_Real)
-      Var.prop_Real<-sum((Y_Data-Xbeta_Final_Real)^2)/N
-    }
-
-    beta.prop<-solve(a=t(X_Data)%*%X_Data,b=t(X_Data)%*%Y_Data)
-    Xbeta_Final<-as.vector(X_Data%*%beta.prop)
-    Var.prop<-sum((Y_Data-Xbeta_Final)^2)/N
-  }
-
-  if(family == "logistic"){
-    Pi_Data<-1-1/(1+exp(X_Data_Real%*%Beta))
-    Y_Data <- stats::rbinom(N,1,Pi_Data)
-
-    if(MisspecificationType == "Type 1"){
-      parameter.propfits<-.getMLE(x=X_Data_Real[,-ncol(X_Data_Real)], y=Y_Data, w=rep(N,N))
-      beta.prop_Real<-parameter.propfits$par
-      Xbeta_Final_Real<-as.vector(X_Data_Real[,-ncol(X_Data_Real)]%*%beta.prop_Real)
-    } else {
-      parameter.propfits<-.getMLE(x=X_Data_Real, y=Y_Data, w=rep(N,N))
-      beta.prop_Real<-parameter.propfits$par
-      Xbeta_Final_Real<-as.vector(X_Data_Real%*%beta.prop_Real)
-    }
-    parameter.propfits<-.getMLE(x=X_Data, y=Y_Data, w=rep(N,N))
-    beta.prop<-parameter.propfits$par
-    Xbeta_Final<-as.vector(X_Data%*%beta.prop)
-  }
-
-  if(family == "poisson"){
-    Lambda_Data<-exp(X_Data_Real%*%Beta)
-    Y_Data <- stats::rpois(N,Lambda_Data)
-
-    if(MisspecificationType == "Type 1"){
-      Temp_Data<-cbind.data.frame(Y_Data,X_Data_Real[,-ncol(X_Data_Real)])
-      colnames(Temp_Data)<-c("Y",paste0("X",0:(ncol(Temp_Data[,-1])-1)))
-      parameter.propfits<-stats::glm(Y ~ . -1, data = Temp_Data, family = "poisson")
-      beta.prop_Real<-parameter.propfits$coefficients
-      Xbeta_Final_Real<-as.vector(X_Data_Real[,-ncol(X_Data_Real)]%*%beta.prop_Real)
-    } else {
-      Temp_Data<-cbind.data.frame(Y_Data,X_Data_Real)
-      colnames(Temp_Data)<-c("Y",paste0("X",0:(ncol(Temp_Data[,-1])-1)))
-      parameter.propfits<-stats::glm(Y ~ .-1, data = Temp_Data, family = "poisson")
-      beta.prop_Real<-parameter.propfits$coefficients
-      Xbeta_Final_Real<-as.vector(X_Data_Real%*%beta.prop_Real)
-    }
-
-    Temp_Data<-cbind.data.frame(Y_Data,X_Data)
-    colnames(Temp_Data)<-c("Y",paste0("X",0:(ncol(Temp_Data[,-1])-1)))
-    parameter.propfits<-stats::glm(Y ~ .-1, data = Temp_Data, family="poisson")
-    beta.prop<-parameter.propfits$coefficients
-    Xbeta_Final<-as.vector(X_Data%*%beta.prop)
-  }
-
-  my_formula<-stats::as.formula(paste("Y ~ ",paste(paste0("s(X",1:ncol(X_Data[,-1]),")"),collapse = " + "),"+",
-                                      paste(paste0("s(",paste0(colnames(X_Data[,-1]),collapse = "*"),")"),
-                                            collapse = " + ")))
-
-  if(family == "linear"){
-    # calculate f_hat
-    Assumed_Data<-data.frame(Y=Y_Data,X_Data)
-    fit_GAM<-gam::gam(formula = my_formula,data=Assumed_Data)
-    Xbeta_GAM<-gam::predict.Gam(fit_GAM,newdata = data.frame(X_Data))
-    f_estimate<-Xbeta_GAM - Xbeta_Final
-    Var_GAM.prop<-sum((Y_Data-Xbeta_GAM)^2)/N
-
-    Real_Model_Data<-cbind(Y=Y_Data,X_Data_Real)
-    Assumed_Model_Data<-cbind(Y=Y_Data,X_Data)
-
-    colnames(Real_Model_Data)<-c("Y","X0",paste0("X",1:ncol(X_Data[,-1])),"f(x)")
-    colnames(Assumed_Model_Data)<-c("Y","X0",paste0("X",1:ncol(X_Data[,-1])))
-
-    Outputs<-list("N"=N,
-                  "Beta"=list("Real"=Beta,"Real_Estimate"=t(beta.prop_Real),"Estimate"=t(beta.prop)),
-                  "Variance_Epsilon"=list("Real"=Var_Epsilon,"Real_Estimate"=Var.prop_Real,
-                                          "Real_GAM"=Var_GAM.prop,"Estimate"=Var.prop),
-                  "Xbeta"=list("Real_Estimate"=Xbeta_Final_Real,"Real_GAM"=Xbeta_GAM,"Estimate"=Xbeta_Final),
-                  "f"=list("Real"=X_Data_Real[,ncol(X_Data_Real)],"Real_GAM"=f_estimate),
-                  "Real_Full_Data"=Real_Model_Data,
-                  "Full_Data"=Assumed_Model_Data)
-    class(Outputs)<-c("ModelMisspecified","linear")
-  }
-  if(family == "logistic"){
-    # calculate f_hat
-    Assumed_Data<-data.frame(Y=Y_Data,X_Data)
-    fit_GAM<-gam::gam(formula = my_formula,data=Assumed_Data,family = "binomial")
-    Xbeta_GAM<-gam::predict.Gam(fit_GAM,newdata = data.frame(X_Data))
-    f_estimate<-Xbeta_GAM - Xbeta_Final
-
-    Real_Model_Data<-cbind(Y=Y_Data,X_Data_Real)
-    Assumed_Model_Data<-cbind(Y=Y_Data,X_Data)
-
-    colnames(Real_Model_Data)<-c("Y","X0",paste0("X",1:ncol(X_Data[,-1])),"f(x)")
-    colnames(Assumed_Model_Data)<-c("Y","X0",paste0("X",1:ncol(X_Data[,-1])))
-
-    Outputs<-list("N"=N,
-                  "Beta"=list("Real"=Beta,"Real_Estimate"=beta.prop_Real,"Estimate"=beta.prop),
-                  "Xbeta"=list("Real_Estimate"=Xbeta_Final_Real,"Real_GAM"=Xbeta_GAM,"Estimate"=Xbeta_Final),
-                  "f"=list("Real"=X_Data_Real[,ncol(X_Data_Real)],"Real_GAM"=f_estimate),
-                  "Real_Full_Data"=Real_Model_Data,
-                  "Full_Data"=Assumed_Model_Data)
-    class(Outputs)<-c("ModelMisspecified","logistic")
-  }
-  if(family == "poisson"){
-    # calculate f_hat
-    Assumed_Data<-data.frame(Y=Y_Data,X_Data)
-    fit_GAM<-gam::gam(formula = my_formula,data=Assumed_Data,family = "poisson")
-    Xbeta_GAM<-gam::predict.Gam(fit_GAM,newdata = data.frame(X_Data))
-    f_estimate<-Xbeta_GAM - Xbeta_Final
-
-    Real_Model_Data<-cbind(Y=Y_Data,X_Data_Real)
-    Assumed_Model_Data<-cbind(Y=Y_Data,X_Data)
-
-    colnames(Real_Model_Data)<-c("Y","X0",paste0("X",1:ncol(X_Data[,-1])),"f(x)")
-    colnames(Assumed_Model_Data)<-c("Y","X0",paste0("X",1:ncol(X_Data[,-1])))
-
-    Outputs<-list("N"=N,
-                  "Beta"=list("Real"=Beta,"Real_Estimate"=beta.prop_Real,"Estimate"=beta.prop),
-                  "Xbeta"=list("Real_Estimate"=Xbeta_Final_Real,"Real_GAM"=Xbeta_GAM,"Estimate"=Xbeta_Final),
-                  "f"=list("Real"=X_Data_Real[,ncol(X_Data_Real)],"Real_GAM"=f_estimate),
-                  "Real_Full_Data"=Real_Model_Data,
-                  "Full_Data"=Assumed_Model_Data)
-    class(Outputs)<-c("ModelMisspecified","poisson")
-  }
-  return(Outputs)
 }

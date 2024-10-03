@@ -5,7 +5,7 @@
 #' with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error).
 #'
 #' @usage
-#' modelMissLogSub(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full)
+#' modelMissLogSub(r1,r2,Y,X,N,Alpha,proportion)
 #'
 #' @param r1                 sample size for initial random sampling
 #' @param r2                 sample size for optimal sampling
@@ -13,8 +13,7 @@
 #' @param X                  covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N                  size of the big data
 #' @param Alpha              scaling factor when using Log Odds or Power functions to magnify the probabilities
-#' @param Beta_Estimate_Full estimate of Beta after fitting the logistic model
-#' @param F_Estimate_Full    estimate of f that is the difference of linear predictor on GAM and logistic model
+#' @param proportion         a proportion of the big data is used to help estimate the AMSE values from the subsamples
 #'
 #' @details
 #' Two stage subsampling algorithm for big data under logistic regression for potential model misspecification.
@@ -38,6 +37,8 @@
 #' if they are not aligned an error message will be produced.
 #'
 #' If \eqn{\alpha > 1} for the scaling vector is not satisfied an error message will be produced.
+#'
+#' If proportion is not in the region of \eqn{(0,1]} an error message will be produced.
 #'
 #' @return
 #' The output of \code{modelMissLogSub} gives a list of
@@ -63,12 +64,16 @@
 #' \insertRef{adewale2010robust}{NeEDS4BigData}
 #'
 #' @examples
-#' No_Of_Var<-2; Beta<-c(-1,2,2,1); N<-10000;
-#' MisspecificationType <- "Type 2 Squared"; family <- "logistic"
+#' Beta<-c(-1,0.75,0.75,1); family <- "logistic"; N<-10000
+#' X_1 <- replicate(2,stats::runif(n=N,min = -1,max = 1))
 #'
-#' Full_Data<-GenModelMissGLMdata(No_Of_Var,Beta,Var_Epsilon=NULL,N,MisspecificationType,family)
+#' Temp<-Rfast::rowprods(X_1)
+#' Misspecification <- (Temp-mean(Temp))/sqrt(mean(Temp^2)-mean(Temp)^2)
+#' X_Data <- cbind(X0=1,X_1);
+#' Full_Data<-GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon=NULL,family)
 #'
-#' r1<-300; r2<-rep(100*c(6,9),50); Original_Data<-Full_Data$Full_Data;
+#' r1<-300; r2<-rep(100*c(6,9),50);
+#' Original_Data<-Full_Data$Complete_Data[,-ncol(Full_Data$Complete_Data)];
 #'
 #' # cl <- parallel::makeCluster(4)
 #' # doParallel::registerDoParallel(cl)
@@ -76,10 +81,7 @@
 #' Results<-modelMissLogSub(r1 = r1, r2 = r2,
 #'                          Y = as.matrix(Original_Data[,1]),
 #'                          X = as.matrix(Original_Data[,-1]),
-#'                          N = Full_Data$N,
-#'                          Alpha = 10,
-#'                          Beta_Estimate_Full = Full_Data$Beta$Estimate,
-#'                          F_Estimate_Full = Full_Data$f$Real_GAM)
+#'                          N = N, Alpha = 10, proportion = 0.3)
 #'
 #' # parallel::stopCluster(cl)
 #'
@@ -94,9 +96,9 @@
 #' @importFrom Rfast rowprods
 #' @importFrom psych tr
 #' @export
-modelMissLogSub <- function(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full){
-  if(any(is.na(c(r1,r2,N,Alpha))) | any(is.nan(c(r1,r2,N,Alpha)))){
-    stop("NA or Infinite or NAN values in the r1,r2,N or Alpha")
+modelMissLogSub <- function(r1,r2,Y,X,N,Alpha,proportion){
+  if(any(is.na(c(r1,r2,N,Alpha,proportion))) | any(is.nan(c(r1,r2,N,Alpha,proportion)))){
+    stop("NA or Infinite or NAN values in the r1,r2,N,Alpha or proportion")
   }
 
   if((N != nrow(X)) | (N != nrow(Y)) | nrow(X) != nrow(Y)){
@@ -113,6 +115,13 @@ modelMissLogSub <- function(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full
 
   if(Alpha <= 1 | length(Alpha) > 1){
     stop("Scaling factor alpha is not greater than one or the length is more than one")
+  }
+
+  if(proportion >1 | proportion <=0){
+    stop("Proportion should be a value higher than zero and less than or equal one")
+  }
+  if(proportion >= 0.5){
+    warning("50% of the big data is used to help find the AMSE for the desings, this could take some time.")
   }
 
   n1 <- sum(Y)
@@ -143,12 +152,26 @@ modelMissLogSub <- function(r1,r2,Y,X,N,Alpha,Beta_Estimate_Full,F_Estimate_Full
   Xbeta_GAM<-gam::predict.Gam(fit_GAM,newdata = data.frame(X))
   f_estimate<-Xbeta_GAM - X%*%beta.prop
 
-  if(is.null(Beta_Estimate_Full) || is.null(F_Estimate_Full) ||
-     anyNA(Beta_Estimate_Full) || anyNA(F_Estimate_Full)){
+  if(proportion*N != r1){
+    idx.proportion <- sample(1:N, ceiling(proportion*N), T, PI.prop)
 
+    Y_proportion <- Y[idx.proportion]
+    X_proportion <- X[idx.proportion,]
+    pinv.proportion <- 1/PI.prop[idx.proportion]
+    fit.proportion <- .getMLE(x=X_proportion, y=Y_proportion, w=pinv.proportion)
+
+    beta.proportion <- fit.proportion$par
+    Xbeta_proportion <- X %*% beta.proportion
+
+    Assumed_Data<-data.frame(Y=Y_proportion,X_proportion)
+    fit_GAM_proportion<-gam::gam(my_formula,data=Assumed_Data,family = "binomial")
+    Xbeta_GAM_proportion<-gam::predict.Gam(fit_GAM_proportion,newdata = data.frame(X))
+
+    F_Estimate_Full<-Xbeta_GAM_proportion - Xbeta_proportion
+    Beta_Estimate_Full<-beta.proportion
+  }
+  else {
     Beta_Estimate_Full<- beta.prop ; F_Estimate_Full<-f_estimate
-    message("Beta_Estimate_Full and F_Estimate_Full from the initial sample is used.")
-
   }
 
   ## mVc

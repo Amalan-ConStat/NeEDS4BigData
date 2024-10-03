@@ -6,7 +6,7 @@ r<-100*c(6,10); Original_Data<-Full_Data$Complete_Data;
 
 LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                 alpha = 0.95,
+                 S_alpha = 0.95,
                  family = "linear") |> suppressMessages() ->Results
 
 context_start_file("Checking the LeverageSampling function under linear regression")
@@ -46,7 +46,7 @@ r<-100*c(6,10); Original_Data<-Full_Data$Complete_Data;
 
 LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                 alpha = 0.95,
+                 S_alpha = 0.95,
                  family = "logistic") |> suppressMessages()->Results
 
 context_start_file("Checking the LeverageSampling function under logistic regression")
@@ -78,32 +78,32 @@ context_start_file("Checking the LeverageSampling for error messages")
 test_that("Error on input for r",{
   expect_error(LeverageSampling(r = c(r,NA), Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                                alpha = 0.95,
-                                family = "logistic"),"NA or Infinite or NAN values in the r,alpha,N or family")
+                                S_alpha = 0.95,
+                                family = "logistic"),"NA or Infinite or NAN values in the r,S_alpha,N or family")
 })
 Original_Data[100,]<-rep(NA,4)
 test_that("Error on X input",{
   expect_error(LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                                alpha = 0.95,
+                                S_alpha = 0.95,
                                 family = "logistic"),"NA or Infinite or NAN values in the Y or X")
 })
 Original_Data<-Full_Data$Complete_Data
 test_that("Error on size of X and Y",{
   expect_error(LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data)+1,
-                                alpha = 0.95,
+                                S_alpha = 0.95,
                                 family = "logistic"),"The big data size N is not the same as of the size of X or Y")
 })
 test_that("Error on alphva value input",{
   expect_error(LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                                alpha = 1.95,
-                                family = "logistic"),"Alpha value for shrinkage leverage scores are not in the range of zero and one or the length is more than one")
+                                S_alpha = 1.95,
+                                family = "logistic"),"S_alpha value for shrinkage leverage scores are not in the range of zero and one or the length is more than one")
 })
 test_that("Error on character value of family",{
   expect_error(LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                                alpha = 0.95,
+                                S_alpha = 0.95,
                                 family = "exp"),"Only the regression types 'linear','logistic' or 'poisson' are allowed")
 })

@@ -5,19 +5,19 @@
 #' optimality criteria.
 #'
 #' @usage
-#' modelRobustLogSub(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates)
+#' modelRobustLogSub(r1,r2,Y,X,N,Apriori_alpha,All_Combinations,All_Covariates)
 #'
 #' @param r1      sample size for initial random sampling
 #' @param r2      sample size for optimal sampling
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
-#' @param Alpha   vector of alpha values that are used to obtain the model robust subsampling probabilities
+#' @param Apriori_alpha   vector of a priori probabilities that are used to obtain the model robust subsampling probabilities
 #' @param All_Combinations list of possible models that can describe the data
 #' @param All_Covariates all the covariates in the models
 #'
 #' @details
-#'Two stage subsampling algorithm for big data under logistic regression for multiple models that can
+#' Two stage subsampling algorithm for big data under logistic regression for multiple models that can
 #' describe the big data.
 #'
 #' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters for all models.
@@ -37,7 +37,8 @@
 #' The big data size \eqn{N} is compared with the sizes of \eqn{X,Y} and
 #' if they are not aligned an error message will be produced.
 #'
-#' If \eqn{0 < \alpha < 1} for the a priori probabilities are not satisfied an error message will be produced.
+#' If \eqn{0 < \alpha_{q} < 1} for the a priori probabilities are not satisfied an error message will be produced,
+#' where \eqn{q=1,\ldots,Q} and \eqn{Q} is the number of models in the model set.
 #'
 #' @return
 #' The output of \code{modelRobustLinSub} gives a list of
@@ -60,22 +61,40 @@
 #' \insertRef{mahendran2023model}{NeEDS4BigData}
 #'
 #' @examples
-#' Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1)
-#' No_Of_Var<-2; Beta<-c(-1,2,1,2); N<-10000
-#' All_Models<-list(Real_Model=c("X0","X1","X2","X1^2"),
-#'                  Assumed_Model_1=c("X0","X1","X2"),
-#'                  Assumed_Model_2=c("X0","X1","X2","X2^2"),
-#'                  Assumed_Model_3=c("X0","X1","X2","X1^2","X2^2"))
-#' family = "logistic"
+#' indexes<-1:ceiling(nrow(Skin_segmentation)*0.25)
+#' Original_Data<-cbind(Skin_segmentation[indexes,1],1,Skin_segmentation[indexes,-1])
+#' colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
 #'
-#' Full_Data<-GenModelRobustGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,All_Models,family)
+#' # Scaling the covariate data
+#' for (j in 3:5) {
+#'   Original_Data[,j]<-scale(Original_Data[,j])
+#' }
+#' No_of_Variables<-ncol(Original_Data[,-c(1,2)])
 #'
-#' r1<-300; r2<-rep(100*c(6,9,12),50); Original_Data<-Full_Data$Complete_Data;
+#' Squared_Terms<-paste0("X",1:No_of_Variables,"^2")
+#' term_no <- 2
+#' All_Models <- list(c("X0",paste0("X",1:No_of_Variables)))
+#'
+#' Original_Data<-cbind(Original_Data,Original_Data[,-c(1,2)]^2)
+#' colnames(Original_Data)<-c("Y","X0",paste0("X",1:No_of_Variables),
+#'                            paste0("X",1:No_of_Variables,"^2"))
+#'
+#' for (i in 1:No_of_Variables){
+#'   x <- as.vector(combn(Squared_Terms,i,simplify = FALSE))
+#'   for(j in 1:length(x)){
+#'     All_Models[[term_no]] <- c("X0",paste0("X",1:No_of_Variables),x[[j]])
+#'     term_no <- term_no+1
+#'   }
+#' }
+#' All_Models<-All_Models[-c(5:7)]
+#' names(All_Models)<-paste0("Model_",1:length(All_Models))
+#'
+#' r1<-300; r2<-rep(100*c(6,12),25);
 #'
 #' modelRobustLogSub(r1 = r1, r2 = r2,
 #'                   Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
 #'                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-#'                   Alpha = rep(1/length(All_Models),length(All_Models)),
+#'                   Apriori_alpha = rep(1/length(All_Models),length(All_Models)),
 #'                   All_Combinations = All_Models,
 #'                   All_Covariates = colnames(Original_Data)[-1])->Results
 #'
@@ -85,9 +104,9 @@
 #' @importFrom psych tr
 #' @importFrom matrixStats rowSums2
 #' @export
-modelRobustLogSub <- function(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates){
-  if(any(is.na(c(r1,r2,N,Alpha,All_Covariates))) | any(is.nan(c(r1,r2,N,Alpha,All_Covariates)))){
-    stop("NA or Infinite or NAN values in the r1,r2,N,Alpha or All_Covariates")
+modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_alpha,All_Combinations,All_Covariates){
+  if(any(is.na(c(r1,r2,N,Apriori_alpha,All_Covariates))) | any(is.nan(c(r1,r2,N,Apriori_alpha,All_Covariates)))){
+    stop("NA or Infinite or NAN values in the r1,r2,N,Apriori_alpha or All_Covariates")
   }
 
   if((N != nrow(X)) | (N != nrow(Y)) | nrow(X) != nrow(Y)){
@@ -102,12 +121,12 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates)
     stop("2*r1 cannot be greater than r2 at any point")
   }
 
-  if(length(Alpha) != length(All_Combinations)){
-    stop("No of models for averaging is not equal to the a priori alpha values")
+  if(length(Apriori_alpha) != length(All_Combinations)){
+    stop("No of models for averaging is not equal to the a priori probabilities")
   }
 
-  if(any(Alpha > 1) | any(Alpha < 0) | sum(Alpha) != 1){
-    stop("A priori alpha is not inbetween zero and one or the sum is one")
+  if(any(Apriori_alpha > 1) | any(Apriori_alpha < 0) | sum(Apriori_alpha) != 1){
+    stop("A priori probabilities not inbetween zero and one or the sum is one")
   }
 
   n1 <- sum(Y)
@@ -178,7 +197,7 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates)
     PI.mVc<-sqrt((Y - P.prop[[j]])^2 * matrixStats::rowSums2(X[,All_Covariates %in% All_Combinations[[j]] ]^2))
     return(PI.mVc/sum(PI.mVc))
   })
-  PI_MR.mVc<-matrixStats::rowSums2(do.call(cbind,PI_Single.mVc)%*%diag(Alpha)) # Model Robust Results
+  PI_MR.mVc<-matrixStats::rowSums2(do.call(cbind,PI_Single.mVc)%*%diag(Apriori_alpha)) # Model Robust Results
 
   ## mMSE
   p_Single.prop <- lapply(1:length(All_Combinations),function(j){
@@ -195,7 +214,7 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates)
                                                                  W_Single.prop[[j]])^2)) # Single Model Results
     return(PI.mMSE/sum(PI.mMSE))
   })
-  PI_MR.mMSE<-matrixStats::rowSums2(do.call(cbind,PI_Single.mMSE)%*%diag(Alpha))  # Model Robust Results
+  PI_MR.mMSE<-matrixStats::rowSums2(do.call(cbind,PI_Single.mMSE)%*%diag(Apriori_alpha))  # Model Robust Results
 
   message("Step 1 of the algorithm completed.\n")
 

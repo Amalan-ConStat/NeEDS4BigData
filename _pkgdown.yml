@@ -62,7 +62,6 @@ reference:
     desc: Simulating big data under different conditions
     contents:
         - GenGLMdata
-        - GenModelRobustGLMdata
         - GenModelMissGLMdata
   - title: Subsampling
     desc: Model based Subsampling Algorithms

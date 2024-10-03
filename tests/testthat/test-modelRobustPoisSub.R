@@ -1,16 +1,38 @@
-All_Models<-list(Real_Model=c("X0","X1","X2","X1^2"),
-                 Assumed_Model_1=c("X0","X1","X2"),
-                 Assumed_Model_2=c("X0","X1","X2","X2^2"),
-                 Assumed_Model_3=c("X0","X1","X2","X1^2","X2^2"))
+indexes<-1:ceiling(nrow(Bike_sharing)*0.5)
+Original_Data<-cbind(Bike_sharing[indexes,1],1,Bike_sharing[indexes,-1])
+colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
 
-Dist<-"Normal"; No_Of_Var<-2; Beta<-c(-1,0.8,0.8,1); N<-10000; family = "poisson"
-Full_Data<-GenModelRobustGLMdata(Dist,Dist_Par=NULL,No_Of_Var,Beta,N,All_Models,family) |> suppressWarnings()
-r1<-300; r2<-rep(100*c(6,9,12),5); Original_Data<-Full_Data$Complete_Data;
+# Scaling the covariate data
+for (j in 3:5) {
+  Original_Data[,j]<-scale(Original_Data[,j])
+}
+
+No_of_Variables<-ncol(Original_Data[,-c(1,2)])
+Squared_Terms<-paste0("X",1:No_of_Variables,"^2")
+term_no <- 2
+All_Models <- list(c("X0",paste0("X",1:No_of_Variables)))
+
+Original_Data<-cbind(Original_Data,Original_Data[,-c(1,2)]^2)
+colnames(Original_Data)<-c("Y","X0",paste0("X",1:No_of_Variables),
+                            paste0("X",1:No_of_Variables,"^2"))
+
+for (i in 1:No_of_Variables)
+{
+  x <- as.vector(combn(Squared_Terms,i,simplify = FALSE))
+  for(j in 1:length(x))
+  {
+    All_Models[[term_no]] <- c("X0",paste0("X",1:No_of_Variables),x[[j]])
+    term_no <- term_no+1
+  }
+}
+All_Models<-All_Models[-c(5:7)]
+names(All_Models)<-paste0("Model_",1:length(All_Models))
+r1<-300; r2<-rep(100*c(6,9,12),5)
 
 modelRobustPoiSub(r1 = r1, r2 = r2,
                   Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                  Alpha = rep(1/length(All_Models),length(All_Models)),
+                  Apriori_alpha = rep(1/length(All_Models),length(All_Models)),
                   All_Combinations = All_Models,
                   All_Covariates = colnames(Original_Data)[-1]) |> suppressWarnings() |>
   suppressMessages()->Results
@@ -29,11 +51,11 @@ test_that("length of the Beta Estimates",{
 })
 
 test_that("dim of the Model 1 Beta Estimates",{
-  expect_equal(dim(Results$Beta_Estimates$Model_1),c(length(r2)*4,2+length(All_Models$Real_Model)))
+  expect_equal(dim(Results$Beta_Estimates$Model_1),c(length(r2)*4,2+length(All_Models$Model_1)))
 })
 
 test_that("dimension of the subsampling probability",{
-  expect_equal(dim(Results$Subsampling_Probability),c(N,length(All_Models)*2+2))
+  expect_equal(dim(Results$Subsampling_Probability),c(nrow(Original_Data),length(All_Models)*2+2))
 })
 
 test_that("dimension of the Model 1 A-optimality sample",{
@@ -52,36 +74,33 @@ test_that("dimension of the Model 1 MR L-optimality sample",{
   expect_equal(length(Results$`Sample_L-Optimality_MR`$Model_1),length(r2)+1)
 })
 
-Dist<-"Normal"; No_Of_Var<-2; Beta<-c(-1,0.8,0.8,1); N<-10000; family = "poisson"
-Full_Data<-GenModelRobustGLMdata(Dist,Dist_Par=NULL,No_Of_Var,Beta,N,All_Models,family) |> suppressWarnings()
-r1<-300; r2<-rep(100*c(6,9,12),5); Original_Data<-Full_Data$Complete_Data;
-
 context_start_file("Checking the modelRobustPoiSub for error messages")
 test_that("Error on input for r2",{
   expect_error(modelRobustPoiSub(r1 = r1, r2 = NA,
                                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                                 Alpha = rep(1/length(All_Models),length(All_Models)),
+                                 Apriori_alpha = rep(1/length(All_Models),length(All_Models)),
                                  All_Combinations = All_Models,
                                  All_Covariates = colnames(Original_Data)[-1]),
-               "NA or Infinite or NAN values in the r1,r2,N,Alpha or All_Covariates")
+               "NA or Infinite or NAN values in the r1,r2,N,Apriori_alpha or All_Covariates")
 })
-Original_Data[100,]<-rep(NA,6)
+Temp_Data<-Original_Data
+Temp_Data[100,]<-rep(NA,8)
 test_that("Error on X input",{
   expect_error(modelRobustPoiSub(r1 = r1, r2 = r2,
-                                 Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
-                                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                                 Alpha = rep(1/length(All_Models),length(All_Models)),
+                                 Y = as.matrix(Temp_Data[,colnames(Temp_Data) %in% c("Y")]),
+                                 X = as.matrix(Temp_Data[,-1]),N = nrow(Temp_Data),
+                                 Apriori_alpha = rep(1/length(All_Models),length(All_Models)),
                                  All_Combinations = All_Models,
-                                 All_Covariates = colnames(Original_Data)[-1]),
+                                 All_Covariates = colnames(Temp_Data)[-1]),
                "NA or Infinite or NAN values in the Y or X")
 })
-Original_Data<-Full_Data$Complete_Data
+
 test_that("Error on r1 and r2 input",{
   expect_error(modelRobustPoiSub(r1 = r1+1000, r2 = r2,
                                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                                 Alpha = rep(1/length(All_Models),length(All_Models)),
+                                 Apriori_alpha = rep(1/length(All_Models),length(All_Models)),
                                  All_Combinations = All_Models,
                                  All_Covariates = colnames(Original_Data)[-1]),
                "2*r1 cannot be greater than r2 at any point")
@@ -90,19 +109,19 @@ test_that("Error on size of X and Y",{
   expect_error(modelRobustPoiSub(r1 = r1, r2 = r2,
                                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data)+1,
-                                 Alpha = rep(1/length(All_Models),length(All_Models)),
+                                 Apriori_alpha = rep(1/length(All_Models),length(All_Models)),
                                  All_Combinations = All_Models,
                                  All_Covariates = colnames(Original_Data)[-1]),
                "The big data size N is not the same as of the size of X or Y")
 })
 
-test_that("Error on length on Alpha the a priori probability",{
+test_that("Error on length on Apriori_alpha the a priori probability",{
   expect_error(modelRobustPoiSub(r1 = r1, r2 = r2,
                                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                                 Alpha = c(rep(1/length(All_Models),length(All_Models)),0.1),
+                                 Apriori_alpha = c(rep(1/length(All_Models),length(All_Models)),0.1),
                                  All_Combinations = All_Models,
                                  All_Covariates = colnames(Original_Data)[-1]),
-               "No of models for averaging is not equal to the a priori alpha values")
+               "No of models for averaging is not equal to the a priori probabilities")
 })
 

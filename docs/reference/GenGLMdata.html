@@ -95,7 +95,7 @@ Covariate data X is through Normal or Uniform distribution for Poisson regressio
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Generate data for Generalised Linear Models</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Amalan-ConStat/NeEDS4BigData/blob/HEAD/R/ALoptimalGLMSub.R" class="external-link"><code>R/ALoptimalGLMSub.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Amalan-ConStat/NeEDS4BigData/blob/HEAD/R/Big_data.R" class="external-link"><code>R/Big_data.R</code></a></small>
       <div class="d-none name"><code>GenGLMdata.Rd</code></div>
     </div>
 
@@ -141,10 +141,7 @@ Covariate data X is through Normal or Uniform distribution for Poisson regressio
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>The output of <code>GenGLMData</code> gives a list of</p>
-
-
-<p><code>Basic</code> a list of outputs based on the inputs and Beta Estimates for all models</p>
+<p>The output of <code>GenGLMdata</code> gives a list of</p>
 
 
 <p><code>Complete_Data</code> a matrix for Y and X</p>
@@ -171,12 +168,10 @@ Poisson regression through normal and uniform distribution.</p>
 <span class="r-in"><span><span class="va">No_Of_Var</span><span class="op">&lt;-</span><span class="fl">2</span>; <span class="va">Beta</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span>; <span class="va">N</span><span class="op">&lt;-</span><span class="fl">5000</span>; <span class="va">Family</span><span class="op">&lt;-</span><span class="st">"linear"</span></span></span>
 <span class="r-in"><span><span class="va">Results</span><span class="op">&lt;-</span><span class="fu">GenGLMdata</span><span class="op">(</span><span class="va">Dist</span>,<span class="va">Dist_Par</span>,<span class="va">No_Of_Var</span>,<span class="va">Beta</span>,<span class="va">N</span>,<span class="va">Family</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">Dist</span><span class="op">&lt;-</span><span class="st">"Normal"</span>; <span class="va">Dist_Par</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Mean<span class="op">=</span><span class="fl">0</span>,Variance<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">No_Of_Var</span><span class="op">&lt;-</span><span class="fl">2</span>; <span class="va">Beta</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span>; <span class="va">N</span><span class="op">&lt;-</span><span class="fl">5000</span>; <span class="va">Family</span><span class="op">&lt;-</span><span class="st">"logistic"</span></span></span>
+<span class="r-in"><span><span class="va">Dist</span><span class="op">&lt;-</span><span class="st">"Normal"</span>; <span class="va">Dist_Par</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Mean<span class="op">=</span><span class="fl">0</span>,Variance<span class="op">=</span><span class="fl">1</span><span class="op">)</span>; <span class="va">Family</span><span class="op">&lt;-</span><span class="st">"logistic"</span></span></span>
 <span class="r-in"><span><span class="va">Results</span><span class="op">&lt;-</span><span class="fu">GenGLMdata</span><span class="op">(</span><span class="va">Dist</span>,<span class="va">Dist_Par</span>,<span class="va">No_Of_Var</span>,<span class="va">Beta</span>,<span class="va">N</span>,<span class="va">Family</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">Dist</span><span class="op">&lt;-</span><span class="st">"Normal"</span>;</span></span>
-<span class="r-in"><span><span class="va">No_Of_Var</span><span class="op">&lt;-</span><span class="fl">2</span>; <span class="va">Beta</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span>; <span class="va">N</span><span class="op">&lt;-</span><span class="fl">5000</span>; <span class="va">Family</span><span class="op">&lt;-</span><span class="st">"poisson"</span></span></span>
+<span class="r-in"><span><span class="va">Dist</span><span class="op">&lt;-</span><span class="st">"Normal"</span>;  <span class="va">Family</span><span class="op">&lt;-</span><span class="st">"poisson"</span></span></span>
 <span class="r-in"><span><span class="va">Results</span><span class="op">&lt;-</span><span class="fu">GenGLMdata</span><span class="op">(</span><span class="va">Dist</span>,<span class="cn">NULL</span>,<span class="va">No_Of_Var</span>,<span class="va">Beta</span>,<span class="va">N</span>,<span class="va">Family</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

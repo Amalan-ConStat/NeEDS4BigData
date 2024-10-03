@@ -5,14 +5,14 @@
 #' optimality criteria.
 #'
 #' @usage
-#' modelRobustLinSub(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates)
+#' modelRobustLinSub(r1,r2,Y,X,N,Apriori_alpha,All_Combinations,All_Covariates)
 #'
 #' @param r1      sample size for initial random sampling
 #' @param r2      sample size for optimal sampling
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
-#' @param Alpha   vector of alpha values that are used to obtain the model robust subsampling probabilities
+#' @param Apriori_alpha   vector of a priori probabilities that are used to obtain the model robust subsampling probabilities
 #' @param All_Combinations list of possible models that can describe the data
 #' @param All_Covariates all the covariates in the models
 #'
@@ -37,7 +37,8 @@
 #' The big data size \eqn{N} is compared with the sizes of \eqn{X,Y} and
 #' if they are not aligned an error message will be produced.
 #'
-#' If \eqn{0 < \alpha < 1} for the a priori probabilities are not satisfied an error message will be produced.
+#' If \eqn{0 < \alpha_{q} < 1} for the a priori probabilities are not satisfied an error message will be produced,
+#' where \eqn{q=1,\ldots,Q} and \eqn{Q} is the number of models in the model set.
 #'
 #' @return
 #' The output of \code{modelRobustLinSub} gives a list of
@@ -60,22 +61,40 @@
 #' \insertRef{mahendran2023model}{NeEDS4BigData}
 #'
 #' @examples
-#' Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5)
-#' No_Of_Var<-2; Beta<-c(-1,2,1,2); N<-10000
-#' All_Models<-list(Real_Model=c("X0","X1","X2","X1^2"),
-#'                  Assumed_Model_1=c("X0","X1","X2"),
-#'                  Assumed_Model_2=c("X0","X1","X2","X2^2"),
-#'                  Assumed_Model_3=c("X0","X1","X2","X1^2","X2^2"))
-#' family = "linear"
+#' indexes<-1:ceiling(nrow(Electric_consumption)*0.005)
+#' Original_Data<-cbind(Electric_consumption[indexes,1],1,
+#'                      Electric_consumption[indexes,-1])
+#'                      colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
+#' for (j in 3:5) {
+#'   Original_Data[,j]<-scale(Original_Data[,j])
+#' }
 #'
-#' Full_Data<-GenModelRobustGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,All_Models,family)
+#' No_of_Variables<-ncol(Original_Data[,-c(1,2)])
+#' Squared_Terms<-paste0("X",1:No_of_Variables,"^2")
+#' term_no <- 2
+#' All_Models <- list(c("X0",paste0("X",1:No_of_Variables)))
 #'
-#' r1<-300; r2<-rep(100*c(6,12),50); Original_Data<-Full_Data$Complete_Data;
+#' Original_Data<-cbind(Original_Data,Original_Data[,-c(1,2)]^2)
+#' colnames(Original_Data)<-c("Y","X0",paste0("X",1:No_of_Variables),
+#'                            paste0("X",1:No_of_Variables,"^2"))
+#'
+#' for (i in 1:No_of_Variables){
+#'   x <- as.vector(combn(Squared_Terms,i,simplify = FALSE))
+#'     for(j in 1:length(x)){
+#'        All_Models[[term_no]] <- c("X0",paste0("X",1:No_of_Variables),x[[j]])
+#'        term_no <- term_no+1
+#'      }
+#'    }
+#'
+#' All_Models<-All_Models[-c(5:7)]
+#' names(All_Models)<-paste0("Model_",1:length(All_Models))
+#'
+#' r1<-300; r2<-rep(100*c(6,12),25);
 #'
 #' modelRobustLinSub(r1 = r1, r2 = r2,
 #'                   Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
 #'                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-#'                   Alpha = rep(1/length(All_Models),length(All_Models)),
+#'                   Apriori_alpha = rep(1/length(All_Models),length(All_Models)),
 #'                   All_Combinations = All_Models,
 #'                   All_Covariates = colnames(Original_Data)[-1])->Results
 #'
@@ -84,9 +103,9 @@
 #' @importFrom Rdpack reprompt
 #' @importFrom matrixStats rowSums2
 #' @export
-modelRobustLinSub <- function(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates){
-  if(any(is.na(c(r1,r2,N,Alpha,All_Covariates))) | any(is.nan(c(r1,r2,N,Alpha,All_Covariates)))){
-    stop("NA or Infinite or NAN values in the r1,r2,N,Alpha or All_Covariates")
+modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_alpha,All_Combinations,All_Covariates){
+  if(any(is.na(c(r1,r2,N,Apriori_alpha,All_Covariates))) | any(is.nan(c(r1,r2,N,Apriori_alpha,All_Covariates)))){
+    stop("NA or Infinite or NAN values in the r1,r2,N,Apriori_alpha or All_Covariates")
   }
 
   if((N != nrow(X)) | (N != nrow(Y)) | nrow(X) != nrow(Y)){
@@ -101,12 +120,12 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates)
     stop("2*r1 cannot be greater than r2 at any point")
   }
 
-  if(length(Alpha) != length(All_Combinations)){
-    stop("No of models for averaging is not equal to the a priori alpha values")
+  if(length(Apriori_alpha) != length(All_Combinations)){
+    stop("No of models for averaging is not equal to the a priori probabilities")
   }
 
-  if(any(Alpha > 1) | any(Alpha < 0) | sum(Alpha) != 1){
-    stop("A priori alpha is not inbetween zero and one or the sum is one")
+  if(any(Apriori_alpha > 1) | any(Apriori_alpha < 0) | sum(Apriori_alpha) != 1){
+    stop("A priori probabilities not inbetween zero and one or the sum is one")
   }
 
   PI.prop <- rep(1/N, N)
@@ -173,7 +192,7 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates)
     PI.mVc<-sqrt(fit.prop[[j]]$Epsilon.prop^2 * matrixStats::rowSums2(X[,All_Covariates %in% All_Combinations[[j]] ]^2))
     return(PI.mVc/sum(PI.mVc))
   })
-  PI_MR.mVc<-matrixStats::rowSums2(do.call(cbind,PI_Single.mVc)%*%diag(Alpha)) # Model Robust Results
+  PI_MR.mVc<-matrixStats::rowSums2(do.call(cbind,PI_Single.mVc)%*%diag(Apriori_alpha)) # Model Robust Results
 
   ## mMSE
   PI_Single.mMSE <- lapply(1:length(All_Combinations),function(j){ # Single Model Results
@@ -183,7 +202,7 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates)
                                                    X[,All_Covariates %in% All_Combinations[[j]] ]))^2))
     return(PI.mMSE/sum(PI.mMSE))
   })
-  PI_MR.mMSE<-matrixStats::rowSums2(do.call(cbind,PI_Single.mMSE)%*%diag(Alpha))  # Model Robust Results
+  PI_MR.mMSE<-matrixStats::rowSums2(do.call(cbind,PI_Single.mMSE)%*%diag(Apriori_alpha))  # Model Robust Results
 
   message("Step 1 of the algorithm completed.\n")
 
@@ -346,229 +365,4 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Alpha,All_Combinations,All_Covariates)
             "Subsampling_Probability"=Full_SP)
   class(ans)<-c("ModelRobust","linear")
   return(ans)
-}
-
-#' Generate data for Generalised Linear Models under model robust scenario
-#'
-#' Function to simulate big data under linear, logistic and Poisson regression for the model robust scenario
-#' through a set of models.
-#' Covariate data X is through Normal or Uniform distribution for linear regression.
-#' Covariate data X is through Exponential or Normal or Uniform distribution for logistic regression.
-#' Covariate data X is through Normal or Uniform distribution for Poisson regression.
-#'
-#' @usage
-#' GenModelRobustGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,All_Models,family)
-#'
-#' @param Dist        a character value for the distribution "Normal" or "Uniform
-#' @param Dist_Par    a list of parameters for the distribution that would generate data for covariate X
-#' @param No_Of_Var   number of variables
-#' @param Beta        a vector for the model parameters, including the intercept
-#' @param N           the big data size
-#' @param All_Models  a list that contains the possible models
-#' @param family      a character vector for "linear", "logistic" and "poisson" regression from Generalised Linear Models
-#'
-#' @details
-#' Big data for the Generalised Linear Models are generated by the "linear", "logistic" and "poisson"
-#' regression types.
-#'
-#' We have limited the covariate data generation for
-#' linear regression through normal and uniform distribution,
-#' logistic regression through exponential, normal and uniform and
-#' Poisson regression through normal and uniform distribution.
-#'
-#' For a given real model data is generated and then this data is modelled by All_Models.
-#'
-#' @return
-#' The output of \code{GenModelRobustGLMdata} gives a list of
-#'
-#' \code{Basic} a list of outputs based on the inputs and Beta Estimates for all models
-#'
-#' \code{Complete_Data} a matrix for Y,X and X^2
-#'
-#' @examples
-#' Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5)
-#' No_Of_Var<-2; Beta<-c(-1,2,1,2); N<-10000
-#' All_Models<-list(Real_Model=c("X0","X1","X2","X1^2"),
-#'                  Assumed_Model_1=c("X0","X1","X2"),
-#'                  Assumed_Model_2=c("X0","X1","X2","X2^2"),
-#'                  Assumed_Model_3=c("X0","X1","X2","X1^2","X2^2"))
-#' family<-"linear"
-#'
-#' Results<-GenModelRobustGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,All_Models,family)
-#'
-#' Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1)
-#' No_Of_Var<-2; Beta<-c(-1,2,1,2); N<-10000
-#' All_Models<-list(Real_Model=c("X0","X1","X2","X1^2"),
-#'                  Assumed_Model_1=c("X0","X1","X2"),
-#'                  Assumed_Model_2=c("X0","X1","X2","X2^2"),
-#'                  Assumed_Model_3=c("X0","X1","X2","X1^2","X2^2"))
-#' family = "logistic"
-#'
-#' Results<-GenModelRobustGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,All_Models,family)
-#'
-#' Dist<-"Normal";
-#' No_Of_Var<-2; Beta<-c(-1,2,1,2); N<-10000
-#' All_Models<-list(Real_Model=c("X0","X1","X2","X1^2"),
-#'                  Assumed_Model_1=c("X0","X1","X2"),
-#'                  Assumed_Model_2=c("X0","X1","X2","X2^2"),
-#'                  Assumed_Model_3=c("X0","X1","X2","X1^2","X2^2"))
-#' family = "poisson"
-#'
-#' Results<-GenModelRobustGLMdata(Dist,Dist_Par=NULL,No_Of_Var,Beta,N,All_Models,family)
-#'
-#' @import stats
-#' @export
-GenModelRobustGLMdata<-function(Dist,Dist_Par,No_Of_Var,Beta,N,All_Models,family){
-  if(any(is.na(c(Dist,Beta,No_Of_Var,N,family))) | any(is.nan(c(Dist,No_Of_Var,Beta,N,family)))){
-    stop("NA or Infinite or NAN values in the Dist,Beta,No_Of_Var,N or family")
-  }
-
-  if(any(is.na(unlist(Dist_Par))) | any(is.nan(unlist(Dist_Par)))){
-    stop("NA or Infinite or NAN values in the Dist_Par")
-  }
-
-  if(!any(family == c("linear","logistic","poisson"))){
-    stop("Only the regression types 'linear','logistic' or 'poisson' are allowed")
-  }
-
-  if(family == "linear"){
-    if(!(Dist == "Normal" | Dist == "Uniform")){
-      stop("For linear regression select the distribution 'Normal' \n or 'Uniform' to generate the covarate data")
-    }
-  }
-
-  if(family == "logistic"){
-    if(!(Dist == "Exponential" | Dist == "Normal" | Dist == "Uniform")){
-      stop("For logistic regression select the distribution 'Exponential', \n 'Normal' or 'Uniform' to generate the covarate data")
-    }
-  }
-
-  if(family == "poisson"){
-    if(!(Dist == "Normal" | Dist == "Uniform")){
-      stop("For poisson regression select the distribution 'Normal' \n or 'Uniform' to generate the covarate data")
-    }
-  }
-
-  if(family == "linear"){
-    if(Dist == "Normal"){
-      X<-replicate(No_Of_Var,stats::rnorm(n = N, mean = Dist_Par$Mean, sd = sqrt(Dist_Par$Variance)))
-    }
-    if(Dist == "Uniform"){
-      X<-replicate(No_Of_Var,stats::runif(n = N, min = Dist_Par$Min, max = Dist_Par$Max))
-    }
-
-    Complete_Data<-cbind(1,X,X^2);
-    colnames(Complete_Data)<-c(paste0("X",0:ncol(X)),paste0("X",1:ncol(X),"^2"))
-    Residual<-stats::rnorm(n=N,mean=0,sd=sqrt(Dist_Par$Error_Variance))
-    Y <- Complete_Data[,colnames(Complete_Data) %in% All_Models$Real_Model]%*%Beta + Residual
-
-    Complete_Data<-cbind(Y,Complete_Data)
-    colnames(Complete_Data)<-c("Y",paste0("X",0:ncol(X)),paste0("X",1:ncol(X),"^2"))
-
-    Beta_Estimates<-list()
-    Var_Epsilon_Estimates<-NULL
-    for (j in 1:length(All_Models))
-    {
-      Temp_Data<-Complete_Data[,colnames(Complete_Data) %in% c("Y",All_Models[[j]])]
-
-      stats::lm(Y~.-1,data=as.data.frame(Temp_Data))->Results
-      Beta_Estimates[[j]]<-stats::coefficients(Results)
-      Var_Epsilon_Estimates[j]<-mean((Y-stats::fitted.values(Results))^2)
-    }
-    names(Var_Epsilon_Estimates)<-paste0("Model ",1:length(All_Models))
-
-    Outputs<-list("Basic"=list("N"=N,
-                               "Beta"=Beta,
-                               "Beta_Estimates"=Beta_Estimates,
-                               "Variance_Epsilon_Estimates"=Var_Epsilon_Estimates,
-                               "Distribution"=Dist,
-                               "Distribution_Parameter"=Dist_Par,
-                               "No_Of_Variables"=No_Of_Var,
-                               "All_Models"=All_Models),
-                  "Complete_Data"=Complete_Data)
-
-    class(Outputs)<-c("ModelRobust","linear")
-    return(Outputs)
-  }
-  if(family == "logistic"){
-    if(Dist %in% "Exponential"){
-      X<-replicate(No_Of_Var,stats::rexp(n = N, rate = Dist_Par$Rate))
-    }
-    if(Dist %in% "Normal"){
-      X<-replicate(No_Of_Var,stats::rnorm(n = N, mean = Dist_Par$Mean, sd = sqrt(Dist_Par$Variance)))
-    }
-
-    if(Dist %in% "Uniform"){
-      X<-replicate(No_Of_Var,stats::runif(n = N, min = Dist_Par$Min, max = Dist_Par$Max))
-    }
-
-    Complete_Data<-cbind(1,X,X^2)
-    colnames(Complete_Data)<-c(paste0("X",0:ncol(X)),paste0("X",1:ncol(X),"^2"))
-
-    Linear_Predictor_Data <- Complete_Data[,colnames(Complete_Data) %in% All_Models$Real_Model]%*%Beta
-    Pi_Data <- 1-1/(1+exp(Linear_Predictor_Data))
-    Y <- stats::rbinom(n=N,size=1,prob = Pi_Data)
-
-    Complete_Data<-cbind(Y,Complete_Data)
-    colnames(Complete_Data)<-c("Y",paste0("X",0:ncol(X)),paste0("X",1:ncol(X),"^2"))
-
-    Beta_Estimates<-list()
-    for (j in 1:length(All_Models))
-    {
-      Temp_Data<-Complete_Data[,colnames(Complete_Data) %in% c("Y",All_Models[[j]])]
-
-      stats::glm(Y~.-1,data=as.data.frame(Temp_Data),family = "binomial")->Results
-      Beta_Estimates[[j]]<-stats::coefficients(Results)
-    }
-
-    Outputs<-list("Basic"=list("N"=N,
-                               "Beta"=Beta,
-                               "Beta_Estimates"=Beta_Estimates,
-                               "Distribution"=Dist,
-                               "Distribution_Parameter"=Dist_Par,
-                               "No_Of_Variables"=No_Of_Var,
-                               "All_Models"=All_Models),
-                  "Complete_Data"=Complete_Data)
-
-    class(Outputs)<-c("ModelRobust","logistic")
-    return(Outputs)
-  }
-  if(family=="poisson"){
-    if(Dist %in% "Normal"){
-      X<-replicate(No_Of_Var,stats::rnorm(n = N, mean = 0, sd = 1))
-    }
-    if(Dist %in% "Uniform"){
-      X<-replicate(No_Of_Var,stats::runif(n = N, min = 0, max = 1))
-    }
-
-    Complete_Data<-cbind(1,X,X^2)
-    colnames(Complete_Data)<-c(paste0("X",0:ncol(X)),paste0("X",1:ncol(X),"^2"))
-
-    Linear_Predictor_Data <- Complete_Data[,colnames(Complete_Data) %in% All_Models$Real_Model]%*%Beta
-    Lambda_Data <- exp(Linear_Predictor_Data)
-    Y <- stats::rpois(n=N,lambda = Lambda_Data)
-
-    Complete_Data<-cbind(Y,Complete_Data)
-    colnames(Complete_Data)<-c("Y",paste0("X",0:ncol(X)),paste0("X",1:ncol(X),"^2"))
-
-    Beta_Estimates<-list()
-    for (j in 1:length(All_Models))
-    {
-      Temp_Data<-Complete_Data[,colnames(Complete_Data) %in% c("Y",All_Models[[j]])]
-
-      stats::glm(Y~.-1,data=as.data.frame(Temp_Data),family = "poisson")->Results
-      Beta_Estimates[[j]]<-stats::coefficients(Results)
-    }
-
-    Outputs<-list("Basic"=list("N"=N,
-                               "Beta"=Beta,
-                               "Beta_Estimates"=Beta_Estimates,
-                               "Distribution"=Dist,
-                               "No_Of_Variables"=No_Of_Var,
-                               "All_Models"=All_Models),
-                  "Complete_Data"=Complete_Data)
-
-    class(Outputs)<-c("ModelRobust","poisson")
-    return(Outputs)
-  }
 }

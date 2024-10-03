@@ -108,10 +108,10 @@ colnames(Final_Beta_RS)<-c("Method","Sample",paste0("Beta",0:3))
 
 ```{r Leverage sampling}
 # Leverage sampling
-## we set the shrinkage value of alpha=0.9
+## we set the shrinkage value of S_alpha=0.9
 NeEDS4BigData::LeverageSampling(r=rep_k,Y=as.matrix(Original_Data[,1]),
                                 X=as.matrix(Original_Data[,-1]),N=N,
-                                alpha = 0.9,family = "linear")->Results
+                                S_alpha = 0.9,family = "linear")->Results
 Final_Beta_LS<-Results$Beta_Estimates
 colnames(Final_Beta_LS)<-c("Method","Sample",paste0("Beta",0:3))
 ```

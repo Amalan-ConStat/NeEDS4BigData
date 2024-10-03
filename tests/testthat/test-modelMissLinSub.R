@@ -1,17 +1,18 @@
-No_Of_Var<-2; Beta<-c(-1,2,2,1); Var_Epsilon<-0.5; N<-10000;
-MisspecificationType <- "Type 2 Squared"; family <- "linear"
-Full_Data<-GenModelMissGLMdata(No_Of_Var,Beta,Var_Epsilon,N,MisspecificationType,family)
+Beta<-c(-1,0.75,0.75,1); Var_Epsilon<-0.5; family <- "linear"; N<-10000
+X_1 <- replicate(2,stats::runif(n=N,min = -1,max = 1))
 
-r1<-300; r2<-100*c(6,9); Original_Data<-Full_Data$Full_Data;
+Temp<-Rfast::rowprods(X_1)
+Misspecification <- (Temp-mean(Temp))/sqrt(mean(Temp^2)-mean(Temp)^2)
+X_Data <- cbind(X0=1,X_1);
+
+Full_Data<-GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon,family)
+
+r1<-300; r2<-rep(100*c(6,9),50); Original_Data<-Full_Data$Complete_Data[,-ncol(Full_Data$Complete_Data)];
 
 Results<-modelMissLinSub(r1 = r1, r2 = r2,
                          Y = as.matrix(Original_Data[,1]),
                          X = as.matrix(Original_Data[,-1]),
-                         N = Full_Data$N,
-                         Alpha = 10 ,
-                         Var_GAM_Full = Full_Data$Variance_Epsilon$Real_GAM,
-                         Var_Full = Full_Data$Variance_Epsilon$Estimate,
-                         F_Estimate_Full = Full_Data$f$Real_GAM) |> suppressWarnings() |> suppressMessages()
+                         N = N, Alpha = 10, proportion = 0.3) |> suppressWarnings() |> suppressMessages()
 
 context_start_file("Checking the modelMissLinSub function")
 test_that("type of the Results",{
@@ -54,57 +55,45 @@ test_that("dimension of the RLmAMSE Power sample",{
   expect_equal(length(Results$Sample_RLmAMSE_Power[[1]]),c(length(r2)+1))
 })
 
-No_Of_Var<-2; Beta<-c(-1,2,2,1); Var_Epsilon<-0.5; N<-10000;
-MisspecificationType <- "Type 2 Squared"; family <- "linear"
-Full_Data<-GenModelMissGLMdata(No_Of_Var,Beta,Var_Epsilon,N,MisspecificationType,family)
-r1<-300; r2<-100*c(6,9); Original_Data<-Full_Data$Full_Data;
 
 context_start_file("Checking the modelMissLinSub for error messages")
 test_that("Error on input for r2",{
   expect_error(modelMissLinSub(r1,r2=NA,Y = as.matrix(Original_Data[,1]),
                                X = as.matrix(Original_Data[,-1]),
-                               N = Full_Data$N,Alpha = 10,
-                               Var_GAM_Full = Full_Data$Variance_Epsilon$Real_GAM,
-                               Var_Full = Full_Data$Variance_Epsilon$Estimate,
-                               F_Estimate_Full = Full_Data$f$Real_GAM),
-               "NA or Infinite or NAN values in the r1,r2,N or Alpha")
+                               N = N,Alpha = 10,proportion = 0.3),
+               "NA or Infinite or NAN values in the r1,r2,N,Alpha or proportion")
 })
 Original_Data[100,]<-rep(NA,4)
 test_that("Error on X input",{
   expect_error(modelMissLinSub(r1,r2,Y = as.matrix(Original_Data[,1]),
                                X = as.matrix(Original_Data[,-1]),
-                               N = Full_Data$N,Alpha = 10,
-                               Var_GAM_Full = Full_Data$Variance_Epsilon$Real_GAM,
-                               Var_Full = Full_Data$Variance_Epsilon$Estimate,
-                               F_Estimate_Full = Full_Data$f$Real_GAM),
+                               N = N,Alpha = 10,proportion = 0.3),
                "NA or Infinite or NAN values in the Y or X")
 })
-Original_Data<-Full_Data$Full_Data
+Original_Data<-Full_Data$Complete_Data[,-ncol(Full_Data$Complete_Data)]
 test_that("Error on r1 and r2 input",{
   expect_error(modelMissLinSub(r1=r1+1000,r2,Y = as.matrix(Original_Data[,1]),
                                X = as.matrix(Original_Data[,-1]),
-                               N = Full_Data$N,Alpha = 10,
-                               Var_GAM_Full = Full_Data$Variance_Epsilon$Real_GAM,
-                               Var_Full = Full_Data$Variance_Epsilon$Estimate,
-                               F_Estimate_Full = Full_Data$f$Real_GAM),
+                               N = N,Alpha = 10, proportion = 0.3),
                "2*r1 cannot be greater than r2 at any point")
 })
 test_that("Error on size of X and Y",{
   expect_error(modelMissLinSub(r1,r2,Y = as.matrix(Original_Data[,1]),
                                X = as.matrix(Original_Data[,-1]),
-                               N = Full_Data$N+1,Alpha = 10,
-                               Var_GAM_Full = Full_Data$Variance_Epsilon$Real_GAM,
-                               Var_Full = Full_Data$Variance_Epsilon$Estimate,
-                               F_Estimate_Full = Full_Data$f$Real_GAM),
+                               N = N+1,Alpha = 10, proportion = 0.3),
                "The big data size N is not the same as of the size of X or Y")
 })
 
 test_that("Error on Alpha the scaling factor",{
   expect_error(modelMissLinSub(r1,r2,Y = as.matrix(Original_Data[,1]),
                                X = as.matrix(Original_Data[,-1]),
-                               N = Full_Data$N,Alpha = 0.4,
-                               Var_GAM_Full = Full_Data$Variance_Epsilon$Real_GAM,
-                               Var_Full = Full_Data$Variance_Epsilon$Estimate,
-                               F_Estimate_Full = Full_Data$f$Real_GAM),
+                               N = N,Alpha = 0.4, proportion = 0.3),
                "Scaling factor alpha is not greater than one or the length is more than one")
+})
+
+test_that("Error on proportion value",{
+  expect_error(modelMissLinSub(r1,r2,Y = as.matrix(Original_Data[,1]),
+                               X = as.matrix(Original_Data[,-1]),
+                               N = N,Alpha = 10, proportion = 1.3),
+               "Proportion should be a value higher than zero and less than or equal one")
 })

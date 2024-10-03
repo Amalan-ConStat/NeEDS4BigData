@@ -4,7 +4,7 @@
 \alias{LeverageSampling}
 \title{Basic and shrinkage leverage sampling for Generalised Linear Models}
 \usage{
-LeverageSampling(r,Y,X,N,alpha,family)
+LeverageSampling(r,Y,X,N,S_alpha,family)
 }
 \arguments{
 \item{r}{sample size}
@@ -15,7 +15,7 @@ LeverageSampling(r,Y,X,N,alpha,family)
 
 \item{N}{size of the big data}
 
-\item{alpha}{shrinkage factor in between 0 and 1}
+\item{S_alpha}{shrinkage factor in between 0 and 1}
 
 \item{family}{a character vector for "linear", "logistic" and "poisson" regression from Generalised Linear Models}
 }
@@ -55,7 +55,7 @@ If the big data \eqn{X,Y} has any missing values then an error message will be p
 The big data size \eqn{N} is compared with the sizes of \eqn{X,Y} and if they are not aligned an error
 message will be produced.
 
-If \eqn{0 < \alpha < 1} is not satisfied an error message will be produced.
+If \eqn{0 < \alpha_{S} < 1} is not satisfied an error message will be produced.
 
 A character vector is provided for \code{family} and if it is not of the any three types an error message
 will be produced.
@@ -69,7 +69,7 @@ r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
 
 LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),
                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                 alpha = 0.95,
+                 S_alpha = 0.95,
                  family = "linear")->Results
 
 plot_Beta(Results)
@@ -82,7 +82,7 @@ r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
 
 LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),
                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                 alpha = 0.95,
+                 S_alpha = 0.95,
                  family = "logistic")->Results
 
 plot_Beta(Results)
@@ -95,7 +95,7 @@ r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
 
 LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),
                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                 alpha = 0.95,
+                 S_alpha = 0.95,
                  family = "poisson")->Results
 
 plot_Beta(Results)

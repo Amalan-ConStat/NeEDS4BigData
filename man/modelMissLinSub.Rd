@@ -4,7 +4,7 @@
 \alias{modelMissLinSub}
 \title{Subsampling under linear regression for a potentially misspecified model}
 \usage{
-modelMissLinSub(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_Full)
+modelMissLinSub(r1,r2,Y,X,N,Alpha,proportion)
 }
 \arguments{
 \item{r1}{sample size for initial random sampling}
@@ -19,11 +19,7 @@ modelMissLinSub(r1,r2,Y,X,N,Alpha,Var_GAM_Full,Var_Full,F_Estimate_Full)
 
 \item{Alpha}{scaling factor when using Log Odds or Power functions to magnify the probabilities}
 
-\item{Var_GAM_Full}{estimate of Var_Epsilon after fitting the GAM model}
-
-\item{Var_Full}{estimate of Var_Epsilon after fitting the linear regression model}
-
-\item{F_Estimate_Full}{estimate of f that is the difference of linear predictor on GAM and linear model}
+\item{proportion}{a proportion of the big data is used to help estimate the AMSE values from the subsamples}
 }
 \value{
 The output of \code{modelMissLinSub} gives a list of
@@ -73,14 +69,20 @@ The big data size \eqn{N} is compared with the sizes of \eqn{X,Y},F_estimate_Ful
 if they are not aligned an error message will be produced.
 
 If \eqn{\alpha > 1} for the scaling factor is not satisfied an error message will be produced.
+
+If proportion is not in the region of \eqn{(0,1]} an error message will be produced.
 }
 \examples{
-No_Of_Var<-2; Beta<-c(-1,2,2,1); Var_Epsilon<-0.5; N<-10000;
-MisspecificationType <- "Type 2 Squared"; family <- "linear"
+Beta<-c(-1,0.75,0.75,1); Var_Epsilon<-0.5; family <- "linear"; N<-10000
+X_1 <- replicate(2,stats::runif(n=N,min = -1,max = 1))
 
-Full_Data<-GenModelMissGLMdata(No_Of_Var,Beta,Var_Epsilon,N,MisspecificationType,family)
+Temp<-Rfast::rowprods(X_1)
+Misspecification <- (Temp-mean(Temp))/sqrt(mean(Temp^2)-mean(Temp)^2)
+X_Data <- cbind(X0=1,X_1);
+Full_Data<-GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon,family)
 
-r1<-300; r2<-rep(100*c(6,9),50); Original_Data<-Full_Data$Full_Data;
+r1<-300; r2<-rep(100*c(6,9),50);
+Original_Data<-Full_Data$Complete_Data[,-ncol(Full_Data$Complete_Data)];
 
 # cl <- parallel::makeCluster(4)
 # doParallel::registerDoParallel(cl)
@@ -88,11 +90,7 @@ r1<-300; r2<-rep(100*c(6,9),50); Original_Data<-Full_Data$Full_Data;
 Results<-modelMissLinSub(r1 = r1, r2 = r2,
                          Y = as.matrix(Original_Data[,1]),
                          X = as.matrix(Original_Data[,-1]),
-                         N = Full_Data$N,
-                         Alpha = 10 ,
-                         Var_GAM_Full = Full_Data$Variance_Epsilon$Real_GAM,
-                         Var_Full = Full_Data$Variance_Epsilon$Estimate,
-                         F_Estimate_Full = Full_Data$f$Real_GAM)
+                         N = N, Alpha = 10, proportion = 0.3)
 
 # parallel::stopCluster(cl)
 

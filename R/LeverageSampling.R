@@ -4,13 +4,13 @@
 #' Sampling probabilities are obtained based on the basic and shrinkage leverage method.
 #'
 #' @usage
-#' LeverageSampling(r,Y,X,N,alpha,family)
+#' LeverageSampling(r,Y,X,N,S_alpha,family)
 #'
 #' @param r       sample size
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
-#' @param alpha   shrinkage factor in between 0 and 1
+#' @param S_alpha shrinkage factor in between 0 and 1
 #' @param family  a character vector for "linear", "logistic" and "poisson" regression from Generalised Linear Models
 #'
 #' @details
@@ -32,7 +32,7 @@
 #' The big data size \eqn{N} is compared with the sizes of \eqn{X,Y} and if they are not aligned an error
 #' message will be produced.
 #'
-#' If \eqn{0 < \alpha < 1} is not satisfied an error message will be produced.
+#' If \eqn{0 < \alpha_{S} < 1} is not satisfied an error message will be produced.
 #'
 #' A character vector is provided for \code{family} and if it is not of the any three types an error message
 #' will be produced.
@@ -63,7 +63,7 @@
 #'
 #' LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-#'                  alpha = 0.95,
+#'                  S_alpha = 0.95,
 #'                  family = "linear")->Results
 #'
 #' plot_Beta(Results)
@@ -76,7 +76,7 @@
 #'
 #' LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-#'                  alpha = 0.95,
+#'                  S_alpha = 0.95,
 #'                  family = "logistic")->Results
 #'
 #' plot_Beta(Results)
@@ -89,16 +89,16 @@
 #'
 #' LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-#'                  alpha = 0.95,
+#'                  S_alpha = 0.95,
 #'                  family = "poisson")->Results
 #'
 #' plot_Beta(Results)
 #'
 #' @importFrom Rdpack reprompt
 #' @export
-LeverageSampling<-function(r,Y,X,N,alpha,family){
-  if(any(is.na(c(r,alpha,N,family))) | any(is.nan(c(r,alpha,N,family)))){
-    stop("NA or Infinite or NAN values in the r,alpha,N or family")
+LeverageSampling<-function(r,Y,X,N,S_alpha,family){
+  if(any(is.na(c(r,S_alpha,N,family))) | any(is.nan(c(r,S_alpha,N,family)))){
+    stop("NA or Infinite or NAN values in the r,S_alpha,N or family")
   }
 
   if(any(is.na(cbind(Y,X))) | any(is.nan(cbind(Y,X)))){
@@ -109,22 +109,22 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
     stop("The big data size N is not the same as of the size of X or Y")
   }
 
-  if(alpha >= 1 | alpha <= 0 | length(alpha) > 1){
-    stop("Alpha value for shrinkage leverage scores are not in the range of zero and one or the length is more than one")
+  if(S_alpha >= 1 | S_alpha <= 0 | length(S_alpha) > 1){
+    stop("S_alpha value for shrinkage leverage scores are not in the range of zero and one or the length is more than one")
   }
 
   if(!any(family == c("linear","logistic","poisson"))){
     stop("Only the regression types 'linear','logistic' or 'poisson' are allowed")
   }
 
-  alpha<-ifelse(is.null(alpha),0.9,alpha)
+  S_alpha<-ifelse(is.null(S_alpha),0.9,S_alpha)
   if(family %in% c("linear")){
     svdf <- svd(X)
     U <- svdf$u
     PP <- apply(U, 1, crossprod)
 
     PI.blev <- PP / ncol(X)
-    PI.slev <- alpha * PI.blev + (1-alpha) * 1 / N
+    PI.slev <- S_alpha * PI.blev + (1-S_alpha) * 1 / N
 
     beta.blev<-beta.uwlev<-beta.slev<-matrix(nrow = length(r),ncol = ncol(X)+1 )
     Var_Epsilon<-matrix(nrow = length(r),ncol = 4)
@@ -253,7 +253,7 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
       })
 
     PI.blev <- PP / sum(PP)
-    PI.slev <- alpha * PI.blev + (1-alpha) * 1 / N
+    PI.slev <- S_alpha * PI.blev + (1-S_alpha) * 1 / N
 
     beta.blev<-beta.uwlev<-beta.slev<-matrix(nrow = length(r),ncol = ncol(X)+1 )
     Sample.blev<-Sample.uwlev<-Sample.slev<-list()
@@ -356,7 +356,7 @@ LeverageSampling<-function(r,Y,X,N,alpha,family){
     })
 
     PI.blev <- PP / sum(PP)
-    PI.slev <- alpha * PI.blev + (1-alpha) * 1 / N
+    PI.slev <- S_alpha * PI.blev + (1-S_alpha) * 1 / N
 
     beta.blev<-beta.uwlev<-beta.slev<-matrix(nrow = length(r),ncol = ncol(X)+1 )
     Sample.blev<-Sample.uwlev<-Sample.slev<-list()

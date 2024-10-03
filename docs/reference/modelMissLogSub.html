@@ -105,7 +105,7 @@ with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">modelMissLogSub</span><span class="op">(</span><span class="va">r1</span>,<span class="va">r2</span>,<span class="va">Y</span>,<span class="va">X</span>,<span class="va">N</span>,<span class="va">Alpha</span>,<span class="va">Beta_Estimate_Full</span>,<span class="va">F_Estimate_Full</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">modelMissLogSub</span><span class="op">(</span><span class="va">r1</span>,<span class="va">r2</span>,<span class="va">Y</span>,<span class="va">X</span>,<span class="va">N</span>,<span class="va">Alpha</span>,<span class="va">proportion</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -134,12 +134,8 @@ with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error
 <dd><p>scaling factor when using Log Odds or Power functions to magnify the probabilities</p></dd>
 
 
-<dt>Beta_Estimate_Full</dt>
-<dd><p>estimate of Beta after fitting the logistic model</p></dd>
-
-
-<dt>F_Estimate_Full</dt>
-<dd><p>estimate of f that is the difference of linear predictor on GAM and logistic model</p></dd>
+<dt>proportion</dt>
+<dd><p>a proportion of the big data is used to help estimate the AMSE values from the subsamples</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -188,6 +184,7 @@ necessary error messages will be provided to go further.</p>
 <p>The big data size \(N\) is compared with the sizes of \(X,Y\),F_estimate_Full and
 if they are not aligned an error message will be produced.</p>
 <p>If \(\alpha &gt; 1\) for the scaling vector is not satisfied an error message will be produced.</p>
+<p>If proportion is not in the region of \((0,1]\) an error message will be produced.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
@@ -202,12 +199,16 @@ Adewale AJ, Xu X (2010).
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">No_Of_Var</span><span class="op">&lt;-</span><span class="fl">2</span>; <span class="va">Beta</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span>; <span class="va">N</span><span class="op">&lt;-</span><span class="fl">10000</span>;</span></span>
-<span class="r-in"><span><span class="va">MisspecificationType</span> <span class="op">&lt;-</span> <span class="st">"Type 2 Squared"</span>; <span class="va">family</span> <span class="op">&lt;-</span> <span class="st">"logistic"</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">Beta</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>,<span class="fl">0.75</span>,<span class="fl">0.75</span>,<span class="fl">1</span><span class="op">)</span>; <span class="va">family</span> <span class="op">&lt;-</span> <span class="st">"logistic"</span>; <span class="va">N</span><span class="op">&lt;-</span><span class="fl">10000</span></span></span>
+<span class="r-in"><span><span class="va">X_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span>n<span class="op">=</span><span class="va">N</span>,min <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,max <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">Full_Data</span><span class="op">&lt;-</span><span class="fu"><a href="GenModelMissGLMdata.html">GenModelMissGLMdata</a></span><span class="op">(</span><span class="va">No_Of_Var</span>,<span class="va">Beta</span>,Var_Epsilon<span class="op">=</span><span class="cn">NULL</span>,<span class="va">N</span>,<span class="va">MisspecificationType</span>,<span class="va">family</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">Temp</span><span class="op">&lt;-</span><span class="fu">Rfast</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Rfast/man/colprods.html" class="external-link">rowprods</a></span><span class="op">(</span><span class="va">X_1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">Misspecification</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">Temp</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">Temp</span><span class="op">)</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">Temp</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">Temp</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">X_Data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>X0<span class="op">=</span><span class="fl">1</span>,<span class="va">X_1</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span><span class="va">Full_Data</span><span class="op">&lt;-</span><span class="fu"><a href="GenModelMissGLMdata.html">GenModelMissGLMdata</a></span><span class="op">(</span><span class="va">N</span>,<span class="va">X_Data</span>,<span class="va">Misspecification</span>,<span class="va">Beta</span>,Var_Epsilon<span class="op">=</span><span class="cn">NULL</span>,<span class="va">family</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">r1</span><span class="op">&lt;-</span><span class="fl">300</span>; <span class="va">r2</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">100</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>,<span class="fl">9</span><span class="op">)</span>,<span class="fl">50</span><span class="op">)</span>; <span class="va">Original_Data</span><span class="op">&lt;-</span><span class="va">Full_Data</span><span class="op">$</span><span class="va">Full_Data</span>;</span></span>
+<span class="r-in"><span><span class="va">r1</span><span class="op">&lt;-</span><span class="fl">300</span>; <span class="va">r2</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">100</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>,<span class="fl">9</span><span class="op">)</span>,<span class="fl">50</span><span class="op">)</span>;</span></span>
+<span class="r-in"><span><span class="va">Original_Data</span><span class="op">&lt;-</span><span class="va">Full_Data</span><span class="op">$</span><span class="va">Complete_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Full_Data</span><span class="op">$</span><span class="va">Complete_Data</span><span class="op">)</span><span class="op">]</span>;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># cl &lt;- parallel::makeCluster(4)</span></span></span>
 <span class="r-in"><span><span class="co"># doParallel::registerDoParallel(cl)</span></span></span>
@@ -215,10 +216,7 @@ Adewale AJ, Xu X (2010).
 <span class="r-in"><span><span class="va">Results</span><span class="op">&lt;-</span><span class="fu">modelMissLogSub</span><span class="op">(</span>r1 <span class="op">=</span> <span class="va">r1</span>, r2 <span class="op">=</span> <span class="va">r2</span>,</span></span>
 <span class="r-in"><span>                         Y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                         X <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                         N <span class="op">=</span> <span class="va">Full_Data</span><span class="op">$</span><span class="va">N</span>,</span></span>
-<span class="r-in"><span>                         Alpha <span class="op">=</span> <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>                         Beta_Estimate_Full <span class="op">=</span> <span class="va">Full_Data</span><span class="op">$</span><span class="va">Beta</span><span class="op">$</span><span class="va">Estimate</span>,</span></span>
-<span class="r-in"><span>                         F_Estimate_Full <span class="op">=</span> <span class="va">Full_Data</span><span class="op">$</span><span class="va">f</span><span class="op">$</span><span class="va">Real_GAM</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                         N <span class="op">=</span> <span class="va">N</span>, Alpha <span class="op">=</span> <span class="fl">10</span>, proportion <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># parallel::stopCluster(cl)</span></span></span>
 <span class="r-in"><span></span></span>
