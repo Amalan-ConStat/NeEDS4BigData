@@ -13,7 +13,7 @@
 #' @param X                  covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N                  size of the big data
 #' @param Alpha              scaling factor when using Log Odds or Power functions to magnify the probabilities
-#' @param proportion         a proportion of the big data is used to help estimate the AMSE values from the subsamples
+#' @param proportion         a proportion of the big data is used to help estimate AMSE values from the subsamples
 #'
 #' @details
 #' Two stage subsampling algorithm for big data under logistic regression for potential model misspecification.
@@ -121,7 +121,7 @@ modelMissLogSub <- function(r1,r2,Y,X,N,Alpha,proportion){
     stop("Proportion should be a value higher than zero and less than or equal one")
   }
   if(proportion >= 0.5){
-    warning("50% of the big data is used to help find the AMSE for the desings, this could take some time.")
+    message("50% of the big data is used to help find AMSE for the subsamples, this could take some time.")
   }
 
   n1 <- sum(Y)

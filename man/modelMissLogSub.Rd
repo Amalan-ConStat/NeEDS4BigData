@@ -19,7 +19,7 @@ modelMissLogSub(r1,r2,Y,X,N,Alpha,proportion)
 
 \item{Alpha}{scaling factor when using Log Odds or Power functions to magnify the probabilities}
 
-\item{proportion}{a proportion of the big data is used to help estimate the AMSE values from the subsamples}
+\item{proportion}{a proportion of the big data is used to help estimate AMSE values from the subsamples}
 }
 \value{
 The output of \code{modelMissLogSub} gives a list of
