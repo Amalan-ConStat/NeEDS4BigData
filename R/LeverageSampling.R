@@ -110,7 +110,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
   }
 
   if(S_alpha >= 1 | S_alpha <= 0 | length(S_alpha) > 1){
-    stop("S_alpha value for shrinkage leverage scores are not in the range of zero and one or the length is more than one")
+    stop("S_alpha value for shrinkage leverage scores are not in the range of zero \nand one or the length is more than one")
   }
 
   if(!any(family == c("linear","logistic","poisson"))){

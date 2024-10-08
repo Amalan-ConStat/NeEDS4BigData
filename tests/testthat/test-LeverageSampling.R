@@ -99,7 +99,7 @@ test_that("Error on alphva value input",{
   expect_error(LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                                 S_alpha = 1.95,
-                                family = "logistic"),"S_alpha value for shrinkage leverage scores are not in the range of zero and one or the length is more than one")
+                                family = "logistic"),"S_alpha value for shrinkage leverage scores are not in the range of zero \nand one or the length is more than one")
 })
 test_that("Error on character value of family",{
   expect_error(LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
