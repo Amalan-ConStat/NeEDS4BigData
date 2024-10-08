@@ -123,7 +123,7 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion){
     stop("Proportion should be a value higher than zero and less than or equal one")
   }
   if(proportion >= 0.5){
-    message("50% of the big data is used to help find AMSE for the subsamples, this could take some time.")
+    message("50% or >=50% of the big data is used to help find AMSE for the subsamples, this could take some time.")
   }
 
   idx.prop <- sample(1:N, r1, T)
