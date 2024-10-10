@@ -13,9 +13,8 @@ library(badger)
 <!-- badges: start -->
 
 `r badge_cran_release("NeEDS4BigData")`
-[![packageversion](https://img.shields.io/badge/Package%20version-1.0.0-orange.svg?style=flat-square)](commits/main)
-`r badge_dependencies("NeEDS4BigData")`
-[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+`r badge_cran_checks("SLPresElection")`
+`r badge_runiverse()`
 
 `r badge_cran_download("NeEDS4BigData", "grand-total", "green")`
 `r badge_cran_download("NeEDS4BigData", "last-month", "green")`
@@ -29,6 +28,7 @@ library(badger)
 `r badge_codefactor("Amalan-ConStat/NeEDS4BigData")`
 `r badge_code_size("Amalan-ConStat/NeEDS4BigData")`
 
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 `r badge_doi("10.1007/s00362-023-01446-9", "green")`
 <!-- badges: end -->
 

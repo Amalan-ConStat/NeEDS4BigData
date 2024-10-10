@@ -4,10 +4,10 @@
 <!-- badges: start -->
 
 [![](https://www.r-pkg.org/badges/version/NeEDS4BigData)](https://cran.r-project.org/package=NeEDS4BigData)
-[![packageversion](https://img.shields.io/badge/Package%20version-1.0.0-orange.svg?style=flat-square)](commits/main)
-[![Dependencies](https://tinyverse.netlify.com/badge/NeEDS4BigData)](https://cran.r-project.org/package=NeEDS4BigData)
-[![MIT
-license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+[![CRAN
+checks](https://badges.cranchecks.info/summary/SLPresElection.svg)](https://cran.r-project.org/web/checks/check_results_SLPresElection.html)
+[![r-universe status
+badge](https://Amalan-ConStat.r-universe.dev/badges/NeEDS4BigData)](https://Amalan-ConStat.r-universe.dev/NeEDS4BigData)
 
 [![](http://cranlogs.r-pkg.org/badges/grand-total/NeEDS4BigData?color=green)](https://cran.r-project.org/package=NeEDS4BigData)
 [![](http://cranlogs.r-pkg.org/badges/last-month/NeEDS4BigData?color=green)](https://cran.r-project.org/package=NeEDS4BigData)
@@ -24,6 +24,8 @@ issues](https://img.shields.io/github/issues/Amalan-ConStat/NeEDS4BigData.svg?st
 [![CodeFactor](https://www.codefactor.io/repository/github/Amalan-ConStat/NeEDS4BigData/badge)](https://www.codefactor.io/repository/github/Amalan-ConStat/NeEDS4BigData)
 [![](https://img.shields.io/github/languages/code-size/Amalan-ConStat/NeEDS4BigData.svg)](https://github.com/Amalan-ConStat/NeEDS4BigData)
 
+[![MIT
+license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 [![](https://img.shields.io/badge/doi-10.1007/s00362--023--01446--9-green.svg)](https://doi.org/10.1007/s00362-023-01446-9)
 <!-- badges: end -->
 
