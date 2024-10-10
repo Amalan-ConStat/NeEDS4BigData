@@ -54,8 +54,16 @@ test_that("dim of the Model 1 Beta Estimates",{
   expect_equal(dim(Results$Beta_Estimates$Model_1),c(length(r2)*4,2+length(All_Models$Model_1)))
 })
 
+test_that("class of Model 1 Beta Estimates",{
+  expect_s3_class(Results$Beta_Estimates$Model_1,"data.frame")
+})
+
 test_that("dimension of the subsampling probability",{
   expect_equal(dim(Results$Subsampling_Probability),c(nrow(Original_Data),length(All_Models)*2+2))
+})
+
+test_that("class of subsampling probability",{
+  expect_s3_class(Results$Subsampling_Probability,"data.frame")
 })
 
 test_that("dimension of the Model 1 A-optimality sample",{
@@ -124,4 +132,12 @@ test_that("Error on length on Apriori_alpha the a priori probability",{
                                  All_Covariates = colnames(Original_Data)[-1]),
                "No of models for averaging is not equal to the a priori probabilities")
 })
-
+test_that("Error on length of r1 or N",{
+  expect_error(modelRobustPoiSub(r1 = c(r1,3), r2 = r2,
+                                 Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+                                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
+                                 Apriori_alpha = c(rep(1/length(All_Models),length(All_Models)),0.1),
+                                 All_Combinations = All_Models,
+                                 All_Covariates = colnames(Original_Data)[-1]),
+               "r1 or N has a value greater than length one")
+})

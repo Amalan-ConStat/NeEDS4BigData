@@ -135,6 +135,10 @@ GenGLMdata<-function(Dist,Dist_Par,No_Of_Var,Beta,N,family){
     stop("NA or Infinite or NAN values in the Dist,Beta,No_Of_Var,N or family")
   }
 
+  if((length(N) + length(family)) != 2){
+    stop("N or family has a value greater than length one")
+  }
+
   if(any(is.na(unlist(Dist_Par))) | any(is.nan(unlist(Dist_Par)))){
     stop("NA or Infinite or NAN values in the Dist_Par")
   }
@@ -179,7 +183,7 @@ GenGLMdata<-function(Dist,Dist_Par,No_Of_Var,Beta,N,family){
 
     Outputs<-list("Complete_Data"=Complete_Data)
 
-    class(Outputs)<-c("A_L_OptimalSubsampling","linear")
+    class(Outputs)<-c("linear")
     return(Outputs)
   }
   if(family %in% "logistic"){
@@ -205,7 +209,7 @@ GenGLMdata<-function(Dist,Dist_Par,No_Of_Var,Beta,N,family){
 
     Outputs<-list("Complete_Data"=Complete_Data)
 
-    class(Outputs)<-c("A_L_OptimalSubsampling","logistic")
+    class(Outputs)<-c("logistic")
     return(Outputs)
   }
   if(family %in% "poisson"){
@@ -228,7 +232,7 @@ GenGLMdata<-function(Dist,Dist_Par,No_Of_Var,Beta,N,family){
 
     Outputs<-list("Complete_Data"=Complete_Data)
 
-    class(Outputs)<-c("A_L_OptimalSubsampling","poisson")
+    class(Outputs)<-c("poisson")
     return(Outputs)
   }
 }
@@ -280,6 +284,10 @@ GenModelMissGLMdata<-function(N,X_Data,Misspecification,Beta,Var_Epsilon,family)
     stop("NA or Infinite or NAN values in the Misspecification,Beta,Var_Epsilon or family")
   }
 
+  if((length(N) + length(family)) != 2){
+    stop("N or family has a value greater than length one")
+  }
+
   if(!any(family %in% c("linear","logistic","poisson"))){
     stop("Only the regression types 'linear','logistic' or 'poisson' are allowed")
   }
@@ -311,13 +319,13 @@ GenModelMissGLMdata<-function(N,X_Data,Misspecification,Beta,Var_Epsilon,family)
 
   Outputs<-list("Complete_Data"=Real_Model_Data)
   if(family == "linear"){
-    class(Outputs)<-c("ModelMisspecified","linear")
+    class(Outputs)<-c("linear")
   }
   if(family == "logistic"){
-    class(Outputs)<-c("ModelMisspecified","logistic")
+    class(Outputs)<-c("logistic")
   }
   if(family == "poisson"){
-    class(Outputs)<-c("ModelMisspecified","poisson")
+    class(Outputs)<-c("poisson")
   }
 
   return(Outputs)

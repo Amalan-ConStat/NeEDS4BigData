@@ -102,6 +102,10 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     stop("NA or Infinite or NAN values in the r1,r2,N or family")
   }
 
+  if((length(r1) + length(N) + length(family)) != 3){
+    stop("r1, N or family has a value greater than length one")
+  }
+
   if(any(is.na(cbind(Y,X))) | any(is.nan(cbind(Y,X)))){
     stop("NA or Infinite or NAN values in the Y or X")
   }

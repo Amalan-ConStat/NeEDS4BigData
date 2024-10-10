@@ -101,6 +101,10 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     stop("NA or Infinite or NAN values in the r,S_alpha,N or family")
   }
 
+  if((length(N) + length(family)) != 2){
+    stop("N or family has a value greater than length one")
+  }
+
   if(any(is.na(cbind(Y,X))) | any(is.nan(cbind(Y,X)))){
     stop("NA or Infinite or NAN values in the Y or X")
   }

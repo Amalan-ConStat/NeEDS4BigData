@@ -12,6 +12,10 @@ test_that("length of Results output",{
 test_that("dimension of Results$Complete_Data",{
   expect_equal(dim(Results$Complete_Data),c(N,length(Beta)+1))
 })
+test_that("column names of Complete Data",{
+  expect_identical(colnames(Results$Complete_Data),c("Y",paste0("X",0:2)))
+})
+
 
 Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1)
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"logistic"
@@ -27,6 +31,9 @@ test_that("length of Results output",{
 test_that("dimension of Results$Complete_Data",{
   expect_equal(dim(Results$Complete_Data),c(N,length(Beta)+1))
 })
+test_that("column names of Complete Data",{
+  expect_identical(colnames(Results$Complete_Data),c("Y",paste0("X",0:2)))
+})
 
 Dist<-"Normal";
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"poisson"
@@ -41,6 +48,9 @@ test_that("length of Results output",{
 })
 test_that("dimension of Results$Complete_Data",{
   expect_equal(dim(Results$Complete_Data),c(N,length(Beta)+1))
+})
+test_that("column names of Complete Data",{
+  expect_identical(colnames(Results$Complete_Data),c("Y",paste0("X",0:2)))
 })
 
 Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5)
@@ -74,4 +84,8 @@ Family<-"poisson"; Dist<-"Exp"
 test_that("Error on Results output for poisson Dist",{
   expect_error(GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family),
                "For poisson regression select the distribution 'Normal' \n or 'Uniform' to generate the covarate data")
+})
+test_that("Error on length of N or family",{
+  expect_error(GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,family=c("linear","logistic")),
+               "N or family has a value greater than length one")
 })

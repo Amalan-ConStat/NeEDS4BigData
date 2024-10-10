@@ -18,6 +18,10 @@ test_that("length of Results output",{
 test_that("dim of Results$Real_Full_Data output",{
   expect_equal(dim(Results$Complete_Data),c(N,length(Beta)+1))
 })
+test_that("column names of Complete Data",{
+  expect_identical(colnames(Results$Complete_Data),c("Y",paste0("X",0:2),"f(x)"))
+})
+
 
 Results<-GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon=NULL,family="logistic")
 
@@ -31,6 +35,10 @@ test_that("length of Results output",{
 test_that("dim of Results$Complete_Data output",{
   expect_equal(dim(Results$Complete_Data),c(N,length(Beta)+1))
 })
+test_that("column names of Complete Data",{
+  expect_identical(colnames(Results$Complete_Data),c("Y",paste0("X",0:2),"f(x)"))
+})
+
 
 Results<-GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon=NULL,family="poisson")
 
@@ -44,8 +52,9 @@ test_that("length of Results output",{
 test_that("dim of Results$Complete_Data output",{
   expect_equal(dim(Results$Complete_Data),c(N,length(Beta)+1))
 })
-
-
+test_that("column names of Complete Data",{
+  expect_identical(colnames(Results$Complete_Data),c("Y",paste0("X",0:2),"f(x)"))
+})
 
 context_start_file("Checking the GenModelMissGLMdata function for error")
 test_that("Error on Results output for Beta",{
@@ -57,4 +66,8 @@ family<-"hello"
 test_that("Error on Results output for Family",{
   expect_error(GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon,family),
                "Only the regression types 'linear','logistic' or 'poisson' are allowed")
+})
+test_that("Error on length of N or family",{
+  expect_error(GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon,family=c("linear","logistic")),
+               "N or family has a value greater than length one")
 })

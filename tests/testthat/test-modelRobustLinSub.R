@@ -1,7 +1,7 @@
 indexes<-1:ceiling(nrow(Electric_consumption)*0.005)
 Original_Data<-cbind(Electric_consumption[indexes,1],1,
                      Electric_consumption[indexes,-1])
-                     colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
+colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
 for (j in 3:5) {
   Original_Data[,j]<-scale(Original_Data[,j])
 }
@@ -25,7 +25,7 @@ for (i in 1:No_of_Variables){
 
 All_Models<-All_Models[-c(5:7)]
 names(All_Models)<-paste0("Model_",1:length(All_Models))
-r1<-300; r2<-rep(100*c(6,9,12),25);
+r1<-300; r2<-rep(100*c(6,9,12),5);
 
 modelRobustLinSub(r1 = r1, r2 = r2,
                   Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
@@ -52,12 +52,36 @@ test_that("dim of the Model 1 Beta Estimates",{
   expect_equal(dim(Results$Beta_Estimates$Model_1),c(length(r2)*4,2+length(All_Models$Model_1)))
 })
 
+test_that("class of Model 1 Beta Estimates",{
+  expect_s3_class(Results$Beta_Estimates$Model_1,"data.frame")
+})
+
 test_that("dimension of the Var Epsilon Estimates",{
   expect_equal(dim(Results$Variance_Epsilon_Estimates),c(length(r2)*4,length(All_Models)+2))
 })
 
+test_that("class of variance epsilon Estimates",{
+  expect_s3_class(Results$Variance_Epsilon_Estimates,"data.frame")
+})
+
+test_that("Variance epsilon estimate values lt",{
+  expect_gt(min(Results$Variance_Epsilon_Estimates[,-c(1,2)]),0)
+})
+
 test_that("dimension of the subsampling probability",{
   expect_equal(dim(Results$Subsampling_Probability),c(length(indexes),length(All_Models)*2+2))
+})
+
+test_that("class of subsampling probability",{
+  expect_s3_class(Results$Subsampling_Probability,"data.frame")
+})
+
+test_that("value in subsampling probability gte",{
+  expect_gte(min(Results$Subsampling_Probability),0)
+})
+
+test_that("value in subsampling probability lte",{
+  expect_lte(max(Results$Subsampling_Probability),1)
 })
 
 test_that("dimension of the Model 1 A-optimality sample",{
@@ -126,4 +150,12 @@ test_that("Error on length on Apriori_alpha the a priori probability",{
                                  All_Covariates = colnames(Original_Data)[-1]),
                "No of models for averaging is not equal to the a priori probabilities")
 })
-
+test_that("Error on length of r1 or N",{
+  expect_error(modelRobustLinSub(r1 = c(r1,3), r2 = r2,
+                                 Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+                                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
+                                 Apriori_alpha = c(rep(1/length(All_Models),length(All_Models)),0.1),
+                                 All_Combinations = All_Models,
+                                 All_Covariates = colnames(Original_Data)[-1]),
+               "r1 or N has a value greater than length one")
+})

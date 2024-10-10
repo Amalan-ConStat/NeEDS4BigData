@@ -11,4 +11,6 @@ test_that("The class of the data",{
 test_that("Mean of response variable",{
   expect_equal(round(mean(Skin_segmentation$Skin_presence),1),0.8)
 })
-
+test_that("column names of skin segmentation data",{
+  expect_equal(colnames(Skin_segmentation),c("Skin_presence","Red","Green","Blue"))
+})

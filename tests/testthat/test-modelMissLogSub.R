@@ -7,7 +7,7 @@ X_Data <- cbind(X0=1,X_1);
 
 Full_Data<-GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon=NULL,family)
 
-r1<-300; r2<-rep(100*c(6,9),50); Original_Data<-Full_Data$Complete_Data[,-ncol(Full_Data$Complete_Data)];
+r1<-300; r2<-rep(100*c(6,9),10); Original_Data<-Full_Data$Complete_Data[,-ncol(Full_Data$Complete_Data)];
 
 Results<-modelMissLogSub(r1 = r1, r2 = r2,Y = as.matrix(Original_Data[,1]),
                          X = as.matrix(Original_Data[,-1]),
@@ -26,8 +26,24 @@ test_that("dimension of the Beta Estimates",{
   expect_equal(dim(Results$Beta_Estimates),c(length(r2)*5,length(Beta)-1+2))
 })
 
+test_that("class of the Beta Estimates",{
+  expect_s3_class(Results$Beta_Estimates,"data.frame")
+})
+
 test_that("dimension of the subsampling probability",{
   expect_equal(dim(Results$Subsampling_Probability),c(N,5))
+})
+
+test_that("class of the subsampling probability",{
+  expect_s3_class(Results$Subsampling_Probability,"data.frame")
+})
+
+test_that("value in subsampling probability gte",{
+  expect_gte(min(Results$Subsampling_Probability),0)
+})
+
+test_that("value in subsampling probability lte",{
+  expect_lte(max(Results$Subsampling_Probability),1)
 })
 
 test_that("dimension of the A-optimality sample",{
@@ -86,8 +102,13 @@ test_that("Error on Alpha the scaling factor",{
 })
 
 test_that("Error on proportion value",{
-  expect_error(modelMissLinSub(r1,r2,Y = as.matrix(Original_Data[,1]),
+  expect_error(modelMissLogSub(r1,r2,Y = as.matrix(Original_Data[,1]),
                                X = as.matrix(Original_Data[,-1]),
                                N = N,Alpha = 10, proportion = 1.3),
                "Proportion should be a value higher than zero and less than or equal one")
+})
+test_that("Error on length of r1 or N",{
+  expect_error(modelMissLogSub(r1,r2,Y = as.matrix(Original_Data[,1]),
+                               X = as.matrix(Original_Data[,-1]),
+                               N = c(N,2),Alpha = 10, proportion = 0.3),"proportion, r1 or N has a value greater than length one")
 })

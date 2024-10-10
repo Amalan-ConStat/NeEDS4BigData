@@ -11,3 +11,6 @@ test_that("The class of the data",{
 test_that("Mean of response variable",{
   expect_equal(round(mean(Electric_consumption$Intensity),5),1.10033)
 })
+test_that("column names of electric consumption data",{
+  expect_equal(colnames(Electric_consumption),c("Intensity","EE_Kitchen","EE_Laundry","EE_WH_AC"))
+})

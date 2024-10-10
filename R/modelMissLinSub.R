@@ -103,6 +103,10 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion){
     stop("NA or Infinite or NAN values in the r1,r2,N,Alpha or proportion")
   }
 
+  if((length(r1) + length(N) + length(proportion)) != 3){
+    stop("proportion, r1 or N has a value greater than length one")
+  }
+
   if((N != nrow(X)) | (N != nrow(Y)) | nrow(X) != nrow(Y)){
     stop("The big data size N is not the same as of the size of X or Y")
   }

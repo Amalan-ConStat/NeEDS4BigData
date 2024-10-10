@@ -11,3 +11,6 @@ test_that("The class of the data",{
 test_that("Number of response variables",{
   expect_equal(length(unique(Bike_sharing$Rented_Bikes)),869)
 })
+test_that("column names of bike sharing data",{
+  expect_equal(colnames(Bike_sharing),c("Rented_Bikes","Temperature","Humidity","Windspeed"))
+})

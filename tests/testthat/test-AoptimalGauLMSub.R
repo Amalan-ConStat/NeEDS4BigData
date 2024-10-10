@@ -22,12 +22,36 @@ test_that("dimension of the Beta Estimates",{
   expect_equal(dim(Results$Beta_Estimates),c(length(r2),length(Beta)+2))
 })
 
+test_that("class of the Beta Estimates",{
+  expect_s3_class(Results$Beta_Estimates,"data.frame")
+})
+
 test_that("dimension of the Var Epsilon Estimates",{
   expect_equal(dim(Results$Variance_Epsilon_Estimates),c(length(r2),3))
 })
 
+test_that("class of the Var Epsilon Estimates",{
+  expect_s3_class(Results$Variance_Epsilon_Estimates,"data.frame")
+})
+
+test_that("value in variance epsilon estimates",{
+  expect_gt(min(Results$Variance_Epsilon_Estimates$`Var Epsilon`),0)
+})
+
 test_that("dimension of the subsampling probability",{
   expect_equal(dim(Results$Subsampling_Probability),c(N,1))
+})
+
+test_that("class of the subsampling probability",{
+  expect_s3_class(Results$Subsampling_Probability,"data.frame")
+})
+
+test_that("value in subsampling probability gte A-Opt",{
+  expect_gte(min(Results$Subsampling_Probability$`A-Optimality`),0)
+})
+
+test_that("value in subsampling probability lte A-Opt",{
+  expect_lte(max(Results$Subsampling_Probability$`A-Optimality`),1)
 })
 
 test_that("dimension of the A-optimality sample",{
@@ -60,4 +84,10 @@ test_that("Error on size of X and Y",{
                                 Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                 X = as.matrix(Original_Data[,-1]),
                                 N = nrow(Original_Data)+1),"The big data size N is not the same as of the size of X or Y")
+})
+test_that("Error on length of r1, N or family",{
+  expect_error(AoptimalGauLMSub(r1 = r1, r2 = r2,
+                                Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+                                X = as.matrix(Original_Data[,-1]),
+                                N = c(nrow(Original_Data),N)),"r1 or N has a value greater than length one")
 })

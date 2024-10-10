@@ -38,12 +38,18 @@
 #' @importFrom dplyr group_by summarise
 #' @export
 plot_Beta<-function(object){
+  if(any(!(class(object)[1] %in% c("LocalCaseControl","Leverage","A_L_OptimalSubsampling",
+                          "AoptimalSubsampling","A_OptimalSamplingMC","ModelRobust","ModelMisspecified")))){
+    stop("object is not from any of the classes LocalCaseControl, Leverage,\nA_L_OptimalSubsampling, AoptimalSubsampling, A_OptimalSamplingMC, \nModelRobust or ModelMisspecified")
+  }
+
   UseMethod("plot_Beta",object)
 }
 
 #' @method plot_Beta LocalCaseControl
 #' @export
 plot_Beta.LocalCaseControl<-function(object){
+
   Temp_Data<-data.frame(object$Beta_Estimates)
   Temp_Data |>
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
@@ -299,6 +305,10 @@ plot_Beta.ModelMisspecified<-function(object){
 #' @importFrom dplyr group_by summarise
 #' @export
 plot_AMSE<-function(object){
+  if(any(!(class(object)[1] %in% c("ModelMisspecified")))){
+    stop("object is not from any of the classes ModelMisspecified")
+  }
+
   UseMethod("plot_AMSE",object)
 }
 

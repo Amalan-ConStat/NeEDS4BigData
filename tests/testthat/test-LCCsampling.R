@@ -21,8 +21,24 @@ test_that("dimension of the Beta Estimates",{
   expect_equal(dim(Results$Beta_Estimates),c(length(r2),length(Beta)+2))
 })
 
+test_that("class of the Beta Estimates",{
+  expect_s3_class(Results$Beta_Estimates,"data.frame")
+})
+
 test_that("dimension of the sampling probability",{
   expect_equal(dim(Results$Sampling_Probability),c(N,1))
+})
+
+test_that("class of the sampling probability",{
+  expect_s3_class(Results$Sampling_Probability,"data.frame")
+})
+
+test_that("value in sampling probability gte",{
+  expect_gte(min(Results$Sampling_Probability),0)
+})
+
+test_that("value in sampling probability lte",{
+  expect_lte(max(Results$Sampling_Probability),1)
 })
 
 test_that("dimension of the LCC sample",{
@@ -51,4 +67,9 @@ test_that("Error on size of X and Y",{
   expect_error(LCCsampling(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                            X = as.matrix(Original_Data[,-1]),
                            N = nrow(Original_Data)+1),"The big data size N is not the same as of the size of X or Y")
+})
+test_that("Error on length of r1, N or family",{
+  expect_error(LCCsampling(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+                           X = as.matrix(Original_Data[,-1]),
+                           N = c(nrow(Original_Data),2)),"r1 or N has a value greater than length one")
 })

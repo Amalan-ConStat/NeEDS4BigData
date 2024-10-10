@@ -66,6 +66,10 @@ AoptimalGauLMSub <- function(r1,r2,Y,X,N){
     stop("NA or Infinite or NAN values in the r1,r2 or N")
   }
 
+  if((length(r1) + length(N)) != 2){
+    stop("r1 or N has a value greater than length one")
+  }
+
   if(any(is.na(cbind(Y,X))) | any(is.nan(cbind(Y,X)))){
     stop("NA or Infinite or NAN values in the Y or X")
   }
