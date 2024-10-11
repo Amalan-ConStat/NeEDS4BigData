@@ -13,7 +13,7 @@ library(badger)
 <!-- badges: start -->
 
 `r badge_cran_release("NeEDS4BigData")`
-`r badge_cran_checks("SLPresElection")`
+`r badge_cran_checks("NeEDS4BigData")`
 `r badge_runiverse()`
 
 `r badge_cran_download("NeEDS4BigData", "grand-total", "green")`

@@ -5,7 +5,7 @@
 
 [![](https://www.r-pkg.org/badges/version/NeEDS4BigData)](https://cran.r-project.org/package=NeEDS4BigData)
 [![CRAN
-checks](https://badges.cranchecks.info/summary/SLPresElection.svg)](https://cran.r-project.org/web/checks/check_results_SLPresElection.html)
+checks](https://badges.cranchecks.info/summary/NeEDS4BigData.svg)](https://cran.r-project.org/web/checks/check_results_NeEDS4BigData.html)
 [![r-universe status
 badge](https://Amalan-ConStat.r-universe.dev/badges/NeEDS4BigData)](https://Amalan-ConStat.r-universe.dev/NeEDS4BigData)
 
