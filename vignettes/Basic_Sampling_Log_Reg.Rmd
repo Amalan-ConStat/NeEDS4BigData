@@ -201,9 +201,9 @@ ggplot(MSE_Beta[!(MSE_Beta$Method %in% c("Unweighted Leverage","Shrinkage Levera
     aes(x=factor(Sample),y=MSE,color=Method,group=Method,
         linetype=Method,shape=Method))+
   geom_point()+geom_line()+xlab("Sample size")+ylab("MSE")+
-  scale_color_manual(values = Method_Colour[-7])+
-  scale_linetype_manual(values=Method_Line_Types[-7])+
-  scale_shape_manual(values = Method_Shape_Types[-7])+
+  scale_color_manual(values = Method_Colour[-c(5,6,7)])+
+  scale_linetype_manual(values=Method_Line_Types[-c(5,6,7)])+
+  scale_shape_manual(values = Method_Shape_Types[-c(5,6,7)])+
   theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p2
 
 ggarrange(p1,p2,nrow = 2,ncol = 1,labels = "auto")
