@@ -75,10 +75,9 @@ Based on this model the methods random sampling, leverage sampling [@ma2014stati
 Method_Names<-c("A-Optimality","L-Optimality","A-Optimality GauLM","A-Optimality MC",
                 "Shrinkage Leverage","Basic Leverage","Unweighted Leverage",
                 "Random Sampling")
-Method_Colour<-c("yellowgreen","green4","green","springgreen4",
-                 "red","darkred","maroon","black")
-Method_Shape_Types<-c(rep(8,4),rep(4,3),16)
-Method_Line_Types<-c(rep("twodash",4),rep("dotted",3),"solid")
+Method_Colour<-c("#BBFFBB","#50FF50","#00BB00","#008600",
+                 "#F76D5E","#D82632","#A50021","#000000")
+Method_Shape_Types<-c(rep(17,4),rep(4,3),16)
 ```
 
 The obtained samples and their respective model parameter estimates are over $M=100$ simulations across different sample sizes $k=(600,\ldots,1500)$. 
@@ -173,36 +172,48 @@ remove(Final_Beta_RS,Final_Beta_LS,Final_Beta_AoptGauLM,Final_Beta_ALoptGLM,
 
 The mean squared error is plotted below.
 
-```{r Model parameter estimates,fig.width=7,fig.height=12,fig.align='center',fig.cap="Mean squared error for a) all the subsampling methods and b) without unweighted leverage sampling."}
+```{r Model parameter estimates,fig.width=7,fig.height=10,fig.align='center',fig.cap="Mean squared error for a) all the subsampling methods and b) without unweighted leverage sampling, with 5% and 95% percentile intervals."}
 # Obtain the mean squared error for the model parameter estimates
 MSE_Beta<-data.frame("Method"=Final_Beta$Method,
                      "Sample"=Final_Beta$Sample,
-                     "MSE"=rowSums((All_Beta - Final_Beta[,-c(1,2)])^2)) 
+                     "SE"=rowSums((All_Beta - Final_Beta[,-c(1,2)])^2)) 
 
 MSE_Beta$Method<-factor(MSE_Beta$Method,levels = Method_Names,labels = Method_Names)
 
+Mean_Data <- MSE_Beta |>
+    group_by(Method,Sample) |>
+    dplyr::summarise(Mean = mean(SE),
+                     min=quantile(SE,0.05),
+                     max=quantile(SE,0.95), .groups = "drop")
+
 # Plot for the mean squared error with all methods
-ggplot(MSE_Beta |> dplyr::group_by(Method,Sample) |> 
-       dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
-    aes(x=factor(Sample),y=MSE,color=Method,group=Method,
-        linetype=Method,shape=Method))+
-  geom_point()+geom_line()+xlab("Sample size")+ylab("MSE")+
+ggplot(data=Mean_Data,aes(x=factor(Sample),y=Mean,color=Method,shape=Method))+
+  xlab("Sample Size")+ylab("Squared Error")+
+  geom_point(size=3,position = position_dodge(width = 0.5))+
+  geom_line(data=Mean_Data,aes(x=factor(Sample),y=Mean,group=Method,color=Method),
+            position = position_dodge(width = 0.5))+
+  geom_errorbar(data=Mean_Data,aes(ymin=min,ymax=max),
+                width=0.3,position = position_dodge(width = 0.5))+
   scale_color_manual(values = Method_Colour)+
-  scale_linetype_manual(values=Method_Line_Types)+
   scale_shape_manual(values = Method_Shape_Types)+
-  theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p1
+  theme_bw()+Theme_special()+
+  guides(colour = guide_legend(nrow = 3))->p1
 
 # Plot for the mean squared error with all methods except unweighted leverage
-ggplot(MSE_Beta[MSE_Beta$Method != "Unweighted Leverage",] |> 
-       dplyr::group_by(Method,Sample) |> 
-       dplyr::summarise(MSE=mean(MSE),.groups ='drop'),
-   aes(x=factor(Sample),y=MSE,color=Method,group=Method,
-       linetype=Method,shape=Method))+
-  geom_point()+geom_line()+xlab("Sample size")+ylab("MSE")+
+ggplot(data=Mean_Data[Mean_Data$Method != "Unweighted Leverage",],
+       aes(x=factor(Sample),y=Mean,color=Method,shape=Method))+
+  xlab("Sample Size")+ylab("Squared Error")+
+  geom_point(size=3,position = position_dodge(width = 0.5))+
+  geom_line(data=Mean_Data[Mean_Data$Method != "Unweighted Leverage",],
+            aes(x=factor(Sample),y=Mean,group=Method,color=Method),
+            position = position_dodge(width = 0.5))+
+  geom_errorbar(data=Mean_Data[Mean_Data$Method != "Unweighted Leverage",],
+                aes(ymin=min,ymax=max),width=0.3,
+                position = position_dodge(width = 0.5))+
   scale_color_manual(values = Method_Colour[-7])+
-  scale_linetype_manual(values=Method_Line_Types[-7])+
   scale_shape_manual(values = Method_Shape_Types[-7])+
-  theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p2
+  theme_bw()+Theme_special()+
+  guides(colour = guide_legend(nrow = 3))->p2
 
 ggarrange(p1,p2,nrow = 2,ncol = 1,labels = "auto")
 ```

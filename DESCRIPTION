@@ -19,6 +19,7 @@ Imports:
     gam,
     ggh4x,
     ggplot2,
+    ggridges,
     matrixStats,
     psych,
     Rdpack,

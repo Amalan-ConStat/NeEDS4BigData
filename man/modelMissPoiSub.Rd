@@ -46,6 +46,8 @@ Subsampling probabilities are obtained based on the A- and L- optimality criteri
 with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error).
 }
 \details{
+\strong{The article for this function is in preparation for publication. Please be patient.}
+
 Two stage subsampling algorithm for big data under Poisson regression for potential model misspecification.
 
 First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.

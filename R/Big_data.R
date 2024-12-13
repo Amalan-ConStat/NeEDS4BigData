@@ -261,6 +261,10 @@ GenGLMdata<-function(Dist,Dist_Par,No_Of_Var,Beta,N,family){
 #'
 #' \code{Complete_Data} a matrix for Y,X and f(x)
 #'
+#' @references
+#' \insertRef{adewale2009robust}{NeEDS4BigData}
+#' \insertRef{adewale2010robust}{NeEDS4BigData}
+#'
 #' @examples
 #' Beta<-c(-1,0.75,0.75,1); Var_Epsilon<-0.5; family <- "linear"; N<-10000
 #' X_1 <- replicate(2,stats::runif(n=N,min = -1,max = 1))

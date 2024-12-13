@@ -47,3 +47,7 @@ Results<-GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon=NULL,fam
 Results<-GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon=NULL,family="poisson")
 
 }
+\references{
+\insertRef{adewale2009robust}{NeEDS4BigData}
+\insertRef{adewale2010robust}{NeEDS4BigData}
+}

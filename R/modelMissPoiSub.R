@@ -16,6 +16,8 @@
 #' @param proportion         a proportion of the big data is used to help estimate AMSE values from the subsamples
 #'
 #' @details
+#' \strong{The article for this function is in preparation for publication. Please be patient.}
+#'
 #' Two stage subsampling algorithm for big data under Poisson regression for potential model misspecification.
 #'
 #' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.

@@ -32,6 +32,7 @@
 #' The output is a faceted ggplot result
 #'
 #' @import ggplot2
+#' @import ggridges
 #' @importFrom rlang .data
 #' @importFrom ggh4x facet_grid2
 #' @importFrom tidyr pivot_longer starts_with
@@ -55,7 +56,7 @@ plot_Beta.LocalCaseControl<-function(object){
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
   label_values<-0:(length(unique(Temp_Data$Beta))-1)
 
-  method_colors<-c("darkred")
+  method_colors<-c("#A50021")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
@@ -64,13 +65,12 @@ plot_Beta.LocalCaseControl<-function(object){
     dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
     dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
 
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
-    ggplot2::geom_density(alpha=0.4)+
-    ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r2),color=.data$Method))+
+    ggridges::geom_density_ridges2(scale=0.95,alpha=0,linewidth=0.9)+
+    ggh4x::facet_grid2(.~Beta,scales = "free", labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
     ggplot2::ylab("Density")+
-    ggplot2::scale_fill_manual(values = method_colors)+
-    ggplot2::geom_vline(data=Mean_Data,ggplot2::aes(xintercept = .data$Mean, color = .data$Method))+
+    ggplot2::geom_point(data=Mean_Data,ggplot2::aes(x=.data$Mean),shape="|",size=4)+
     ggplot2::scale_color_manual(values = method_colors)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = "bottom",
@@ -87,7 +87,7 @@ plot_Beta.Leverage<-function(object){
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
   label_values<-0:(length(unique(Temp_Data$Beta))-1)
 
-  method_colors<-c("maroon","red","darkred")
+  method_colors<-c("#F76D5E","#D82632","#A50021")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
@@ -96,13 +96,12 @@ plot_Beta.Leverage<-function(object){
     dplyr::group_by(.data$Method,.data$r,.data$Beta) |>
     dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
 
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
-    ggplot2::geom_density(alpha=0.4)+
-    ggh4x::facet_grid2(r~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r),color=.data$Method))+
+    ggridges::geom_density_ridges2(scale=0.95,alpha=0,linewidth=0.9)+
+    ggh4x::facet_grid2(.~Beta,scales = "free", labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
     ggplot2::ylab("Density")+
-    ggplot2::scale_fill_manual(values = method_colors)+
-    ggplot2::geom_vline(data=Mean_Data,ggplot2::aes(xintercept = .data$Mean, color = .data$Method))+
+    ggplot2::geom_point(data=Mean_Data,ggplot2::aes(x=.data$Mean),shape="|",size=4)+
     ggplot2::scale_color_manual(values = method_colors)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = "bottom",
@@ -119,7 +118,7 @@ plot_Beta.A_L_OptimalSubsampling<-function(object){
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
   label_values<-0:(length(unique(Temp_Data$Beta))-1)
 
-  method_colors<-c("darkred","red")
+  method_colors<-c("#A50021","#F76D5E")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
@@ -128,13 +127,12 @@ plot_Beta.A_L_OptimalSubsampling<-function(object){
     dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
     dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
 
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
-    ggplot2::geom_density(alpha=0.4)+
-    ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r2),color=.data$Method))+
+    ggridges::geom_density_ridges2(scale=0.95,alpha=0,linewidth=0.9)+
+    ggh4x::facet_grid2(.~Beta,scales = "free", labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
     ggplot2::ylab("Density")+
-    ggplot2::scale_fill_manual(values = method_colors)+
-    ggplot2::geom_vline(data=Mean_Data,ggplot2::aes(xintercept = .data$Mean, color = .data$Method))+
+    ggplot2::geom_point(data=Mean_Data,ggplot2::aes(x=.data$Mean),shape="|",size=4)+
     ggplot2::scale_color_manual(values = method_colors)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = "bottom",
@@ -151,7 +149,7 @@ plot_Beta.AoptimalSubsampling<-function(object){
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
   label_values<-0:(length(unique(Temp_Data$Beta))-1)
 
-  method_colors<-c("darkred")
+  method_colors<-c("#A50021")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
@@ -160,13 +158,12 @@ plot_Beta.AoptimalSubsampling<-function(object){
     dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
     dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
 
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
-    ggplot2::geom_density(alpha=0.4)+
-    ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r2),color=.data$Method))+
+    ggridges::geom_density_ridges2(scale=0.95,alpha=0,linewidth=0.9)+
+    ggh4x::facet_grid2(.~Beta,scales = "free", labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
     ggplot2::ylab("Density")+
-    ggplot2::scale_fill_manual(values = method_colors)+
-    ggplot2::geom_vline(data=Mean_Data,ggplot2::aes(xintercept = .data$Mean, color = .data$Method))+
+    ggplot2::geom_point(data=Mean_Data,ggplot2::aes(x=.data$Mean),shape="|",size=4)+
     ggplot2::scale_color_manual(values = method_colors)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = "bottom",
@@ -183,7 +180,7 @@ plot_Beta.A_OptimalSamplingMC<-function(object){
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
   label_values<-0:(length(unique(Temp_Data$Beta))-1)
 
-  method_colors<-c("darkred")
+  method_colors<-c("#A50021")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
@@ -192,13 +189,12 @@ plot_Beta.A_OptimalSamplingMC<-function(object){
     dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
     dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
 
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
-    ggplot2::geom_density(alpha=0.4)+
-    ggh4x::facet_grid2(r2~Beta,scales = "free", independent = "x",labeller = ggplot2::label_parsed)+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r2),color=.data$Method))+
+    ggridges::geom_density_ridges2(scale=0.95,alpha=0,linewidth=0.9)+
+    ggh4x::facet_grid2(.~Beta,scales = "free", labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
     ggplot2::ylab("Density")+
-    ggplot2::scale_fill_manual(values = method_colors)+
-    ggplot2::geom_vline(data=Mean_Data,ggplot2::aes(xintercept = .data$Mean, color = .data$Method))+
+    ggplot2::geom_point(data=Mean_Data,ggplot2::aes(x=.data$Mean),shape="|",size=4)+
     ggplot2::scale_color_manual(values = method_colors)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = "bottom",
@@ -225,16 +221,16 @@ plot_Beta.ModelRobust<-function(object){
         dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
         dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
 
-      method_colors<-c("darkred","red","darkgreen","green")
+      method_colors<-c("#A50021","#F76D5E","#005000","#50FF50")
 
-      ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
-        ggplot2::geom_density(alpha=0.4)+
-        ggh4x::facet_grid2(r2~Beta,scales = "free",labeller = ggplot2::label_parsed)+
+      ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r2),color=.data$Method),
+                      outline.type = "full")+
+        ggridges::geom_density_ridges2(scale=0.95,alpha=0,linewidth=0.9)+
+        ggh4x::facet_grid2(.~Beta,scales = "free",labeller = ggplot2::label_parsed)+
         ggplot2::xlab(expression(paste(beta," values")))+
         ggplot2::ylab("Density")+
-        ggplot2::scale_fill_manual(values = method_colors)+
+        ggplot2::geom_point(data=Mean_Data,ggplot2::aes(x=.data$Mean),shape="|",size=4)+
         ggplot2::ggtitle(names(object$Beta_Estimates)[i])+
-        ggplot2::geom_vline(data=Mean_Data,ggplot2::aes(xintercept = .data$Mean, color = .data$Method))+
         ggplot2::scale_color_manual(values = method_colors)+
         ggplot2::theme_bw()+
         ggplot2::theme(legend.position = "bottom",
@@ -255,8 +251,7 @@ plot_Beta.ModelMisspecified<-function(object){
   Log_Odds_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Log Odds")]
   Power_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Power")]
 
-  method_colors<-c("darkred","red","lightgreen",rep("green",length(Log_Odds_Labels)),
-                   rep("darkgreen",length(Power_Labels)))
+  method_colors<-c("#A50021","#F76D5E","#BBFFBB","#50FF50","#00BB00")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta",label_values),
                          labels = paste0("beta[",label_values,"]"))
@@ -265,13 +260,12 @@ plot_Beta.ModelMisspecified<-function(object){
     dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
     dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
 
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,fill=.data$Method,color=.data$Method))+
-    ggplot2::geom_density(alpha=0.4)+
-    ggh4x::facet_grid2(r2~Beta,scales = "free",independent = "x",labeller = ggplot2::label_parsed)+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r2),color=.data$Method))+
+    ggridges::geom_density_ridges2(scale=0.95,alpha=0,linewidth=0.9)+
+    ggh4x::facet_grid2(.~Beta,scales = "free",labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
     ggplot2::ylab("Density")+
-    ggplot2::scale_fill_manual(values = method_colors)+
-    ggplot2::geom_vline(data=Mean_Data,ggplot2::aes(xintercept = .data$Mean, color = .data$Method))+
+    ggplot2::geom_point(data=Mean_Data,ggplot2::aes(x=.data$Mean),shape="|",size=4)+
     ggplot2::scale_color_manual(values = method_colors)+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = "bottom",
@@ -327,8 +321,7 @@ plot_AMSE.ModelMisspecified<-function(object){
 
   Log_Odds_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Log Odds")]
   Power_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Power")]
-  method_colors<-c("darkred","red","lightgreen",rep("green",length(Log_Odds_Labels)),
-                   rep("darkgreen",length(Power_Labels)))
+  method_colors<-c("#A50021","#F76D5E","#BBFFBB","#50FF50","#00BB00")
   method_linetypes<-c(rep("dashed",2),"solid",rep("dotted",length(Log_Odds_Labels)),
                       rep("dotdash",length(Power_Labels)))
 
