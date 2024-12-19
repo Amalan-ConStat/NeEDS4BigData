@@ -113,7 +113,7 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion){
     stop("The big data size N is not the same as of the size of X or Y")
   }
 
-  if(any(is.na(cbind(Y,X))) | any(is.nan(cbind(Y,X)))){
+  if(anyNA(Y) | anyNA(X) | any(is.nan(Y)) | any(is.nan(X)) ){
     stop("NA or Infinite or NAN values in the Y or X")
   }
 
@@ -184,16 +184,20 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion){
   PI.mMSE <- PI.mMSE / sum(PI.mMSE)
 
   Tempsy_Var_Gam_Var<-Var_GAM.prop*Var.prop^(-2)
+  Var_prop_inv <- Var.prop^(-1)
 
   a<-NULL
   L_All <- foreach::foreach(a = 1:N, .combine = rbind,.packages = "psych") %dopar% {
-    X_r1 <- rbind(x.prop, X[a, ])
+    X_r1 <-X[c(idx.prop,a),]
     f_r1 <- f_estimate[c(idx.prop, a)]
 
-    Temp_Solve<-solve(t(X_r1) %*% X_r1)
-    Temp1 <- X_r1 %*% Temp_Solve %*% t(X_r1)
+    Temp_Solve<-solve(crossprod(X_r1))
+    Temp1 <- tcrossprod(X_r1 %*% Temp_Solve, X_r1)
+
     L1_r1 <- Tempsy_Var_Gam_Var*psych::tr(Temp1)
-    L2_r1 <- sum((Var.prop^(-1)*(Temp1%*%f_r1 - f_r1))^2)
+    Temp_f_r1 <- Temp1 %*% f_r1
+    diff_scaled <- Var_prop_inv * (Temp_f_r1 - f_r1)
+    L2_r1 <- sum(diff_scaled^2)
 
     L1_r1 + L2_r1
   }

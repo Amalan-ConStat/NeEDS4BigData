@@ -118,7 +118,7 @@ All_Covariates<-colnames(Original_Data_ModelRobust)[-1]
 NeEDS4BigData::modelRobustPoiSub(r1=300,r2=rep_k,
                                  Y=as.matrix(Original_Data_ModelRobust[,1]),
                                  X=as.matrix(Original_Data_ModelRobust[,-1]),
-                                 N=N,Apriori_alpha=rep(1/length(All_Models),length(All_Models)),
+                                 N=N,Apriori_probs=rep(1/length(All_Models),length(All_Models)),
                                  All_Combinations = All_Models,
                                  All_Covariates = All_Covariates)->Results
 Final_Beta_modelRobust<-Results$Beta_Estimates

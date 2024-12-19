@@ -105,7 +105,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     stop("N or family has a value greater than length one")
   }
 
-  if(any(is.na(cbind(Y,X))) | any(is.nan(cbind(Y,X)))){
+  if(anyNA(Y) | anyNA(X) | any(is.nan(Y)) | any(is.nan(X)) ){
     stop("NA or Infinite or NAN values in the Y or X")
   }
 
@@ -248,13 +248,20 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     w.prop<-as.vector(sqrt(p.prop*(1-p.prop)))
     X_bar<- w.prop*X
     XX_Inv<-solve(t(X_bar)%*%X_bar)
-    X_Temp<-X
-    PP <-apply(X_Temp,1,function(X_Temp){
-      P.prop  <- 1 - 1 / (1 + exp(X_Temp%*% beta.prop))
-      W.prop <- sqrt(P.prop*(1-P.prop))
-      x_bar <- W.prop%*%X_Temp
-      x_bar%*%XX_Inv%*%t(x_bar)
-      })
+
+    # X_Temp<-X
+    # PP <-apply(X_Temp,1,function(X_Temp){
+    #   P.prop  <- 1 - 1 / (1 + exp(X_Temp%*% beta.prop))
+    #   W.prop <- sqrt(P.prop*(1-P.prop))
+    #   x_bar <- W.prop%*%X_Temp
+    #   x_bar%*%XX_Inv%*%t(x_bar)
+    #   })
+
+    # Precompute terms outside the loop
+    P.prop <- 1 - 1 / (1 + exp(X %*% beta.prop))
+    W.prop <- sqrt(P.prop * (1 - P.prop))
+    X_bar_s <- as.vector(W.prop) * X
+    PP <- rowSums((X_bar_s %*% XX_Inv) * X_bar_s)
 
     PI.blev <- PP / sum(PP)
     PI.slev <- S_alpha * PI.blev + (1-S_alpha) * 1 / N
@@ -330,7 +337,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
               "Sample_Basic_Leverage"=Sample.blev,
               "Sample_Shrinkage_Leverage"=Sample.slev,
               "Sampling_Probability"=Full_SP)
-    class(ans)<-c("Leverage","linear")
+    class(ans)<-c("Leverage","logistic")
     return(ans)
   }
   if(family %in% c("poisson")){
@@ -352,12 +359,19 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     p.prop<-as.vector(sqrt(exp(X%*% beta.prop)))
     X_bar<- p.prop*X
     XX_Inv<-solve(t(X_bar)%*%X_bar)
-    X_Temp<-X;
-    PP <-apply(X_Temp,1,function(X_Temp){
-      P.prop  <- sqrt(exp(X_Temp%*%beta.prop))
-      x_bar <- P.prop%*%X_Temp
-      x_bar%*%XX_Inv%*%t(x_bar)
-    })
+
+    # X_Temp<-X;
+    # PP <-apply(X_Temp,1,function(X_Temp){
+    #   P.prop  <- sqrt(exp(X_Temp%*%beta.prop))
+    #   x_bar <- P.prop%*%X_Temp
+    #   x_bar%*%XX_Inv%*%t(x_bar)
+    # })
+
+    # Precompute terms outside the loop
+    P.prop <- 1 - 1 / (1 + exp(X %*% beta.prop))
+    W.prop <- sqrt(P.prop * (1 - P.prop))
+    X_bar_s <- as.vector(W.prop) * X
+    PP <- rowSums((X_bar_s %*% XX_Inv) * X_bar_s)
 
     PI.blev <- PP / sum(PP)
     PI.slev <- S_alpha * PI.blev + (1-S_alpha) * 1 / N

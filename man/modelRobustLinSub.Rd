@@ -4,7 +4,7 @@
 \alias{modelRobustLinSub}
 \title{Model robust optimal subsampling for A- and L- optimality criteria under linear regression}
 \usage{
-modelRobustLinSub(r1,r2,Y,X,N,Apriori_alpha,All_Combinations,All_Covariates)
+modelRobustLinSub(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Covariates)
 }
 \arguments{
 \item{r1}{sample size for initial random sampling}
@@ -17,7 +17,7 @@ modelRobustLinSub(r1,r2,Y,X,N,Apriori_alpha,All_Combinations,All_Covariates)
 
 \item{N}{size of the big data}
 
-\item{Apriori_alpha}{vector of a priori probabilities that are used to obtain the model robust subsampling probabilities}
+\item{Apriori_probs}{vector of a priori model probabilities that are used to obtain the model robust subsampling probabilities}
 
 \item{All_Combinations}{list of possible models that can describe the data}
 
@@ -66,7 +66,7 @@ If the big data \eqn{X,Y} has any missing values then an error message will be p
 The big data size \eqn{N} is compared with the sizes of \eqn{X,Y} and
 if they are not aligned an error message will be produced.
 
-If \eqn{0 < \alpha_{q} < 1} for the a priori probabilities are not satisfied an error message will be produced,
+If \eqn{0 < \alpha_{q} < 1} for the a priori model probabilities are not satisfied an error message will be produced,
 where \eqn{q=1,\ldots,Q} and \eqn{Q} is the number of models in the model set.
 }
 \examples{
@@ -103,7 +103,7 @@ r1<-300; r2<-rep(100*c(6,12),25);
 modelRobustLinSub(r1 = r1, r2 = r2,
                   Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),
                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                  Apriori_alpha = rep(1/length(All_Models),length(All_Models)),
+                  Apriori_probs = rep(1/length(All_Models),length(All_Models)),
                   All_Combinations = All_Models,
                   All_Covariates = colnames(Original_Data)[-1])->Results
 

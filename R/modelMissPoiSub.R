@@ -112,7 +112,7 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,proportion){
     stop("The big data size N is not the same as of the size of X or Y")
   }
 
-  if(any(is.na(cbind(Y,X))) | any(is.nan(cbind(Y,X)))){
+  if(anyNA(Y) | anyNA(X) | any(is.nan(Y)) | any(is.nan(X)) ){
     stop("NA or Infinite or NAN values in the Y or X")
   }
 
@@ -194,19 +194,26 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,proportion){
 
   a<-NULL
   L_All<-foreach::foreach(a=1:N,.combine = rbind,.packages = "psych") %dopar% {
-    X_r1<-rbind(X[idx.prop,],X[a,])
+    X_r1<-X[c(idx.prop,a),]
     lambda_r1<-exp(X_r1%*%beta.prop)
     W_r1<-as.vector(lambda_r1)
     H_r1 <-solve(t(X_r1) %*% (X_r1 * W_r1))
     Temp1<-(W_r1*X_r1)%*%H_r1
 
-    f_r1<-c(f_estimate[idx.prop],f_estimate[a])
+    f_r1<-f_estimate[c(idx.prop,a)]
     lambda_Tr1<-exp((X_r1 %*% beta.prop) + f_r1)
     W_Tr1<-as.vector(lambda_Tr1)
     H_Tr1 <-(t(X_r1)  %*% (X_r1 * W_Tr1))
     b_r1 <-(t(X_r1) %*% (lambda_Tr1-lambda_r1))
-    L1_r1 <- psych::tr(Temp1%*%H_Tr1%*%t(Temp1))
-    L2_r1 <- sum((W_r1*((X_r1%*%H_r1%*%b_r1)-f_r1))^2)
+
+    Temp1_H <- Temp1 %*% H_Tr1
+    diag_Temp <- rowSums(Temp1_H * Temp1)
+    L1_r1 <- sum(diag_Temp)
+
+    XH_r1 <- X_r1 %*% H_r1
+    XH_b_r1 <- XH_r1 %*% b_r1
+    diff <- XH_b_r1 - f_r1
+    L2_r1 <- sum((W_r1 * diff)^2)
 
     c(L1_r1+L2_r1)
   }

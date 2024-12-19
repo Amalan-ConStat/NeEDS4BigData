@@ -30,7 +30,7 @@ r1<-300; r2<-rep(100*c(6,9,12),5);
 modelRobustLinSub(r1 = r1, r2 = r2,
                   Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                  Apriori_alpha = rep(1/length(All_Models),length(All_Models)),
+                  Apriori_probs = rep(1/length(All_Models),length(All_Models)),
                   All_Combinations = All_Models,
                   All_Covariates = colnames(Original_Data)[-1]) |> suppressWarnings() |>
   suppressMessages()->Results
@@ -105,10 +105,10 @@ test_that("Error on input for r2",{
   expect_error(modelRobustLinSub(r1 = r1, r2 = NA,
                                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                                 Apriori_alpha = rep(1/length(All_Models),length(All_Models)),
+                                 Apriori_probs = rep(1/length(All_Models),length(All_Models)),
                                  All_Combinations = All_Models,
                                  All_Covariates = colnames(Original_Data)[-1]),
-               "NA or Infinite or NAN values in the r1,r2,N,Apriori_alpha or All_Covariates")
+               "NA or Infinite or NAN values in the r1,r2,N,Apriori_probs or All_Covariates")
 })
 Temp_Data<-Original_Data
 Temp_Data[100,]<-rep(NA,8)
@@ -116,7 +116,7 @@ test_that("Error on X input",{
   expect_error(modelRobustLinSub(r1 = r1, r2 = r2,
                                  Y = as.matrix(Temp_Data[,colnames(Temp_Data) %in% c("Y")]),
                                  X = as.matrix(Temp_Data[,-1]),N = nrow(Temp_Data),
-                                 Apriori_alpha = rep(1/length(All_Models),length(All_Models)),
+                                 Apriori_probs = rep(1/length(All_Models),length(All_Models)),
                                  All_Combinations = All_Models,
                                  All_Covariates = colnames(Temp_Data)[-1]),
                "NA or Infinite or NAN values in the Y or X")
@@ -126,7 +126,7 @@ test_that("Error on r1 and r2 input",{
   expect_error(modelRobustLinSub(r1 = r1+1000, r2 = r2,
                                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                                 Apriori_alpha = rep(1/length(All_Models),length(All_Models)),
+                                 Apriori_probs = rep(1/length(All_Models),length(All_Models)),
                                  All_Combinations = All_Models,
                                  All_Covariates = colnames(Original_Data)[-1]),
                "2*r1 cannot be greater than r2 at any point")
@@ -135,17 +135,17 @@ test_that("Error on size of X and Y",{
   expect_error(modelRobustLinSub(r1 = r1, r2 = r2,
                                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data)+1,
-                                 Apriori_alpha = rep(1/length(All_Models),length(All_Models)),
+                                 Apriori_probs = rep(1/length(All_Models),length(All_Models)),
                                  All_Combinations = All_Models,
                                  All_Covariates = colnames(Original_Data)[-1]),
                "The big data size N is not the same as of the size of X or Y")
 })
 
-test_that("Error on length on Apriori_alpha the a priori probability",{
+test_that("Error on length on Apriori_probs the a priori probability",{
   expect_error(modelRobustLinSub(r1 = r1, r2 = r2,
                                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                                 Apriori_alpha = c(rep(1/length(All_Models),length(All_Models)),0.1),
+                                 Apriori_probs = c(rep(1/length(All_Models),length(All_Models)),0.1),
                                  All_Combinations = All_Models,
                                  All_Covariates = colnames(Original_Data)[-1]),
                "No of models for averaging is not equal to the a priori probabilities")
@@ -154,7 +154,7 @@ test_that("Error on length of r1 or N",{
   expect_error(modelRobustLinSub(r1 = c(r1,3), r2 = r2,
                                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-                                 Apriori_alpha = c(rep(1/length(All_Models),length(All_Models)),0.1),
+                                 Apriori_probs = c(rep(1/length(All_Models),length(All_Models)),0.1),
                                  All_Combinations = All_Models,
                                  All_Covariates = colnames(Original_Data)[-1]),
                "r1 or N has a value greater than length one")

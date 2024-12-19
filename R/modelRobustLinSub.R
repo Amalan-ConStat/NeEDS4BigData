@@ -5,14 +5,14 @@
 #' optimality criteria.
 #'
 #' @usage
-#' modelRobustLinSub(r1,r2,Y,X,N,Apriori_alpha,All_Combinations,All_Covariates)
+#' modelRobustLinSub(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Covariates)
 #'
 #' @param r1      sample size for initial random sampling
 #' @param r2      sample size for optimal sampling
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
-#' @param Apriori_alpha   vector of a priori probabilities that are used to obtain the model robust subsampling probabilities
+#' @param Apriori_probs   vector of a priori model probabilities that are used to obtain the model robust subsampling probabilities
 #' @param All_Combinations list of possible models that can describe the data
 #' @param All_Covariates all the covariates in the models
 #'
@@ -37,7 +37,7 @@
 #' The big data size \eqn{N} is compared with the sizes of \eqn{X,Y} and
 #' if they are not aligned an error message will be produced.
 #'
-#' If \eqn{0 < \alpha_{q} < 1} for the a priori probabilities are not satisfied an error message will be produced,
+#' If \eqn{0 < \alpha_{q} < 1} for the a priori model probabilities are not satisfied an error message will be produced,
 #' where \eqn{q=1,\ldots,Q} and \eqn{Q} is the number of models in the model set.
 #'
 #' @return
@@ -94,7 +94,7 @@
 #' modelRobustLinSub(r1 = r1, r2 = r2,
 #'                   Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
 #'                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
-#'                   Apriori_alpha = rep(1/length(All_Models),length(All_Models)),
+#'                   Apriori_probs = rep(1/length(All_Models),length(All_Models)),
 #'                   All_Combinations = All_Models,
 #'                   All_Covariates = colnames(Original_Data)[-1])->Results
 #'
@@ -103,9 +103,9 @@
 #' @importFrom Rdpack reprompt
 #' @importFrom matrixStats rowSums2
 #' @export
-modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_alpha,All_Combinations,All_Covariates){
-  if(any(is.na(c(r1,r2,N,Apriori_alpha,All_Covariates))) | any(is.nan(c(r1,r2,N,Apriori_alpha,All_Covariates)))){
-    stop("NA or Infinite or NAN values in the r1,r2,N,Apriori_alpha or All_Covariates")
+modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Covariates){
+  if(any(is.na(c(r1,r2,N,Apriori_probs,All_Covariates))) | any(is.nan(c(r1,r2,N,Apriori_probs,All_Covariates)))){
+    stop("NA or Infinite or NAN values in the r1,r2,N,Apriori_probs or All_Covariates")
   }
 
   if((length(r1) + length(N)) != 2){
@@ -116,7 +116,7 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_alpha,All_Combinations,All_Cov
     stop("The big data size N is not the same as of the size of X or Y")
   }
 
-  if(any(is.na(cbind(Y,X))) | any(is.nan(cbind(Y,X)))){
+  if(anyNA(Y) | anyNA(X) | any(is.nan(Y)) | any(is.nan(X)) ){
     stop("NA or Infinite or NAN values in the Y or X")
   }
 
@@ -124,11 +124,11 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_alpha,All_Combinations,All_Cov
     stop("2*r1 cannot be greater than r2 at any point")
   }
 
-  if(length(Apriori_alpha) != length(All_Combinations)){
+  if(length(Apriori_probs) != length(All_Combinations)){
     stop("No of models for averaging is not equal to the a priori probabilities")
   }
 
-  if(any(Apriori_alpha > 1) | any(Apriori_alpha < 0) | sum(Apriori_alpha) != 1){
+  if(any(Apriori_probs > 1) | any(Apriori_probs < 0) | sum(Apriori_probs) != 1){
     stop("A priori probabilities not inbetween zero and one or the sum is one")
   }
 
@@ -196,17 +196,26 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_alpha,All_Combinations,All_Cov
     PI.mVc<-sqrt(fit.prop[[j]]$Epsilon.prop^2 * matrixStats::rowSums2(X[,All_Covariates %in% All_Combinations[[j]] ]^2))
     return(PI.mVc/sum(PI.mVc))
   })
-  PI_MR.mVc<-matrixStats::rowSums2(do.call(cbind,PI_Single.mVc)%*%diag(Apriori_alpha)) # Model Robust Results
+  PI_MR.mVc<-matrixStats::rowSums2(do.call(cbind,PI_Single.mVc)%*%diag(Apriori_probs)) # Model Robust Results
 
   ## mMSE
-  PI_Single.mMSE <- lapply(1:length(All_Combinations),function(j){ # Single Model Results
-    PI.mMSE<-sqrt(fit.prop[[j]]$Epsilon.prop^2 *
-                  matrixStats::rowSums2((X[,All_Covariates %in% All_Combinations[[j]] ] %*%
-                                           solve(t(X[,All_Covariates %in% All_Combinations[[j]] ])%*%
-                                                   X[,All_Covariates %in% All_Combinations[[j]] ]))^2))
-    return(PI.mMSE/sum(PI.mMSE))
+  # PI_Single.mMSE <- lapply(1:length(All_Combinations),function(j){ # Single Model Results
+  #   PI.mMSE<-sqrt(fit.prop[[j]]$Epsilon.prop^2 *
+  #                 matrixStats::rowSums2((X[,All_Covariates %in% All_Combinations[[j]] ] %*%
+  #                                          solve(t(X[,All_Covariates %in% All_Combinations[[j]] ])%*%
+  #                                                  X[,All_Covariates %in% All_Combinations[[j]] ]))^2))
+  #   return(PI.mMSE/sum(PI.mMSE))
+  # })
+
+  # For efficient row-wise operations
+  PI_Single.mMSE <- lapply(seq_along(All_Combinations), function(j) {
+    X_sub <- X[, All_Covariates %in% All_Combinations[[j]], drop = FALSE]
+    XtX_inv <- solve(crossprod(X_sub)) # More efficient than t(X) %*% X
+    row_sums_squared <- matrixStats::rowSums2((X_sub %*% XtX_inv)^2)
+    PI.mMSE <- sqrt(fit.prop[[j]]$Epsilon.prop^2 * row_sums_squared)
+    PI.mMSE / sum(PI.mMSE)
   })
-  PI_MR.mMSE<-matrixStats::rowSums2(do.call(cbind,PI_Single.mMSE)%*%diag(Apriori_alpha))  # Model Robust Results
+  PI_MR.mMSE<-matrixStats::rowSums2(do.call(cbind,PI_Single.mMSE)%*%diag(Apriori_probs))  # Model Robust Results
 
   message("Step 1 of the algorithm completed.\n")
 

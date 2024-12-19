@@ -69,7 +69,7 @@ LCCsampling<-function(r1,r2,Y,X,N){
     stop("r1 or N has a value greater than length one")
   }
 
-  if(any(is.na(cbind(Y,X))) | any(is.nan(cbind(Y,X)))){
+  if(anyNA(Y) | anyNA(X) | any(is.nan(Y)) | any(is.nan(X)) ){
     stop("NA or Infinite or NAN values in the Y or X")
   }
 
