@@ -142,7 +142,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
 
     for (i in 1:length(r)) {
       # basic leverage sampling
-      idx.blev <- sample.int(N, size = r[i], replace = TRUE, PI.blev)
+      idx.blev <- sample(1:N, size = r[i], replace = TRUE, PI.blev)
 
       x.blev <- as.matrix(X[idx.blev,])
       y.blev <- as.matrix(Y[idx.blev])
@@ -179,7 +179,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       }
 
       # shrinkage leverage sampling
-      idx.slev <- sample.int(N, size = r[i], replace = TRUE, PI.slev)
+      idx.slev <- sample(N, size = r[i], replace = TRUE, PI.slev)
 
       x.slev <- as.matrix(X[idx.slev,])
       y.slev <- as.matrix(Y[idx.slev])
@@ -276,7 +276,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
 
     for (i in 1:length(r)) {
       # basic leverage sampling
-      idx.blev <- sample.int(N, size = r[i], replace = TRUE, PI.blev)
+      idx.blev <- sample(N, size = r[i], replace = TRUE, PI.blev)
 
       x.blev <- as.matrix(X[idx.blev,])
       y.blev <- as.matrix(Y[idx.blev])
@@ -304,7 +304,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       }
 
       # shrinkage leverage sampling
-      idx.slev <- sample.int(N, size = r[i], replace = TRUE, PI.slev)
+      idx.slev <- sample(1:N, size = r[i], replace = TRUE, PI.slev)
 
       x.slev <- as.matrix(X[idx.slev,])
       y.slev <- as.matrix(Y[idx.slev])
@@ -386,7 +386,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
 
     for (i in 1:length(r)) {
       # basic leverage sampling
-      idx.blev <- sample.int(N, size = r[i], replace = TRUE, PI.blev)
+      idx.blev <- sample(1:N, size = r[i], replace = TRUE, PI.blev)
 
       x.blev <- as.matrix(X[idx.blev,])
       y.blev <- as.matrix(Y[idx.blev])
@@ -414,7 +414,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       }
 
       # shrinkage leverage sampling
-      idx.slev <- sample.int(N, size = r[i], replace = TRUE, PI.slev)
+      idx.slev <- sample(1:N, size = r[i], replace = TRUE, PI.slev)
 
       x.slev <- as.matrix(X[idx.slev,])
       y.slev <- as.matrix(Y[idx.slev])

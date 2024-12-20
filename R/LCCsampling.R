@@ -116,6 +116,7 @@ LCCsampling<-function(r1,r2,Y,X,N){
   for(i in 1:length(r2)){
     ## local case control sampling
     idx.LCC <- sample(1:N, r2[i], T, PI.LCC)
+
     x.LCC <- X[c(idx.LCC),]
     y.LCC <- Y[c(idx.LCC)]
     pinv.LCC <- 1

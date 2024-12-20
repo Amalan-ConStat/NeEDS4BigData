@@ -66,7 +66,7 @@ head(Original_Data) %>%
         caption = "First few observations of the skin segmentation data.")
 
 # Setting the sample sizes
-N<-nrow(Original_Data); M<-250; k<-seq(6,18,by=3)*100; rep_k<-rep(k,each=M)
+N<-nrow(Original_Data); M<-300; k<-seq(9,24,by=3)*100; rep_k<-rep(k,each=M)
 ```
 
 Based on this model the methods random sampling, leverage sampling [@ma2014statistical;@ma2015leveraging], local case control sampling [@fithian2015local], $A$- and $L$-optimality subsampling [@ai2021optimal;@yao2021review] and $A$-optimality subsampling with response constraint [@zhang2021optimal] are implemented on the big data.
