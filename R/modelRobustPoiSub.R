@@ -93,8 +93,7 @@
 #'
 #' r1<-300; r2<-rep(100*c(6,12),25);
 #'
-#' modelRobustPoiSub(r1 = r1, r2 = r2,
-#'                   Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+#' modelRobustPoiSub(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,1]),
 #'                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                   Apriori_probs = rep(1/length(All_Models),length(All_Models)),
 #'                   All_Combinations = All_Models,
@@ -137,7 +136,7 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   }
 
   PI.prop <- rep(1/N, N)
-  idx.prop <- sample(1:N, r1, T)
+  idx.prop <- sample(1:N, size = r1, replace = TRUE)
 
   x.prop<-lapply(1:length(All_Combinations),function(j){
     X[idx.prop,All_Covariates %in% All_Combinations[[j]]]
@@ -149,7 +148,7 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   pinv.prop <- 1/PI.prop[idx.prop]
 
   fit.prop <- lapply(1:length(All_Combinations), function(j){
-    stats::glm(y.prop~x.prop[[j]]-1,family = "poisson")
+    stats::glm(y.prop~x.prop[[j]]-1,family = "quasipoisson")
   })
 
   beta.prop<-list()
@@ -210,7 +209,7 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
     P.prop[[j]][idx.prop] # Single Model Results
   })
   W_Single.prop <- lapply(1:length(All_Combinations),function(j){
-    solve(t(x.prop[[j]]) %*% (x.prop[[j]] * w_Single.prop[[j]] * pinv.prop)) # Single Model Results
+    solve(crossprod(x.prop[[j]], x.prop[[j]] * w_Single.prop[[j]] * pinv.prop)) # Single Model Results
   })
   PI_Single.mMSE <- lapply(1:length(All_Combinations),function(j){ # Single Model Results
     PI.mMSE<-sqrt((Y - P.prop[[j]])^2 *
@@ -225,9 +224,9 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   {
     ## mVc
     idx_Single.mVc <- lapply(1:length(All_Combinations), function(j){
-      sample(1:N, r2[i]-r1, T, PI_Single.mVc[[j]]) # Single Model Results
+      sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI_Single.mVc[[j]]) # Single Model Results
     })
-    idx_MR.mVc <- sample(1:N, r2[i]-r1, T, PI_MR.mVc) # Model Robust Results
+    idx_MR.mVc <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI_MR.mVc) # Model Robust Results
 
     x_Single.mVc <-lapply(1:length(All_Combinations),function(j){ # Single Model Results
       X[c(idx_Single.mVc[[j]], idx.prop),All_Covariates %in% All_Combinations[[j]] ]
@@ -244,11 +243,11 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
 
     fit_Single.mVc <-lapply(1:length(All_Combinations), function(j){ # Single Model Results
       pinv_Single.mVc<-c(1 / PI_Single.mVc[[j]][idx_Single.mVc[[j]]], pinv.prop)
-      stats::glm(y_Single.mVc[[j]]~x_Single.mVc[[j]]-1, family = "poisson",weights=pinv_Single.mVc)
+      stats::glm(y_Single.mVc[[j]]~x_Single.mVc[[j]]-1, family = "quasipoisson",weights=pinv_Single.mVc)
     })
 
     fit_MR.mVc <- lapply(1:length(All_Combinations),function(j){
-      stats::glm(y_MR.mVc~x_MR.mVc[[j]]-1,family="poisson",weights=pinv_MR.mVc) # Model Robust Results
+      stats::glm(y_MR.mVc~x_MR.mVc[[j]]-1,family="quasipoisson",weights=pinv_MR.mVc) # Model Robust Results
     })
 
     for (j in 1:length(All_Combinations))
@@ -268,9 +267,8 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
     V_Final<-lapply(1:length(All_Combinations),function(j){
       pi<-c(exp(x_Single.mVc[[j]] %*% beta.mVc_Single[[j]][i,-1]))
       pinv_Single.mVc<-c(1 / PI_Single.mVc[[j]][idx_Single.mVc[[j]]], pinv.prop)
-      Mx<-solve(t(x_Single.mVc[[j]]) %*% (x_Single.mVc[[j]] * pi * pinv_Single.mVc))
-      V_Temp<-t(x_Single.mVc[[j]]) %*% (x_Single.mVc[[j]]*((as.vector(y_Single.mVc[[j]])-pi)*pinv_Single.mVc)^2)
-
+      Mx<-solve(crossprod(x_Single.mVc[[j]], x_Single.mVc[[j]] * pi * pinv_Single.mVc))
+      V_Temp<-crossprod(x_Single.mVc[[j]], x_Single.mVc[[j]]*((as.vector(y_Single.mVc[[j]])-pi)*pinv_Single.mVc)^2)
       Mx %*% V_Temp %*% Mx
     })
 
@@ -282,9 +280,8 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
     # Model Robust Results
     V_Final<-lapply(1:length(All_Combinations),function(j){
       pi<- c(exp(x_MR.mVc[[j]] %*% beta.mVc_MR[[j]][i,-1]))
-      Mx<-solve(t(x_MR.mVc[[j]]) %*% (x_MR.mVc[[j]]*pi*pinv_MR.mVc))
-      V_Temp<-t(x_MR.mVc[[j]]) %*% (x_MR.mVc[[j]]*((as.vector(y_MR.mVc)-pi)*pinv_MR.mVc)^2)
-
+      Mx<-solve(crossprod(x_MR.mVc[[j]], x_MR.mVc[[j]]*pi*pinv_MR.mVc))
+      V_Temp<-crossprod(x_MR.mVc[[j]], x_MR.mVc[[j]]*((as.vector(y_MR.mVc)-pi)*pinv_MR.mVc)^2)
       Mx %*% V_Temp %*% Mx
     })
 
@@ -295,9 +292,9 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
 
     ## mMSE
     idx_Single.mMSE <- lapply(1:length(All_Combinations),function(j){
-      sample(1:N, r2[i]-r1, T, PI_Single.mMSE[[j]]) # Single Model Results
+      sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI_Single.mMSE[[j]]) # Single Model Results
     })
-    idx_MR.mMSE <- sample(1:N, r2[i]-r1, T, PI_MR.mMSE) # Model Robust Results
+    idx_MR.mMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI_MR.mMSE) # Model Robust Results
 
     x_Single.mMSE <- lapply(1:length(All_Combinations),function(j){
       X[c(idx_Single.mMSE[[j]], idx.prop),All_Covariates %in% All_Combinations[[j]] ] # Single Model Results
@@ -314,11 +311,11 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
 
     fit_Single.mMSE <- lapply(1:length(All_Combinations),function(j){ # Single Model Results
       pinv_Single.mMSE<-c(1 / PI_Single.mMSE[[j]][idx_Single.mMSE[[j]]], pinv.prop)
-      stats::glm(y_Single.mMSE[[j]]~x_Single.mMSE[[j]]-1, family = "poisson",weights=pinv_Single.mMSE)
+      stats::glm(y_Single.mMSE[[j]]~x_Single.mMSE[[j]]-1, family = "quasipoisson",weights=pinv_Single.mMSE)
     })
 
     fit_MR.mMSE <- lapply(1:length(All_Combinations), function(j){ # Model Robust Results
-      stats::glm(y_MR.mMSE~x_MR.mMSE[[j]]-1, family = "poisson",weights=pinv_MR.mMSE)
+      stats::glm(y_MR.mMSE~x_MR.mMSE[[j]]-1, family = "quasipoisson",weights=pinv_MR.mMSE)
     })
 
     for (j in 1:length(All_Combinations))
@@ -340,9 +337,8 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
     V_Final<-lapply(1:length(All_Combinations),function(j){
       pi<-c(exp(x_Single.mMSE[[j]] %*% beta.mMSE_Single[[j]][i,-1]))
       pinv_Single.mMSE<-c(1 / PI_Single.mMSE[[j]][idx_Single.mMSE[[j]]], pinv.prop)
-      Mx<-solve(t(x_Single.mMSE[[j]]) %*% (x_Single.mMSE[[j]]*pi*pinv_Single.mMSE))
-      V_Temp<-t(x_Single.mMSE[[j]]) %*% (x_Single.mMSE[[j]]*((as.vector(y_Single.mMSE[[j]])-pi)*pinv_Single.mMSE)^2)
-
+      Mx<-solve(crossprod(x_Single.mMSE[[j]], x_Single.mMSE[[j]]*pi*pinv_Single.mMSE))
+      V_Temp<-crossprod(x_Single.mMSE[[j]], x_Single.mMSE[[j]]*((as.vector(y_Single.mMSE[[j]])-pi)*pinv_Single.mMSE)^2)
       Mx %*% V_Temp %*% Mx
     })
 
@@ -354,9 +350,8 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
     # Model Robust Results
     V_Final<-lapply(1:length(All_Combinations),function(j){
       pi<-c(exp(x_MR.mMSE[[j]] %*% beta.mMSE_MR[[j]][i,-1]))
-      Mx<-solve(t(x_MR.mMSE[[j]]) %*% (x_MR.mMSE[[j]]*pi*pinv_MR.mMSE))
-      V_Temp<-t(x_MR.mMSE[[j]]) %*% (x_MR.mMSE[[j]]*((as.vector(y_MR.mMSE)-pi)*pinv_MR.mMSE)^2)
-
+      Mx<-solve(crossprod(x_MR.mMSE[[j]], x_MR.mMSE[[j]]*pi*pinv_MR.mMSE))
+      V_Temp<-crossprod(x_MR.mMSE[[j]], x_MR.mMSE[[j]]*((as.vector(y_MR.mMSE)-pi)*pinv_MR.mMSE)^2)
       Mx %*% V_Temp %*% Mx
     })
 

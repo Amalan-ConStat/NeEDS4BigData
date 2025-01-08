@@ -91,8 +91,7 @@
 #'
 #' r1<-300; r2<-rep(100*c(6,12),25);
 #'
-#' modelRobustLogSub(r1 = r1, r2 = r2,
-#'                   Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+#' modelRobustLogSub(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,1]),
 #'                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                   Apriori_probs = rep(1/length(All_Models),length(All_Models)),
 #'                   All_Combinations = All_Models,
@@ -137,7 +136,7 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   n0 <- N - n1
   PI.prop <- rep(1/(2*n0), N)
   PI.prop[Y==1] <- 1/(2*n1)
-  idx.prop <- sample(1:N, r1, T, PI.prop)
+  idx.prop <- sample(1:N, size = r1, replace = TRUE, prob = PI.prop)
 
   x.prop<-lapply(1:length(All_Combinations),function(j){
     X[idx.prop,All_Covariates %in% All_Combinations[[j]] ]
@@ -211,7 +210,7 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
     p_Single.prop[[j]] * (1 - p_Single.prop[[j]]) # Single Model Results
   })
   W_Single.prop <- lapply(1:length(All_Combinations),function(j){
-    solve(t(x.prop[[j]]) %*% (x.prop[[j]] * w_Single.prop[[j]] * pinv.prop)) # Single Model Results
+    solve(crossprod(x.prop[[j]],x.prop[[j]] * w_Single.prop[[j]] * pinv.prop)) # Single Model Results
   })
   PI_Single.mMSE <- lapply(1:length(All_Combinations),function(j){
     PI.mMSE<-sqrt((Y - P.prop[[j]])^2 * matrixStats::rowSums2((X[,All_Covariates %in% All_Combinations[[j]] ]%*%
@@ -226,9 +225,9 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   {
     ## mVc
     idx_Single.mVc <- lapply(1:length(All_Combinations), function(j){
-      sample(1:N, r2[i]-r1, T, PI_Single.mVc[[j]]) # Single Model Results
+      sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI_Single.mVc[[j]]) # Single Model Results
     })
-    idx_MR.mVc <- sample(1:N, r2[i]-r1, T, PI_MR.mVc) # Model Robust Results
+    idx_MR.mVc <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI_MR.mVc) # Model Robust Results
 
     x_Single.mVc <-lapply(1:length(All_Combinations),function(j){
       X[c(idx_Single.mVc[[j]], idx.prop),All_Covariates %in% All_Combinations[[j]] ] # Single Model results
@@ -244,7 +243,7 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
 
     fit_Single.mVc <-lapply(1:length(All_Combinations), function(j){
       .getMLE(x=x_Single.mVc[[j]], y=y_Single.mVc[[j]],
-             w=c(1 / PI_Single.mVc[[j]][idx_Single.mVc[[j]]], pinv.prop)) # Single Model Results
+              w=c(1 / PI_Single.mVc[[j]][idx_Single.mVc[[j]]], pinv.prop)) # Single Model Results
     })
 
     fit_MR.mVc <- lapply(1:length(All_Combinations),function(j){
@@ -268,12 +267,10 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
     V_Final<-lapply(1:length(All_Combinations),function(j){
       pi<-1-1/(1 + exp(x_Single.mVc[[j]] %*% beta.mVc_Single[[j]][i,-1]))
       W<-as.vector(pi*(1-pi)*c(1 / PI_Single.mVc[[j]][idx_Single.mVc[[j]]], pinv.prop))
-      Mx<-solve((t(x_Single.mVc[[j]]) %*% (x_Single.mVc[[j]] * W)))
-
+      Mx<-solve(crossprod(x_Single.mVc[[j]],x_Single.mVc[[j]] * W))
       Middle<-((as.vector(y_Single.mVc[[j]])-as.vector(pi))*
                  as.vector(c(1 / PI_Single.mVc[[j]][idx_Single.mVc[[j]]], pinv.prop)))^2
-      V_Temp<-(t(x_Single.mVc[[j]]) %*% (x_Single.mVc[[j]] * Middle) )
-
+      V_Temp<-crossprod(x_Single.mVc[[j]],x_Single.mVc[[j]] * Middle)
       Mx %*% V_Temp %*% Mx
     })
 
@@ -286,11 +283,9 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
     V_Final<-lapply(1:length(All_Combinations),function(j){
       pi<-1-1/(1+exp(x_MR.mVc[[j]] %*% beta.mVc_MR[[j]][i,-1]))
       W<-as.vector(pi*(1-pi)*c(1 / PI_MR.mVc[idx_MR.mVc], pinv.prop))
-      Mx<-solve((t(x_MR.mVc[[j]]) %*% (x_MR.mVc[[j]] * W) ))
-
+      Mx<-solve(crossprod(x_MR.mVc[[j]], x_MR.mVc[[j]] * W))
       Middle<-((as.vector(y_MR.mVc)-as.vector(pi))*as.vector(c(1 / PI_MR.mVc[idx_MR.mVc], pinv.prop)))^2
-      V_Temp<-(t(x_MR.mVc[[j]]) %*% (x_MR.mVc[[j]] * Middle))
-
+      V_Temp<-crossprod(x_MR.mVc[[j]], x_MR.mVc[[j]] * Middle)
       Mx %*% V_Temp %*% Mx
     })
 
@@ -301,9 +296,9 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
 
     ## mMSE
     idx_Single.mMSE <- lapply(1:length(All_Combinations),function(j){
-      sample(1:N, r2[i]-r1, T, PI_Single.mMSE[[j]]) # Single Model Results
+      sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI_Single.mMSE[[j]]) # Single Model Results
     })
-    idx_MR.mMSE <- sample(1:N, r2[i]-r1, T, PI_MR.mMSE) # Model Robust Results
+    idx_MR.mMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI_MR.mMSE) # Model Robust Results
 
     x_Single.mMSE <- lapply(1:length(All_Combinations),function(j){
       X[c(idx_Single.mMSE[[j]], idx.prop),All_Covariates %in% All_Combinations[[j]] ] # Single Model Results
@@ -319,7 +314,7 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
 
     fit_Single.mMSE <- lapply(1:length(All_Combinations),function(j){
       .getMLE(x=x_Single.mMSE[[j]], y=y_Single.mMSE[[j]],
-             w=c(1 / PI_Single.mMSE[[j]][idx_Single.mMSE[[j]]], pinv.prop)) # Single Model Results
+              w=c(1 / PI_Single.mMSE[[j]][idx_Single.mMSE[[j]]], pinv.prop)) # Single Model Results
     })
 
     fit_MR.mMSE <- lapply(1:length(All_Combinations), function(j){
@@ -345,12 +340,10 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
     V_Final<-lapply(1:length(All_Combinations),function(j){
       pi<-1-1/(1 + exp(x_Single.mMSE[[j]] %*% beta.mMSE_Single[[j]][i,-1]))
       W<-as.vector(pi*(1-pi)*c(1 / PI_Single.mMSE[[j]][idx_Single.mMSE[[j]]], pinv.prop))
-      Mx<-solve((t(x_Single.mMSE[[j]]) %*% (x_Single.mMSE[[j]] * W)))
-
+      Mx<-solve(crossprod(x_Single.mMSE[[j]], x_Single.mMSE[[j]] * W))
       Middle<-((as.vector(y_Single.mMSE[[j]])-as.vector(pi))*
                  as.vector(c(1 / PI_Single.mMSE[[j]][idx_Single.mMSE[[j]]], pinv.prop)))^2
-      V_Temp<-(t(x_Single.mMSE[[j]]) %*% (x_Single.mMSE[[j]] * Middle))
-
+      V_Temp<-crossprod(x_Single.mMSE[[j]], x_Single.mMSE[[j]] * Middle)
       Mx %*% V_Temp %*% Mx
     })
 
@@ -363,11 +356,9 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
     V_Final<-lapply(1:length(All_Combinations),function(j){
       pi<-1-1/(1+exp(x_MR.mMSE[[j]] %*% beta.mMSE_MR[[j]][i,-1]))
       W<-as.vector(pi*(1-pi)*c(1 / PI_MR.mMSE[idx_MR.mMSE], pinv.prop))
-      Mx<-solve((t(x_MR.mMSE[[j]]) %*% (x_MR.mMSE[[j]] * W)))
-
+      Mx<-solve(crossprod(x_MR.mMSE[[j]], x_MR.mMSE[[j]] * W))
       Middle<-((as.vector(y_MR.mMSE)-as.vector(pi))*as.vector(c(1 / PI_MR.mMSE[idx_MR.mMSE], pinv.prop)))^2
-      V_Temp<-(t(x_MR.mMSE[[j]]) %*% (x_MR.mMSE[[j]] * Middle))
-
+      V_Temp<-crossprod(x_MR.mMSE[[j]], x_MR.mMSE[[j]] * Middle)
       Mx %*% V_Temp %*% Mx
     })
 
@@ -426,7 +417,7 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   msg <- "NA"
   while (loop <= Loop) {
     pr <- c(1 - 1 / (1 + exp(x %*% beta)))
-    H <- t(x) %*% (pr * (1 - pr) * w * x)
+    H <- crossprod(x,(pr * (1 - pr) * w * x))
     S <- colSums((y - pr) * w * x)
     tryCatch(
       {shs <- NA

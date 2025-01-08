@@ -45,14 +45,14 @@ Theme_special<-function(){
 # Understanding the electric consumption data
 
 ``Electric power consumption'' data [@hebrailindividual], which contains $2,049,280$ measurements for a house located at Sceaux, France between December 2006 and November 2010.
-The data contains $4$ columns, the first column is the response variable and the rest are covariates, however we only use the first $5\%$ of the data for this demonstration. 
+The data contains $4$ columns, the first column is the response variable and the rest are covariates, however we only use the first $25\%$ of the data for this demonstration. 
 The response $y$ is the log scaled intensity, while the covariates are active electrical energy in the a) kitchen ($X_1$), b) laundry room ($X_2$) and c) water-heater and air-conditioner ($X_3$). 
 The covariates are scaled to be mean of zero and variance of one. 
 For the given data subsampling methods are implemented assuming the main effects model can describe the data.
 
 ```{r Exploring data}
-# Selecting 5% of the big data and prepare it
-indexes<-1:ceiling(nrow(Electric_consumption)*0.05)
+# Selecting 25% of the big data and prepare it
+indexes<-1:ceiling(nrow(Electric_consumption)*0.25)
 Original_Data<-cbind(Electric_consumption[indexes,1],1,Electric_consumption[indexes,-1])
 colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
 
@@ -65,7 +65,7 @@ head(Original_Data) %>%
         caption = "First few observations of the electric consumption data.")
 
 # Setting the sample sizes
-N<-nrow(Original_Data); M<-250; k<-seq(6,18,by=3)*100; rep_k<-rep(k,each=M)
+N<-nrow(Original_Data); M<-250; k<-seq(8,20,by=2)*100; rep_k<-rep(k,each=M)
 ```
 
 Based on this model the methods random sampling, leverage sampling [@ma2014statistical;@ma2015leveraging], $A$-optimality subsampling with Gaussian Linear Model [@lee2022sampling], $A$- and $L$-optimality subsampling [@ai2021optimal;@yao2021review] and $A$-optimality subsampling with response constraint [@zhang2021optimal] are implemented on the big data.
@@ -80,8 +80,8 @@ Method_Colour<-c("#BBFFBB","#50FF50","#00BB00","#008600",
 Method_Shape_Types<-c(rep(17,4),rep(4,3),16)
 ```
 
-The obtained samples and their respective model parameter estimates are over $M=100$ simulations across different sample sizes $k=(600,\ldots,1500)$. 
-We set the initial sample size of $r1=300$ for the methods that requires a random sample. 
+The obtained samples and their respective model parameter estimates are over $M=250$ simulations across different sample sizes $k=(800,\ldots,2000)$. 
+We set the initial sample size of $r1=400$ for the methods that requires a random sample. 
 From the final samples, model parameters of the assume model are estimated. 
 These estimated model parameters are compared with the estimated model parameters of the full big data through the mean squared error $MSE(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ}\sum_{i=1}^M \sum_{j=1}^J(\tilde{\beta}_{k,j} - \hat{\beta}_j)^2$. 
 Here, $\tilde{\beta}_k$ is the estimated model parameters from the sample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter. 
@@ -119,7 +119,7 @@ colnames(Final_Beta_LS)<-c("Method","Sample",paste0("Beta",0:3))
 
 ```{r A-optimality subsampling for GauLin Model}
 # A-optimality subsampling for Gaussian Linear Model
-NeEDS4BigData::AoptimalGauLMSub(r1=300,r2=rep_k,
+NeEDS4BigData::AoptimalGauLMSub(r1=400,r2=rep_k,
                                 Y=as.matrix(Original_Data[,1]),
                                 X=as.matrix(Original_Data[,-1]),N=N)->Results
 Final_Beta_AoptGauLM<-Results$Beta_Estimates
@@ -131,7 +131,7 @@ colnames(Final_Beta_AoptGauLM)<-c("Method","Sample",paste0("Beta",0:3))
 
 ```{r A- and L- optimaliy subsampling}
 # A- and L-optimality subsampling for GLM
-NeEDS4BigData::ALoptimalGLMSub(r1=300,r2=rep_k,
+NeEDS4BigData::ALoptimalGLMSub(r1=400,r2=rep_k,
                                Y=as.matrix(Original_Data[,1]),
                                X=as.matrix(Original_Data[,-1]),
                                N=N,family = "linear")->Results
@@ -143,7 +143,7 @@ colnames(Final_Beta_ALoptGLM)<-c("Method","Sample",paste0("Beta",0:3))
 
 ```{r A-optimality subsampling with measurement constraints}
 # A-optimality subsampling for without response
-NeEDS4BigData::AoptimalMCGLMSub(r1=300,r2=rep_k,
+NeEDS4BigData::AoptimalMCGLMSub(r1=400,r2=rep_k,
                                 Y=as.matrix(Original_Data[,1]),
                                 X=as.matrix(Original_Data[,-1]),
                                 N=N,family="linear")->Results

@@ -86,14 +86,14 @@
 #' Generate data for Generalised Linear Models
 #'
 #' Function to simulate big data under linear, logistic and Poisson regression for sampling.
-#' Covariate data X is through Normal or Uniform distribution for linear regression.
-#' Covariate data X is through Exponential or Normal or Uniform distribution for logistic regression.
+#' Covariate data X is through Normal, Multivariate Normal or Uniform distribution for linear regression.
+#' Covariate data X is through Exponential, Normal, Multivariate Normal or Uniform distribution for logistic regression.
 #' Covariate data X is through Normal or Uniform distribution for Poisson regression.
 #'
 #' @usage
 #' GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,family)
 #'
-#' @param Dist        a character value for the distribution "Normal" or "Uniform or "Exponential"
+#' @param Dist        a character value for the distribution "Normal", "MVNormal", "Uniform or "Exponential"
 #' @param Dist_Par    a list of parameters for the distribution that would generate data for covariate X
 #' @param No_Of_Var   number of variables
 #' @param Beta        a vector for the model parameters, including the intercept
@@ -105,8 +105,8 @@
 #' regression types.
 #'
 #' We have limited the covariate data generation for
-#' linear regression through normal and uniform distribution,
-#' logistic regression through exponential, normal and uniform and
+#' linear regression through normal, multivariate normal and uniform distribution,
+#' logistic regression through exponential, normal, multivariate normal and uniform distribution
 #' Poisson regression through normal and uniform distribution.
 #'
 #' @return
@@ -118,17 +118,30 @@
 #' \insertRef{lee1996hierarchical}{NeEDS4BigData}
 #'
 #' @examples
-#' Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5)
-#' No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"linear"
+#' No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000;
+#'
+#' # Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5)
+#' Dist<-"MVNormal";
+#' Dist_Par<-list(Mean=rep(0,No_Of_Var),Variance=diag(rep(2,No_Of_Var)),Error_Variance=0.5)
+#' # Dist<-"Uniform"; Dist_Par<-list(Min=0,Max=1)
+#'
+#' Family<-"linear"
 #' Results<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 #'
-#' Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1); Family<-"logistic"
+#' Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1);
+#' # Dist<-"MVNormal"; Dist_Par<-list(Mean=rep(0,No_Of_Var),Variance=diag(rep(2,No_Of_Var)))
+#' # Dist<-"Exponential"; Dist_Par<-list(Rate=3)
+#' # Dist<-"Uniform"; Dist_Par<-list(Min=0,Max=1)
+#'
+#' Family<-"logistic"
 #' Results<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 #'
-#' Dist<-"Normal";  Family<-"poisson"
+#' # Dist<-"Normal";
+#' Dist<-"Uniform"; Family<-"poisson"
 #' Results<-GenGLMdata(Dist,NULL,No_Of_Var,Beta,N,Family)
 #'
 #' @import stats
+#' @importFrom mvnfast rmvn
 #' @export
 GenGLMdata<-function(Dist,Dist_Par,No_Of_Var,Beta,N,family){
   if(any(is.na(c(Dist,Beta,No_Of_Var,N,family))) | any(is.nan(c(Dist,No_Of_Var,Beta,N,family)))){
@@ -148,14 +161,14 @@ GenGLMdata<-function(Dist,Dist_Par,No_Of_Var,Beta,N,family){
   }
 
   if(family == "linear"){
-    if(!(Dist == "Normal" | Dist == "Uniform")){
-      stop("For linear regression select the distribution 'Normal' \n or 'Uniform' to generate the covarate data")
+    if(!(Dist == "Normal" | Dist == "MVNormal" | Dist == "Uniform")){
+      stop("For linear regression select the distribution 'Normal', 'MVNormal' \n or 'Uniform' to generate the covarate data")
     }
   }
 
   if(family == "logistic"){
-    if(!(Dist == "Exponential" | Dist == "Normal" | Dist == "Uniform")){
-      stop("For logistic regression select the distribution 'Exponential', \n 'Normal' or 'Uniform' to generate the covarate data")
+    if(!(Dist == "Exponential" | Dist == "Normal" | Dist == "MVNormal" | Dist == "Uniform")){
+      stop("For logistic regression select the distribution 'Exponential', \n 'Normal', 'MVNormal' or 'Uniform' to generate the covarate data")
     }
   }
 
@@ -168,6 +181,9 @@ GenGLMdata<-function(Dist,Dist_Par,No_Of_Var,Beta,N,family){
   if(family %in% "linear"){
     if(Dist %in% "Normal"){
       X<-replicate(No_Of_Var,stats::rnorm(n = N, mean = Dist_Par$Mean, sd = sqrt(Dist_Par$Variance)))
+    }
+    if(Dist %in% "MVNormal"){
+      X<-mvnfast::rmvn(n = N, mu = Dist_Par$Mean, sigma = sqrt(Dist_Par$Variance))
     }
     if(Dist %in% "Uniform"){
       X<-replicate(No_Of_Var,stats::runif(n = N, min = Dist_Par$Min, max = Dist_Par$Max))
@@ -192,6 +208,9 @@ GenGLMdata<-function(Dist,Dist_Par,No_Of_Var,Beta,N,family){
     }
     if(Dist %in% "Normal"){
       X<-replicate(No_Of_Var,stats::rnorm(n = N, mean = Dist_Par$Mean, sd = sqrt(Dist_Par$Variance)))
+    }
+    if(Dist %in% "MVNormal"){
+      X<-mvnfast::rmvn(n = N, mu = Dist_Par$Mean, sigma = sqrt(Dist_Par$Variance))
     }
     if(Dist %in% "Uniform"){
       X<-replicate(No_Of_Var,stats::runif(n = N, min = Dist_Par$Min, max = Dist_Par$Max))

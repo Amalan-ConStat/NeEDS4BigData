@@ -71,13 +71,13 @@ test_that("Error on Results output for Family",{
 Family<-"linear"; Dist<-"Exp"; Beta<-c(-1,2,1)
 test_that("Error on Results output for linear Dist",{
   expect_error(GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family),
-               "For linear regression select the distribution 'Normal' \n or 'Uniform' to generate the covarate data")
+               "For linear regression select the distribution 'Normal', 'MVNormal' \n or 'Uniform' to generate the covarate data")
 })
 
 Family<-"logistic"; Dist<-"Exp"
 test_that("Error on Results output for logistic Dist",{
   expect_error(GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family),
-               "For logistic regression select the distribution 'Exponential', \n 'Normal' or 'Uniform' to generate the covarate data")
+               "For logistic regression select the distribution 'Exponential', \n 'Normal', 'MVNormal' or 'Uniform' to generate the covarate data")
 })
 
 Family<-"poisson"; Dist<-"Exp"

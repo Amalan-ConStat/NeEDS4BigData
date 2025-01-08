@@ -67,7 +67,7 @@ Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
 r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
 
-LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),
+LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                  S_alpha = 0.95,
                  family = "linear")->Results
@@ -80,7 +80,7 @@ Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
 r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
 
-LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),
+LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                  S_alpha = 0.95,
                  family = "logistic")->Results
@@ -93,7 +93,7 @@ Full_Data<-GenGLMdata(Dist,NULL,No_Of_Var,Beta,N,Family)
 
 r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
 
-LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),
+LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                  S_alpha = 0.95,
                  family = "poisson")->Results

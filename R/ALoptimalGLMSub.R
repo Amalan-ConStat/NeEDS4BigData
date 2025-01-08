@@ -64,8 +64,7 @@
 #'
 #' r1<-300; r2<-rep(600,50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' ALoptimalGLMSub(r1 = r1, r2 = r2,
-#'                 Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+#' ALoptimalGLMSub(r1 = r1, r2 = r2,Y = as.matrix(Original_Data[,1]),
 #'                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                 family = "linear")->Results
 #'
@@ -77,8 +76,7 @@
 #'
 #' r1<-300; r2<-rep(600,50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' ALoptimalGLMSub(r1 = r1, r2 = r2,
-#'                 Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+#' ALoptimalGLMSub(r1 = r1, r2 = r2,Y = as.matrix(Original_Data[,1]),
 #'                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                 family = "logistic")->Results
 #'
@@ -90,8 +88,7 @@
 #'
 #' r1<-300; r2<-rep(600,50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' ALoptimalGLMSub(r1 = r1, r2 = r2,
-#'                 Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+#' ALoptimalGLMSub(r1 = r1, r2 = r2,Y = as.matrix(Original_Data[,1]),
 #'                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                 family = "poisson")->Results
 #'
@@ -129,7 +126,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 
   if(family %in% c("linear")){
     PI.prop <- rep(1/N, N)
-    idx.prop <- sample(1:N, r1, T)
+    idx.prop <- sample(1:N, size = r1, replace = TRUE)
 
     x.prop <- X[idx.prop,]
     y.prop <- Y[idx.prop,]
@@ -137,8 +134,8 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
     pinv.prop <- N
     pinv.prop <- 1/PI.prop[idx.prop]
 
-    beta.prop<-solve(a=t(x.prop)%*%x.prop,b=t(x.prop)%*%y.prop)
-    Xbeta_Final<-as.vector(X%*%beta.prop)
+    beta.prop<-solve(a=crossprod(x.prop),b= crossprod(x.prop,y.prop))
+    Xbeta_Final<-X%*%beta.prop
     Var.prop<-sum((Y-Xbeta_Final)^2)/N
     Epsilon.prop<-Y-Xbeta_Final
 
@@ -161,7 +158,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
     PI.mVc<-PI.mVc/sum(PI.mVc)
 
     ## mMSE
-    PI.mMSE<-sqrt(Epsilon.prop^2 * matrixStats::rowSums2((X %*% solve(t(X)%*%X))^2))
+    PI.mMSE<-sqrt(Epsilon.prop^2 * matrixStats::rowSums2((X %*% solve(crossprod(X)))^2))
     PI.mMSE<-PI.mMSE/sum(PI.mMSE)
 
     message("Step 1 of the algorithm completed.\n")
@@ -169,7 +166,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
     for (i in 1:length(r2))
     {
       ## mVc
-      idx.mVc <- sample(1:N, r2[i]-r1, T, PI.mVc)
+      idx.mVc <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mVc)
 
       x.mVc <- X[c(idx.mVc, idx.prop),]
       y.mVc <- Y[c(idx.mVc, idx.prop)]
@@ -178,8 +175,8 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
       pi4_r<-sqrt(r2[i]*pinv.mVc^(-1))
       X_r4<-x.mVc/pi4_r
       Y_r4<-y.mVc/pi4_r
-      beta.prop<-solve(a=t(X_r4)%*%X_r4,b=t(X_r4)%*%Y_r4)
-      Xbeta_Final<-as.vector(X%*%beta.prop)
+      beta.prop<-solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4))
+      Xbeta_Final<-X%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
 
       Sample.mVc[[i+1]]<-idx.mVc;
@@ -191,7 +188,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
       }
 
       ## mMSE
-      idx.mMSE <- sample(1:N, r2[i]-r1, T, PI.mMSE)
+      idx.mMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mMSE)
 
       x.mMSE <- X[c(idx.mMSE, idx.prop),]
       y.mMSE <- Y[c(idx.mMSE, idx.prop)]
@@ -200,8 +197,8 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
       pi4_r<-sqrt(r2[i]*pinv.mMSE^(-1))
       X_r4<-x.mMSE/pi4_r
       Y_r4<-y.mMSE/pi4_r
-      beta.prop<-solve(a=t(X_r4)%*%X_r4,b=t(X_r4)%*%Y_r4)
-      Xbeta_Final<-as.vector(X%*%beta.prop)
+      beta.prop<-solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4))
+      Xbeta_Final<-X%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
 
       Sample.mMSE[[i+1]]<-idx.mMSE;
@@ -242,7 +239,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
     n0 <- N - n1
     PI.prop <- rep(1/(2*n0), N)
     PI.prop[Y==1] <- 1/(2*n1)
-    idx.prop <- sample(1:N, r1, T, PI.prop)
+    idx.prop <- sample(1:N, size = r1, replace = TRUE, prob = PI.prop)
 
     x.prop <- X[idx.prop,]
     y.prop <- Y[idx.prop,]
@@ -274,7 +271,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
     ## mMSE
     p.prop <- P.prop[idx.prop]
     w.prop <- p.prop * (1 - p.prop)
-    W.prop <- solve(t(x.prop) %*% (x.prop * w.prop * pinv.prop))
+    W.prop <- solve(crossprod(x.prop,x.prop * w.prop * pinv.prop))
 
     PI.mMSE<-sqrt((Y - P.prop)^2 * matrixStats::rowSums2((X%*%W.prop)^2))
     PI.mMSE <- PI.mMSE/sum(PI.mMSE)
@@ -284,7 +281,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
     for (i in 1:length(r2))
     {
       ## mVc
-      idx.mVc <- sample(1:N, r2[i]-r1, T, PI.mVc)
+      idx.mVc <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mVc)
 
       x.mVc <- X[c(idx.mVc, idx.prop), ]
       y.mVc <- Y[c(idx.mVc, idx.prop)]
@@ -307,7 +304,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
       Utility_mVc[i,-1]<-c(psych::tr(V_Final),det(solve(V_Final)))
 
       ## mMSE
-      idx.mMSE <- sample(1:N, r2[i]-r1, T, PI.mMSE)
+      idx.mMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mMSE)
 
       x.mMSE <- X[c(idx.mMSE, idx.prop),]
       y.mMSE <- Y[c(idx.mMSE, idx.prop)]
@@ -356,14 +353,14 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
   }
   if(family %in% "poisson"){
     PI.prop <- rep(1/N, N)
-    idx.prop <- sample(1:N, r1, T)
+    idx.prop <- sample(1:N, size = r1, replace = TRUE)
 
     x.prop<-X[idx.prop,]
     y.prop <- Y[idx.prop,]
 
     pinv.prop <- N
     pinv.prop <- 1/PI.prop[idx.prop]
-    fit.prop <- stats::glm(y.prop~x.prop-1,family = "poisson")
+    fit.prop <- stats::glm(y.prop~x.prop-1,family = "quasipoisson")
 
     beta.prop <- fit.prop$coefficients
     if(anyNA(beta.prop)){
@@ -389,7 +386,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 
     ## mMSE
     w.prop <- P.prop[idx.prop]
-    W.prop <- solve(t(x.prop) %*% (x.prop * w.prop * pinv.prop))
+    W.prop <- solve(crossprod(x.prop,x.prop * w.prop * pinv.prop))
 
     PI.mMSE<-sqrt((Y - P.prop)^2 * matrixStats::rowSums2((X%*%W.prop)^2))
     PI.mMSE <- PI.mMSE/sum(PI.mMSE)
@@ -399,13 +396,13 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
     for (i in 1:length(r2))
     {
       ## mVc
-      idx.mVc <- sample(1:N, r2[i]-r1, T, PI.mVc)
+      idx.mVc <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mVc)
 
       x.mVc <- X[c(idx.mVc, idx.prop),]
       y.mVc <- Y[c(idx.mVc, idx.prop)]
       pinv.mVc<-c(1 / PI.mVc[idx.mVc], pinv.prop)
 
-      fit.mVc <-stats::glm(y.mVc~x.mVc-1, family = "poisson",weights=pinv.mVc)
+      fit.mVc <-stats::glm(y.mVc~x.mVc-1, family = "quasipoisson",weights=pinv.mVc)
       Sample.mVc[[i+1]]<-idx.mVc;
       beta.mVc[i,-1] <- fit.mVc$coefficients
 
@@ -422,13 +419,13 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
       Utility_mVc[i,-1]<-c(psych::tr(V_Final),det(solve(V_Final)))
 
       ## mMSE
-      idx.mMSE <- sample(1:N, r2[i]-r1, T, PI.mMSE)
+      idx.mMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mMSE)
 
       x.mMSE <- X[c(idx.mMSE, idx.prop),]
       y.mMSE <- Y[c(idx.mMSE, idx.prop)]
       pinv.mMSE<-c(1 / PI.mMSE[idx.mMSE], pinv.prop)
 
-      fit.mMSE <- stats::glm(y.mMSE~x.mMSE-1, family = "poisson",weights=pinv.mMSE)
+      fit.mMSE <- stats::glm(y.mMSE~x.mMSE-1, family = "quasipoisson",weights=pinv.mMSE)
       Sample.mMSE[[i+1]]<-idx.mMSE;
       beta.mMSE[i,-1] <-fit.mMSE$coefficients
 

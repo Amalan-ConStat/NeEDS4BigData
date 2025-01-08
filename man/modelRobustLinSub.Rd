@@ -73,7 +73,7 @@ where \eqn{q=1,\ldots,Q} and \eqn{Q} is the number of models in the model set.
 indexes<-1:ceiling(nrow(Electric_consumption)*0.005)
 Original_Data<-cbind(Electric_consumption[indexes,1],1,
                      Electric_consumption[indexes,-1])
-                     colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
+colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
 for (j in 3:5) {
   Original_Data[,j]<-scale(Original_Data[,j])
 }
@@ -100,8 +100,7 @@ names(All_Models)<-paste0("Model_",1:length(All_Models))
 
 r1<-300; r2<-rep(100*c(6,12),25);
 
-modelRobustLinSub(r1 = r1, r2 = r2,
-                  Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),
+modelRobustLinSub(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,1]),
                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                   Apriori_probs = rep(1/length(All_Models),length(All_Models)),
                   All_Combinations = All_Models,

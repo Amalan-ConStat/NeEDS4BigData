@@ -61,7 +61,7 @@
 #'
 #' r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+#' LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                  S_alpha = 0.95,
 #'                  family = "linear")->Results
@@ -74,7 +74,7 @@
 #'
 #' r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+#' LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                  S_alpha = 0.95,
 #'                  family = "logistic")->Results
@@ -87,7 +87,7 @@
 #'
 #' r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' LeverageSampling(r = r, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+#' LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                  S_alpha = 0.95,
 #'                  family = "poisson")->Results
@@ -142,17 +142,17 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
 
     for (i in 1:length(r)) {
       # basic leverage sampling
-      idx.blev <- sample(1:N, size = r[i], replace = TRUE, PI.blev)
+      idx.blev <- sample(1:N, size = r[i], replace = TRUE, prob = PI.blev)
 
-      x.blev <- as.matrix(X[idx.blev,])
-      y.blev <- as.matrix(Y[idx.blev])
+      x.blev <- X[idx.blev,]
+      y.blev <- Y[idx.blev]
       wgt <- 1 / PI.blev[idx.blev]
 
-      Temp_Data <- data.frame(y = y.blev,x.blev, wgt = wgt)
-      lm.blev <- stats::lm(y ~ . - 1, weights = Temp_Data$wgt, data = Temp_Data[,-ncol(Temp_Data)])
+      Temp_Data <- data.frame(y = y.blev,x.blev)
+      lm.blev <- stats::lm(y ~ . - 1, weights = wgt, data = Temp_Data)
 
       beta.prop<-stats::coefficients(lm.blev)
-      Xbeta_Final<-as.vector(X%*%beta.prop)
+      Xbeta_Final<-X%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
 
       Sample.blev[[i]]<-idx.blev
@@ -164,10 +164,10 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       }
 
       # unweighted leverage sampling
-      lm.uwlev <- stats::lm(y ~ . - 1, data = Temp_Data[,-ncol(Temp_Data)])
+      lm.uwlev <- stats::lm(y ~ . - 1, data = Temp_Data)
 
       beta.prop<-stats::coefficients(lm.uwlev)
-      Xbeta_Final<-as.vector(X%*%beta.prop)
+      Xbeta_Final<-X%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
 
       Sample.uwlev[[i]]<-idx.blev
@@ -179,17 +179,17 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       }
 
       # shrinkage leverage sampling
-      idx.slev <- sample(N, size = r[i], replace = TRUE, PI.slev)
+      idx.slev <- sample(N, size = r[i], replace = TRUE, prob = PI.slev)
 
-      x.slev <- as.matrix(X[idx.slev,])
-      y.slev <- as.matrix(Y[idx.slev])
+      x.slev <- X[idx.slev,]
+      y.slev <- Y[idx.slev]
       wgt <- 1 / PI.slev[idx.slev]
 
-      Temp_Data <- data.frame(y = y.slev,x.slev, wgt = wgt)
-      lm.slev <- stats::lm(y ~ . - 1, weights = wgt, data = Temp_Data[,-ncol(Temp_Data)])
+      Temp_Data <- data.frame(y = y.slev,x.slev)
+      lm.slev <- stats::lm(y ~ . - 1, weights = wgt, data = Temp_Data)
 
       beta.prop<-stats::coefficients(lm.slev)
-      Xbeta_Final<-as.vector(X%*%beta.prop)
+      Xbeta_Final<-X%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
 
       Sample.slev[[i]]<-idx.slev
@@ -233,7 +233,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     n0 <- N - n1
     PI.prop <- rep(1/(2*n0), N)
     PI.prop[Y==1] <- 1/(2*n1)
-    idx.prop <- sample(1:N, r1, T, PI.prop)
+    idx.prop <- sample(1:N, size = r1, replace = TRUE, prob = PI.prop)
 
     x.prop <- X[idx.prop,]
     y.prop <- Y[idx.prop,]
@@ -247,21 +247,9 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     p.prop<-1 - 1 / (1 + exp(X%*% beta.prop))
     w.prop<-as.vector(sqrt(p.prop*(1-p.prop)))
     X_bar<- w.prop*X
-    XX_Inv<-solve(t(X_bar)%*%X_bar)
+    XX_Inv<-solve(crossprod(X_bar))
 
-    # X_Temp<-X
-    # PP <-apply(X_Temp,1,function(X_Temp){
-    #   P.prop  <- 1 - 1 / (1 + exp(X_Temp%*% beta.prop))
-    #   W.prop <- sqrt(P.prop*(1-P.prop))
-    #   x_bar <- W.prop%*%X_Temp
-    #   x_bar%*%XX_Inv%*%t(x_bar)
-    #   })
-
-    # Precompute terms outside the loop
-    P.prop <- 1 - 1 / (1 + exp(X %*% beta.prop))
-    W.prop <- sqrt(P.prop * (1 - P.prop))
-    X_bar_s <- as.vector(W.prop) * X
-    PP <- rowSums((X_bar_s %*% XX_Inv) * X_bar_s)
+    PP <- rowSums((X_bar %*% XX_Inv) * X_bar)
 
     PI.blev <- PP / sum(PP)
     PI.slev <- S_alpha * PI.blev + (1-S_alpha) * 1 / N
@@ -278,8 +266,8 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       # basic leverage sampling
       idx.blev <- sample(N, size = r[i], replace = TRUE, PI.blev)
 
-      x.blev <- as.matrix(X[idx.blev,])
-      y.blev <- as.matrix(Y[idx.blev])
+      x.blev <- X[idx.blev,]
+      y.blev <- Y[idx.blev]
       wgt <- 1 / PI.blev[idx.blev]
 
       fit.blev <- .getMLE(x=x.blev, y=as.vector(y.blev), w=wgt)
@@ -306,8 +294,8 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       # shrinkage leverage sampling
       idx.slev <- sample(1:N, size = r[i], replace = TRUE, PI.slev)
 
-      x.slev <- as.matrix(X[idx.slev,])
-      y.slev <- as.matrix(Y[idx.slev])
+      x.slev <- X[idx.slev,]
+      y.slev <- Y[idx.slev]
       wgt <- 1 / PI.slev[idx.slev]
 
       fit.slev <- .getMLE(x=x.slev, y=as.vector(y.slev), w=wgt)
@@ -343,35 +331,26 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
   if(family %in% c("poisson")){
     r1<-round(min(r/2))
     PI.prop <- rep(1/N, N)
-    idx.prop <- sample(1:N, r1, T)
+    idx.prop <- sample(1:N, size = r1, replace = TRUE)
 
-    x.prop<-X[idx.prop,]
+    x.prop <- X[idx.prop,]
     y.prop <- Y[idx.prop,]
 
     pinv.prop <- N
     pinv.prop <- 1/PI.prop[idx.prop]
-    fit.prop <- stats::glm(y.prop~x.prop-1,family = "poisson")
+    fit.prop <- stats::glm(y.prop~x.prop-1,family = "quasipoisson")
 
     beta.prop <- fit.prop$coefficients
     if(anyNA(beta.prop)){
       stop("There are NA or NaN values in the model parameters")
     }
-    p.prop<-as.vector(sqrt(exp(X%*% beta.prop)))
-    X_bar<- p.prop*X
-    XX_Inv<-solve(t(X_bar)%*%X_bar)
-
-    # X_Temp<-X;
-    # PP <-apply(X_Temp,1,function(X_Temp){
-    #   P.prop  <- sqrt(exp(X_Temp%*%beta.prop))
-    #   x_bar <- P.prop%*%X_Temp
-    #   x_bar%*%XX_Inv%*%t(x_bar)
-    # })
+    p.prop<-exp(X%*% beta.prop)
+    w.prop<-as.vector(sqrt(p.prop))
+    X_bar<- w.prop*X
+    XX_Inv<-solve(crossprod(X_bar))
 
     # Precompute terms outside the loop
-    P.prop <- 1 - 1 / (1 + exp(X %*% beta.prop))
-    W.prop <- sqrt(P.prop * (1 - P.prop))
-    X_bar_s <- as.vector(W.prop) * X
-    PP <- rowSums((X_bar_s %*% XX_Inv) * X_bar_s)
+    PP <- rowSums((X_bar %*% XX_Inv) * X_bar)
 
     PI.blev <- PP / sum(PP)
     PI.slev <- S_alpha * PI.blev + (1-S_alpha) * 1 / N
@@ -386,13 +365,13 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
 
     for (i in 1:length(r)) {
       # basic leverage sampling
-      idx.blev <- sample(1:N, size = r[i], replace = TRUE, PI.blev)
+      idx.blev <- sample(1:N, size = r[i], replace = TRUE, prob = PI.blev)
 
-      x.blev <- as.matrix(X[idx.blev,])
-      y.blev <- as.matrix(Y[idx.blev])
+      x.blev <- X[idx.blev,]
+      y.blev <- Y[idx.blev]
       wgt <- 1 / PI.blev[idx.blev]
 
-      fit.blev <-stats::glm(y.blev~x.blev-1, family = "poisson",weights=wgt)
+      fit.blev <-stats::glm(y.blev~x.blev-1, family = "quasipoisson",weights=wgt)
       beta.prop <- fit.blev$coefficients
 
       Sample.blev[[i]]<-idx.blev
@@ -403,7 +382,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       }
 
       # unweighted leverage sampling
-      fit.uwlev <- stats::glm(y.blev~x.blev-1, family = "poisson")
+      fit.uwlev <- stats::glm(y.blev~x.blev-1, family = "quasipoisson")
       beta.prop<-fit.uwlev$coefficients
 
       Sample.uwlev[[i]]<-idx.blev
@@ -414,13 +393,13 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       }
 
       # shrinkage leverage sampling
-      idx.slev <- sample(1:N, size = r[i], replace = TRUE, PI.slev)
+      idx.slev <- sample(1:N, size = r[i], replace = TRUE, prob = PI.slev)
 
-      x.slev <- as.matrix(X[idx.slev,])
-      y.slev <- as.matrix(Y[idx.slev])
+      x.slev <- X[idx.slev,]
+      y.slev <- Y[idx.slev]
       wgt <- 1 / PI.slev[idx.slev]
 
-      fit.slev <- stats::glm(y.slev~x.slev-1, family = "poisson",weights = wgt)
+      fit.slev <- stats::glm(y.slev~x.slev-1, family = "quasipoisson",weights = wgt)
       beta.prop <- fit.slev$coefficients
 
       Sample.slev[[i]]<-idx.slev

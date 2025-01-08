@@ -64,7 +64,7 @@
 #' indexes<-1:ceiling(nrow(Electric_consumption)*0.005)
 #' Original_Data<-cbind(Electric_consumption[indexes,1],1,
 #'                      Electric_consumption[indexes,-1])
-#'                      colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
+#' colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
 #' for (j in 3:5) {
 #'   Original_Data[,j]<-scale(Original_Data[,j])
 #' }
@@ -91,8 +91,7 @@
 #'
 #' r1<-300; r2<-rep(100*c(6,12),25);
 #'
-#' modelRobustLinSub(r1 = r1, r2 = r2,
-#'                   Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+#' modelRobustLinSub(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,1]),
 #'                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                   Apriori_probs = rep(1/length(All_Models),length(All_Models)),
 #'                   All_Combinations = All_Models,
@@ -133,7 +132,7 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   }
 
   PI.prop <- rep(1/N, N)
-  idx.prop <- sample(1:N, r1, T)
+  idx.prop <- sample(1:N, size = r1, replace = TRUE)
 
   x.prop<-lapply(1:length(All_Combinations),function(j){
     X[idx.prop,All_Covariates %in% All_Combinations[[j]]]
@@ -145,8 +144,8 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   pinv.prop <- 1/PI.prop[idx.prop]
 
   fit.prop <- lapply(1:length(All_Combinations), function(j){
-    beta.prop<-solve(a=t(x.prop[[j]])%*%x.prop[[j]],b=t(x.prop[[j]])%*%y.prop)
-    Xbeta_Final<-as.vector(X[,All_Covariates %in% All_Combinations[[j]] ]%*%beta.prop)
+    beta.prop<-solve(a=crossprod(x.prop[[j]]),b=crossprod(x.prop[[j]],y.prop))
+    Xbeta_Final<-X[,All_Covariates %in% All_Combinations[[j]]]%*%beta.prop
     Var.prop<-sum((Y-Xbeta_Final)^2)/N
     Epsilon.prop<-Y-Xbeta_Final
     return(list("beta.prop"=beta.prop,"Var.prop"=Var.prop,"Epsilon.prop"=Epsilon.prop))
@@ -199,18 +198,10 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   PI_MR.mVc<-matrixStats::rowSums2(do.call(cbind,PI_Single.mVc)%*%diag(Apriori_probs)) # Model Robust Results
 
   ## mMSE
-  # PI_Single.mMSE <- lapply(1:length(All_Combinations),function(j){ # Single Model Results
-  #   PI.mMSE<-sqrt(fit.prop[[j]]$Epsilon.prop^2 *
-  #                 matrixStats::rowSums2((X[,All_Covariates %in% All_Combinations[[j]] ] %*%
-  #                                          solve(t(X[,All_Covariates %in% All_Combinations[[j]] ])%*%
-  #                                                  X[,All_Covariates %in% All_Combinations[[j]] ]))^2))
-  #   return(PI.mMSE/sum(PI.mMSE))
-  # })
-
   # For efficient row-wise operations
   PI_Single.mMSE <- lapply(seq_along(All_Combinations), function(j) {
     X_sub <- X[, All_Covariates %in% All_Combinations[[j]], drop = FALSE]
-    XtX_inv <- solve(crossprod(X_sub)) # More efficient than t(X) %*% X
+    XtX_inv <- solve(crossprod(X_sub))
     row_sums_squared <- matrixStats::rowSums2((X_sub %*% XtX_inv)^2)
     PI.mMSE <- sqrt(fit.prop[[j]]$Epsilon.prop^2 * row_sums_squared)
     PI.mMSE / sum(PI.mMSE)
@@ -223,9 +214,9 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   {
     ## mVc
     idx_Single.mVc <- lapply(1:length(All_Combinations), function(j){
-      sample(1:N, r2[i]-r1, T, PI_Single.mVc[[j]]) # Single Model Results
+      sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI_Single.mVc[[j]]) # Single Model Results
     })
-    idx_MR.mVc <- sample(1:N, r2[i]-r1, T, PI_MR.mVc) # Model Robust Results
+    idx_MR.mVc <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI_MR.mVc) # Model Robust Results
 
     x_Single.mVc <-lapply(1:length(All_Combinations),function(j){ # Single Model Results
       X[c(idx_Single.mVc[[j]], idx.prop),All_Covariates %in% All_Combinations[[j]] ]
@@ -245,8 +236,8 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
       pi4_r<-sqrt(r2[i]*pinv_Single.mVc^(-1))
       X_r4<-x_Single.mVc[[j]]/pi4_r
       Y_r4<-y_Single.mVc[[j]]/pi4_r
-      beta.prop<-solve(a=t(X_r4)%*%X_r4,b=t(X_r4)%*%Y_r4)
-      Xbeta_Final<-as.vector(X[,All_Covariates %in% All_Combinations[[j]] ]%*%beta.prop)
+      beta.prop<-solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4))
+      Xbeta_Final<-X[,All_Covariates %in% All_Combinations[[j]] ]%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
       return(list("beta.prop"=beta.prop,"Var.prop"=Var.prop))
     })
@@ -255,8 +246,8 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
       pi4_r<-sqrt(r2[i]*pinv_MR.mVc^(-1))
       X_r4<-x_MR.mVc[[j]]/pi4_r
       Y_r4<-y_MR.mVc/pi4_r
-      beta.prop<-solve(a=t(X_r4)%*%X_r4,b=t(X_r4)%*%Y_r4) # Model Robust Results
-      Xbeta_Final<-as.vector(X[,All_Covariates %in% All_Combinations[[j]] ]%*%beta.prop)
+      beta.prop<-solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4))
+      Xbeta_Final<-X[,All_Covariates %in% All_Combinations[[j]] ]%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
       return(list("beta.prop"=beta.prop,"Var.prop"=Var.prop))
     })
@@ -279,9 +270,9 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
 
     ## mMSE
     idx_Single.mMSE <- lapply(1:length(All_Combinations),function(j){
-      sample(1:N, r2[i]-r1, T, PI_Single.mMSE[[j]]) # Single Model Results
+      sample(1:N, size = r2[i]-r1, replace = T, prob = PI_Single.mMSE[[j]]) # Single Model Results
     })
-    idx_MR.mMSE <- sample(1:N, r2[i]-r1, T, PI_MR.mMSE) # Model Robust Results
+    idx_MR.mMSE <- sample(1:N, size = r2[i]-r1, replace = T, prob = PI_MR.mMSE) # Model Robust Results
 
     x_Single.mMSE <- lapply(1:length(All_Combinations),function(j){
       X[c(idx_Single.mMSE[[j]], idx.prop),All_Covariates %in% All_Combinations[[j]] ] # Single Model Results
@@ -301,8 +292,8 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
       pi4_r<-sqrt(r2[i]*pinv_Single.mMSE^(-1))
       X_r4<-x_Single.mMSE[[j]]/pi4_r
       Y_r4<-y_Single.mMSE[[j]]/pi4_r
-      beta.prop<-solve(a=t(X_r4)%*%X_r4,b=t(X_r4)%*%Y_r4)
-      Xbeta_Final<-as.vector(X[,All_Covariates %in% All_Combinations[[j]] ]%*%beta.prop)
+      beta.prop<-solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4))
+      Xbeta_Final<-X[,All_Covariates %in% All_Combinations[[j]] ]%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
       return(list("beta.prop"=beta.prop,"Var.prop"=Var.prop))
     })
@@ -311,8 +302,8 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
       pi4_r<-sqrt(r2[i]*pinv_MR.mMSE^(-1))
       X_r4<-x_MR.mMSE[[j]]/pi4_r
       Y_r4<-y_MR.mMSE/pi4_r
-      beta.prop<-solve(a=t(X_r4)%*%X_r4,b=t(X_r4)%*%Y_r4) # Model Robust Results
-      Xbeta_Final<-as.vector(X[,All_Covariates %in% All_Combinations[[j]] ]%*%beta.prop)
+      beta.prop<-solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4))
+      Xbeta_Final<-X[,All_Covariates %in% All_Combinations[[j]] ]%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
       return(list("beta.prop"=beta.prop,"Var.prop"=Var.prop))
     })

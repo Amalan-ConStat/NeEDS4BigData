@@ -10,7 +10,7 @@ template:
     primary: "#003366"
 
 development:
-  mode: auto
+  mode: release
 
 navbar:
   title: NeEDS4BigData
@@ -35,6 +35,10 @@ navbar:
           href: articles/Basic_Sampling_Poi_Reg.html
         - text: Poisson Regression - Model robust and misspecification
           href: articles/Poisson_Regression.html
+        - text: Benchmarking - Model based subsampling
+          href: articles/Benchmarking_model_based.html
+        - text: Benchmarking - Model robust subsampling
+          href: articles/Benchmarking_model_robust.html
     - text: Versions
       href: news/index.html
   right:

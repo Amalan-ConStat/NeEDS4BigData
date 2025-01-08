@@ -97,6 +97,7 @@
 #' @import foreach
 #' @importFrom gam s
 #' @importFrom Rfast rowprods
+#' @importFrom utils combn
 #' @importFrom psych tr
 #' @export
 modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,proportion){
@@ -131,52 +132,60 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,proportion){
     message("50% or >=50% of the big data is used to help find AMSE for the subsamples, \nthis could take some time.")
   }
 
+  main_effects <- paste0("s(X", 1:ncol(X[, -1]), ")")
+
+  if(ncol(X[,-1]) %in% c(2:3) ){
+    two_way_interactions <- utils::combn(colnames(X[, -1]), 2,
+                  function(cols){paste0("lo(", paste(cols, collapse = "*"), ")")})
+
+    my_formula<-stats::as.formula(paste("Y ~ ",paste(main_effects,collapse = " + "),"+",
+                                        paste(two_way_interactions,collapse = " + ")))
+  } else {
+    my_formula<-stats::as.formula(paste("Y ~ ",paste(main_effects,collapse = " + ")))
+  }
+
   PI.prop <- rep(1/N,N)
-  idx.prop <- sample(1:N, r1, T,PI.prop)
+  idx.prop <- sample(1:N, size = r1, replace = TRUE, prob = PI.prop)
 
   x.prop <- X[idx.prop,]
   y.prop <- Y[idx.prop]
 
   pinv.prop <- rep(N,r1)
 
-  fit.prop <- stats::glm(y.prop~x.prop-1,family="poisson")
+  fit.prop <- stats::glm(y.prop~x.prop-1,family="quasipoisson")
   beta.prop <- fit.prop$coefficients
 
   if (anyNA(beta.prop)){
     stop("There are NA or NaN values in the model parameters")
   }
-  Lambda.prop  <- exp(X %*% beta.prop)
-
-  my_formula<-stats::as.formula(paste("Y ~ ",paste(paste0("gam::s(X",1:ncol(x.prop[,-1]),")"),collapse = " + "),"+",
-                                      paste(paste0("gam::s(",paste0(colnames(x.prop[,-1]),collapse = "*"),")"),
-                                            collapse = " + ")))
+  Xbeta_Final <- X %*% beta.prop
+  Lambda.prop  <- exp(Xbeta_Final)
 
   #calculate f_hat
   Assumed_Data<-data.frame(Y=y.prop,x.prop)
-  fit_GAM<-gam::gam(my_formula,data=Assumed_Data,family = "poisson")
+  fit_GAM<-gam::gam(my_formula,data=Assumed_Data,family = "quasipoisson")
   Xbeta_GAM<-gam::predict.Gam(fit_GAM,newdata = data.frame(X))
   Lambda_GAM<-exp(Xbeta_GAM)
-  f_estimate<-Xbeta_GAM - X %*% beta.prop
+  f_estimate<-Xbeta_GAM - Xbeta_Final
 
   if(proportion*N != r1){
-    idx.proportion <- sample(1:N, ceiling(proportion*N), T, PI.prop)
+    idx.proportion <- sample(1:N, size = ceiling(proportion*N), replace = TRUE, prob = PI.prop)
 
     Y_proportion <- Y[idx.proportion]
     X_proportion <- X[idx.proportion,]
     pinv.proportion <- rep(N,ceiling(proportion*N))
 
-    fit.proportion <- stats::glm(Y_proportion~X_proportion-1,family="poisson")
+    fit.proportion <- stats::glm(Y_proportion~X_proportion-1,family="quasipoisson")
     beta.proportion <- fit.proportion$coefficients
     Xbeta_proportion <- X %*% beta.proportion
 
     Assumed_Data<-data.frame(Y=Y_proportion,X_proportion)
-    fit_GAM_proportion<-gam::gam(my_formula,data=Assumed_Data,family = "poisson")
+    fit_GAM_proportion<-gam::gam(my_formula,data=Assumed_Data,family = "quasipoisson")
     Xbeta_GAM_proportion<-gam::predict.Gam(fit_GAM_proportion,newdata = data.frame(X))
 
     F_Estimate_Full<-Xbeta_GAM_proportion - Xbeta_proportion
     Beta_Estimate_Full<-beta.proportion
-  }
-  else {
+  } else {
     Beta_Estimate_Full<- beta.prop ; F_Estimate_Full<-f_estimate
   }
 
@@ -187,7 +196,7 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,proportion){
   # mMSE
   lambda.prop <- Lambda.prop[idx.prop]
   w.prop <- lambda.prop
-  W.prop <- solve(t(x.prop) %*% (x.prop * w.prop * pinv.prop))
+  W.prop <- solve(crossprod(x.prop, x.prop * w.prop * pinv.prop))
 
   PI.mMSE <- sqrt((Y - Lambda.prop)^2 * rowSums((X%*%W.prop)^2))
   PI.mMSE <- PI.mMSE / sum(PI.mMSE)
@@ -197,14 +206,14 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,proportion){
     X_r1<-X[c(idx.prop,a),]
     lambda_r1<-exp(X_r1%*%beta.prop)
     W_r1<-as.vector(lambda_r1)
-    H_r1 <-solve(t(X_r1) %*% (X_r1 * W_r1))
+    H_r1 <-solve(crossprod(X_r1,X_r1 * W_r1))
     Temp1<-(W_r1*X_r1)%*%H_r1
 
     f_r1<-f_estimate[c(idx.prop,a)]
     lambda_Tr1<-exp((X_r1 %*% beta.prop) + f_r1)
     W_Tr1<-as.vector(lambda_Tr1)
-    H_Tr1 <-(t(X_r1)  %*% (X_r1 * W_Tr1))
-    b_r1 <-(t(X_r1) %*% (lambda_Tr1-lambda_r1))
+    H_Tr1 <- crossprod(X_r1, X_r1 * W_Tr1)
+    b_r1 <- crossprod(X_r1, lambda_Tr1-lambda_r1)
 
     Temp1_H <- Temp1 %*% H_Tr1
     diag_Temp <- rowSums(Temp1_H * Temp1)
@@ -215,18 +224,18 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,proportion){
     diff <- XH_b_r1 - f_r1
     L2_r1 <- sum((W_r1 * diff)^2)
 
-    c(L1_r1+L2_r1)
+    L1_r1+L2_r1
   }
 
   lambda_r1<-exp(X[idx.prop,]%*%beta.prop)
   W_r1<-as.vector(lambda_r1)
-  H_r1 <-solve(t(X[idx.prop,]) %*% (X[idx.prop,]*W_r1))
+  H_r1 <-solve(crossprod(X[idx.prop,], X[idx.prop,]*W_r1))
   Temp1<-(W_r1*X[idx.prop,])%*%H_r1
 
   lambda_Tr1<-exp((X[idx.prop,] %*% beta.prop) + f_estimate[idx.prop])
   W_Tr1<-as.vector(lambda_Tr1)
-  H_Tr1 <-(t(X[idx.prop,]) %*% (X[idx.prop,]*W_Tr1))
-  b_r1 <-(t(X[idx.prop,]) %*% (lambda_Tr1-lambda_r1))
+  H_Tr1 <- crossprod(X[idx.prop,], X[idx.prop,]*W_Tr1)
+  b_r1 <- crossprod(X[idx.prop,], lambda_Tr1-lambda_r1)
   L1_r1 <- psych::tr(Temp1%*%H_Tr1%*%t(Temp1))
   L2_r1 <- sum((W_r1*((X[idx.prop,]%*%H_r1%*%b_r1)-f_estimate[idx.prop]))^2)
 
@@ -277,12 +286,13 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,proportion){
   for (i in 1:length(r2))
   {
     # mVc
-    idx.mVc <- sample(1:N, r2[i]-r1, T, PI.mVc)
+    idx.mVc <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mVc)
 
     x.mVc <- X[c(idx.mVc, idx.prop),]
     y.mVc <- Y[c(idx.mVc, idx.prop)]
 
-    fit.mVc <- stats::glm(y.mVc~x.mVc-1,family="poisson",weights = c(1 / PI.mVc[idx.mVc], pinv.prop))
+    fit.mVc <- stats::glm(y.mVc~x.mVc-1,family="quasipoisson",
+                          weights = c(1 / PI.mVc[idx.mVc], pinv.prop))
 
     beta_mVc[i,] <- c(r2[i],fit.mVc$coefficients)
 
@@ -290,25 +300,26 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,proportion){
 
     lambda_r1<-exp(x.mVc%*%Beta_Estimate_Full)
     W_r1<-as.vector(lambda_r1)
-    H_r1 <-solve(t(x.mVc) %*% (x.mVc * W_r1))
+    H_r1 <-solve(crossprod(x.mVc, x.mVc * W_r1))
     Temp1<-(W_r1 * x.mVc)%*%H_r1
 
     lambda_Tr1<-exp((x.mVc %*% Beta_Estimate_Full) + F_Estimate_Full[c(idx.mVc, idx.prop)])
     W_Tr1<-as.vector(lambda_Tr1)
-    H_Tr1 <-(t(x.mVc) %*% (x.mVc * W_Tr1))
-    b_r1 <-(t(x.mVc) %*% (lambda_Tr1-lambda_r1))
+    H_Tr1 <- crossprod(x.mVc, x.mVc * W_Tr1)
+    b_r1 <- crossprod(x.mVc, lambda_Tr1-lambda_r1)
     L1_r1 <- psych::tr(Temp1%*%H_Tr1%*%t(Temp1))
     L2_r1 <- sum((W_r1*((x.mVc%*%H_r1%*%b_r1) - F_Estimate_Full[c(idx.mVc, idx.prop)]))^2)
 
     AMSE_Sample_mVc[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
 
     # mMSE
-    idx.mMSE <- sample(1:N, r2[i]-r1, T, PI.mMSE)
+    idx.mMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mMSE)
 
     x.mMSE <- X[c(idx.mMSE, idx.prop),]
     y.mMSE <- Y[c(idx.mMSE, idx.prop)]
 
-    fit.mMSE <- stats::glm(y.mMSE~x.mMSE-1,family = "poisson", weights =c(1 / PI.mMSE[idx.mMSE], pinv.prop) )
+    fit.mMSE <- stats::glm(y.mMSE~x.mMSE-1,family = "quasipoisson",
+                           weights =c(1 / PI.mMSE[idx.mMSE], pinv.prop) )
 
     beta_mMSE[i,] <- c(r2[i],fit.mMSE$coefficients)
 
@@ -316,25 +327,26 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,proportion){
 
     lambda_r1<-exp(x.mMSE%*%Beta_Estimate_Full)
     W_r1<-as.vector(lambda_r1)
-    H_r1 <-solve(t(x.mMSE) %*% (x.mMSE * W_r1))
+    H_r1 <-solve(crossprod(x.mMSE, x.mMSE * W_r1))
     Temp1<-(W_r1*x.mMSE)%*%H_r1
 
     lambda_Tr1<-exp((x.mMSE %*% Beta_Estimate_Full) + F_Estimate_Full[c(idx.mMSE, idx.prop)])
     W_Tr1<-as.vector(lambda_Tr1)
-    H_Tr1 <-(t(x.mMSE) %*% (x.mMSE * W_Tr1))
-    b_r1 <-(t(x.mMSE) %*% (lambda_Tr1-lambda_r1))
+    H_Tr1 <- crossprod(x.mMSE, x.mMSE * W_Tr1)
+    b_r1 <- crossprod(x.mMSE, lambda_Tr1-lambda_r1)
     L1_r1 <- psych::tr(Temp1%*%H_Tr1%*%t(Temp1))
     L2_r1 <- sum((W_r1*((x.mMSE%*%H_r1%*%b_r1) - F_Estimate_Full[c(idx.mMSE, idx.prop)]))^2)
 
     AMSE_Sample_mMSE[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
 
     # RLmAMSE
-    idx.RLmAMSE <- sample(1:N, r2[i], T, PI.RLmAMSE)
+    idx.RLmAMSE <- sample(1:N, size = r2[i], replace = TRUE, prob = PI.RLmAMSE)
 
-    x.RLmAMSE <- X[c(idx.RLmAMSE),]
-    y.RLmAMSE <- Y[c(idx.RLmAMSE)]
+    x.RLmAMSE <- X[idx.RLmAMSE,]
+    y.RLmAMSE <- Y[idx.RLmAMSE]
 
-    fit.RLmAMSE <- stats::glm(y.RLmAMSE~x.RLmAMSE-1,family="poisson",weights = c(1 / PI.RLmAMSE[idx.RLmAMSE]))
+    fit.RLmAMSE <- stats::glm(y.RLmAMSE~x.RLmAMSE-1,family="quasipoisson",
+                              weights = c(1 / PI.RLmAMSE[idx.RLmAMSE]))
 
     beta_RLmAMSE[i,] <- c(r2[i],fit.RLmAMSE$coefficients)
 
@@ -342,27 +354,28 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,proportion){
 
     lambda_r1<-exp(x.RLmAMSE%*%Beta_Estimate_Full)
     W_r1<-as.vector(lambda_r1)
-    H_r1 <-solve(t(x.RLmAMSE) %*% (x.RLmAMSE * W_r1))
+    H_r1 <-solve(crossprod(x.RLmAMSE, x.RLmAMSE * W_r1))
     Temp1<-(W_r1*x.RLmAMSE)%*%H_r1
 
-    lambda_Tr1<-exp((x.RLmAMSE %*% Beta_Estimate_Full) + F_Estimate_Full[c(idx.RLmAMSE)])
+    lambda_Tr1<-exp((x.RLmAMSE %*% Beta_Estimate_Full) + F_Estimate_Full[idx.RLmAMSE])
     W_Tr1<-as.vector(lambda_Tr1)
-    H_Tr1 <-(t(x.RLmAMSE) %*% (x.RLmAMSE * W_Tr1))
-    b_r1 <-(t(x.RLmAMSE) %*% (lambda_Tr1-lambda_r1))
+    H_Tr1 <- crossprod(x.RLmAMSE, x.RLmAMSE * W_Tr1)
+    b_r1 <- crossprod(x.RLmAMSE, lambda_Tr1-lambda_r1)
     L1_r1 <- psych::tr(Temp1%*%H_Tr1%*%t(Temp1))
-    L2_r1 <- sum((W_r1*((x.RLmAMSE%*%H_r1%*%b_r1) - F_Estimate_Full[c(idx.RLmAMSE)]))^2)
+    L2_r1 <- sum((W_r1*((x.RLmAMSE%*%H_r1%*%b_r1) - F_Estimate_Full[idx.RLmAMSE]))^2)
 
     AMSE_Sample_RLmAMSE[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
 
     for (j in 1:length(Alpha))
     {
       # RLmAMSE Log Odds
-      idx.RLmAMSE <- sample(1:N, r2[i], T, PI.RLmAMSE_LO[,j])
+      idx.RLmAMSE <- sample(1:N, size = r2[i], replace = TRUE, prob = PI.RLmAMSE_LO[,j])
 
-      x.RLmAMSE <- X[c(idx.RLmAMSE),]
-      y.RLmAMSE <- Y[c(idx.RLmAMSE)]
+      x.RLmAMSE <- X[idx.RLmAMSE,]
+      y.RLmAMSE <- Y[idx.RLmAMSE]
 
-      fit.RLmAMSE <- stats::glm(y.RLmAMSE~x.RLmAMSE-1,family="poisson",weights = c(1 / PI.RLmAMSE_LO[idx.RLmAMSE,j]))
+      fit.RLmAMSE <- stats::glm(y.RLmAMSE~x.RLmAMSE-1,family="quasipoisson",
+                                weights = c(1 / PI.RLmAMSE_LO[idx.RLmAMSE,j]))
 
       beta_RLmAMSE_LO[[j]][i,] <- c(r2[i],fit.RLmAMSE$coefficients)
 
@@ -370,25 +383,26 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,proportion){
 
       lambda_r1<-exp(x.RLmAMSE%*%Beta_Estimate_Full)
       W_r1<-as.vector(lambda_r1)
-      H_r1 <-solve(t(x.RLmAMSE) %*% (x.RLmAMSE * W_r1))
+      H_r1 <-solve(crossprod(x.RLmAMSE, x.RLmAMSE * W_r1))
       Temp1<-(W_r1*x.RLmAMSE)%*%H_r1
 
-      lambda_Tr1<-exp((x.RLmAMSE %*% Beta_Estimate_Full) + F_Estimate_Full[c(idx.RLmAMSE)])
+      lambda_Tr1<-exp((x.RLmAMSE %*% Beta_Estimate_Full) + F_Estimate_Full[idx.RLmAMSE])
       W_Tr1<-as.vector(lambda_Tr1)
-      H_Tr1 <-(t(x.RLmAMSE) %*% (x.RLmAMSE * W_Tr1))
-      b_r1 <-(t(x.RLmAMSE) %*% (lambda_Tr1-lambda_r1))
+      H_Tr1 <- crossprod(x.RLmAMSE, x.RLmAMSE * W_Tr1)
+      b_r1 <- crossprod(x.RLmAMSE, lambda_Tr1-lambda_r1)
       L1_r1 <- psych::tr(Temp1%*%H_Tr1%*%t(Temp1))
-      L2_r1 <- sum((W_r1*((x.RLmAMSE%*%H_r1%*%b_r1) - F_Estimate_Full[c(idx.RLmAMSE)]))^2)
+      L2_r1 <- sum((W_r1*((x.RLmAMSE%*%H_r1%*%b_r1) - F_Estimate_Full[idx.RLmAMSE]))^2)
 
       AMSE_Sample_RLmAMSE_LO[[j]][i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
 
       # RLmAMSE Power
-      idx.RLmAMSE <- sample(1:N, r2[i], T, PI.RLmAMSE_Pow[,j])
+      idx.RLmAMSE <- sample(1:N, size = r2[i], replace = TRUE, prob = PI.RLmAMSE_Pow[,j])
 
-      x.RLmAMSE <- X[c(idx.RLmAMSE),]
-      y.RLmAMSE <- Y[c(idx.RLmAMSE)]
+      x.RLmAMSE <- X[idx.RLmAMSE,]
+      y.RLmAMSE <- Y[idx.RLmAMSE]
 
-      fit.RLmAMSE <- stats::glm(y.RLmAMSE~x.RLmAMSE-1,family="poisson",weights = c(1 / PI.RLmAMSE_Pow[idx.RLmAMSE,j]))
+      fit.RLmAMSE <- stats::glm(y.RLmAMSE~x.RLmAMSE-1,family="quasipoisson",
+                                weights = c(1 / PI.RLmAMSE_Pow[idx.RLmAMSE,j]))
 
       beta_RLmAMSE_Pow[[j]][i,] <- c(r2[i],fit.RLmAMSE$coefficients)
 
@@ -399,12 +413,12 @@ modelMissPoiSub <- function(r1,r2,Y,X,N,Alpha,proportion){
       H_r1 <-solve(t(x.RLmAMSE) %*% (x.RLmAMSE * W_r1))
       Temp1<-(W_r1*x.RLmAMSE)%*%H_r1
 
-      lambda_Tr1<-exp((x.RLmAMSE %*% Beta_Estimate_Full) + F_Estimate_Full[c(idx.RLmAMSE)])
+      lambda_Tr1<-exp((x.RLmAMSE %*% Beta_Estimate_Full) + F_Estimate_Full[idx.RLmAMSE])
       W_Tr1<-as.vector(lambda_Tr1)
-      H_Tr1 <-(t(x.RLmAMSE) %*% (x.RLmAMSE * W_Tr1))
-      b_r1 <-(t(x.RLmAMSE) %*% (lambda_Tr1-lambda_r1))
+      H_Tr1 <- crossprod(x.RLmAMSE, x.RLmAMSE * W_Tr1)
+      b_r1 <- crossprod(x.RLmAMSE, lambda_Tr1-lambda_r1)
       L1_r1 <- psych::tr(Temp1%*%H_Tr1%*%t(Temp1))
-      L2_r1 <- sum((W_r1*((x.RLmAMSE%*%H_r1%*%b_r1) - F_Estimate_Full[c(idx.RLmAMSE)]))^2)
+      L2_r1 <- sum((W_r1*((x.RLmAMSE%*%H_r1%*%b_r1) - F_Estimate_Full[idx.RLmAMSE]))^2)
 
       AMSE_Sample_RLmAMSE_Pow[[j]][i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
     }

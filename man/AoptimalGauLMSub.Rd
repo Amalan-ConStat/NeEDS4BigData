@@ -58,8 +58,7 @@ Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
 r1<-300; r2<-rep(100*c(6,12),50); Original_Data<-Full_Data$Complete_Data;
 
-AoptimalGauLMSub(r1 = r1, r2 = r2,
-                 Y = as.matrix(Original_Data[,colnames(Original_Data) \%in\% c("Y")]),
+AoptimalGauLMSub(r1 = r1, r2 = r2,Y = as.matrix(Original_Data[,1]),
                  X = as.matrix(Original_Data[,-1]),
                  N = nrow(Original_Data))->Results
 

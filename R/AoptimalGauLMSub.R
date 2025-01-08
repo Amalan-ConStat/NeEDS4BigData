@@ -52,14 +52,14 @@
 #'
 #' r1<-300; r2<-rep(100*c(6,12),50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' AoptimalGauLMSub(r1 = r1, r2 = r2,
-#'                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+#' AoptimalGauLMSub(r1 = r1, r2 = r2,Y = as.matrix(Original_Data[,1]),
 #'                  X = as.matrix(Original_Data[,-1]),
 #'                  N = nrow(Original_Data))->Results
 #'
 #' plot_Beta(Results)
 #'
 #' @importFrom Rdpack reprompt
+#' @importFrom matrixStats rowSums2
 #' @export
 AoptimalGauLMSub <- function(r1,r2,Y,X,N){
   if(any(is.na(c(r1,r2,N))) | any(is.nan(c(r1,r2,N)))){
@@ -70,7 +70,7 @@ AoptimalGauLMSub <- function(r1,r2,Y,X,N){
     stop("r1 or N has a value greater than length one")
   }
 
-  if(any(is.na(cbind(Y,X))) | any(is.nan(cbind(Y,X)))){
+  if(anyNA(Y) | anyNA(X) | any(is.nan(Y)) | any(is.nan(X)) ){
     stop("NA or Infinite or NAN values in the Y or X")
   }
 
@@ -83,7 +83,7 @@ AoptimalGauLMSub <- function(r1,r2,Y,X,N){
   }
 
   PI.prop <- rep(1/N, N)
-  idx.prop <- sample(1:N, r1, T)
+  idx.prop <- sample(1:N, size = r1, replace = TRUE)
 
   x.prop <- X[idx.prop,]
   y.prop <- Y[idx.prop,]
@@ -91,8 +91,8 @@ AoptimalGauLMSub <- function(r1,r2,Y,X,N){
   pinv.prop <- N
   pinv.prop <- 1/PI.prop[idx.prop]
 
-  beta.prop<-solve(a=t(x.prop)%*%x.prop,b=t(x.prop)%*%y.prop)
-  Xbeta_Final<-as.vector(X%*%beta.prop)
+  beta.prop<-solve(a=crossprod(x.prop),b= crossprod(x.prop,y.prop))
+  Xbeta_Final<-X%*%beta.prop
   Var.prop<-sum((Y-Xbeta_Final)^2)/N
   Epsilon.prop<-Y-Xbeta_Final
 
@@ -101,7 +101,7 @@ AoptimalGauLMSub <- function(r1,r2,Y,X,N){
   }
 
   Second <- (Epsilon.prop^2 - Var.prop)^2/(4 * N^2 * Var.prop)
-  ML_Inv <- solve(t(X)%*%X)
+  ML_Inv <- solve(crossprod(X))
 
   beta.mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
   Var_Epsilon<-matrix(nrow = length(r2),ncol = 2)
@@ -114,7 +114,7 @@ AoptimalGauLMSub <- function(r1,r2,Y,X,N){
   colnames(Var_Epsilon)<-c("r2","A-Optimality")
 
   ## mMSE
-  PI.mMSE <- sqrt(Epsilon.prop^2 * rowSums((X %*% ML_Inv)^2) + Second)
+  PI.mMSE <- sqrt(Epsilon.prop^2 * matrixStats::rowSums2((X %*% ML_Inv)^2) + Second)
   PI.mMSE <- PI.mMSE/sum(PI.mMSE)
 
   message("Step 1 of the algorithm completed.\n")
@@ -122,7 +122,7 @@ AoptimalGauLMSub <- function(r1,r2,Y,X,N){
   for (i in 1:length(r2))
   {
     ## mMSE
-    idx.mMSE <- sample(1:N, r2[i]-r1, T, PI.mMSE)
+    idx.mMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mMSE)
 
     x.mMSE <- X[c(idx.mMSE, idx.prop),]
     y.mMSE <- Y[c(idx.mMSE, idx.prop)]
@@ -131,8 +131,8 @@ AoptimalGauLMSub <- function(r1,r2,Y,X,N){
     pi4_r<-sqrt(r2[i]*pinv.mMSE^(-1))
     X_r4<-x.mMSE/pi4_r
     Y_r4<-y.mMSE/pi4_r
-    beta.prop<-solve(a=t(X_r4)%*%X_r4,b=t(X_r4)%*%Y_r4)
-    Xbeta_Final<-as.vector(X%*%beta.prop)
+    beta.prop<-solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4))
+    Xbeta_Final<-X%*%beta.prop
     Var.prop<-sum((Y-Xbeta_Final)^2)/N
 
     Sample.mMSE[[i+1]]<-idx.mMSE;

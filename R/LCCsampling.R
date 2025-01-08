@@ -52,7 +52,7 @@
 #'
 #' r1<-300; r2<-rep(100*c(6,9,12),50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' LCCsampling(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
+#' LCCsampling(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,1]),
 #'             X = as.matrix(Original_Data[,-1]),
 #'             N = nrow(Original_Data))->Results
 #'
@@ -85,7 +85,7 @@ LCCsampling<-function(r1,r2,Y,X,N){
   n0 <- N - n1
   PI.prop <- rep(1/(2*n0), N)
   PI.prop[Y==1] <- 1/(2*n1)
-  idx.prop <- sample(1:N, r1, T, PI.prop)
+  idx.prop <- sample(1:N, size = r1, replace = TRUE, prob = PI.prop)
 
   x.prop <- X[idx.prop,]
   y.prop <- Y[idx.prop,]
@@ -115,10 +115,10 @@ LCCsampling<-function(r1,r2,Y,X,N){
 
   for(i in 1:length(r2)){
     ## local case control sampling
-    idx.LCC <- sample(1:N, r2[i], T, PI.LCC)
+    idx.LCC <- sample(1:N, size = r2[i], replace = TRUE, prob = PI.LCC)
 
-    x.LCC <- X[c(idx.LCC),]
-    y.LCC <- Y[c(idx.LCC)]
+    x.LCC <- X[idx.LCC,]
+    y.LCC <- Y[idx.LCC]
     pinv.LCC <- 1
     fit.LCC <- .getMLE(x=x.LCC, y=y.LCC, w=pinv.LCC)
     beta.prop <- fit.LCC$par+beta.prop_start
