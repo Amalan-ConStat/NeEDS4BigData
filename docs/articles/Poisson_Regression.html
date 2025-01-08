@@ -61,6 +61,8 @@
     <a class="dropdown-item" href="../articles/Logistic_Regression.html">Logistic Regression - Model robust and misspecification</a>
     <a class="dropdown-item" href="../articles/Basic_Sampling_Poi_Reg.html">Poisson Regression - Model based subsampling</a>
     <a class="dropdown-item" href="../articles/Poisson_Regression.html">Poisson Regression - Model robust and misspecification</a>
+    <a class="dropdown-item" href="../articles/Benchmarking_model_based.html">Benchmarking - Model based subsampling</a>
+    <a class="dropdown-item" href="../articles/Benchmarking_model_robust.html">Benchmarking - Model robust subsampling</a>
   </div>
 </li>
 <li class="nav-item">
@@ -135,8 +137,11 @@ text-align: justify}
 </style>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load the R packages</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Amalan-ConStat/NeEDS4BigData" class="external-link">NeEDS4BigData</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Amalan-ConStat/NeEDS4BigData" class="external-link">NeEDS4BigData</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Error in get(paste0(generic, ".", class), envir = get_method_env()) : </span></span>
+<span><span class="co">##   object 'type_sum.accel' not found</span></span></code></pre>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/ggpubr/" class="external-link">ggpubr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://haozhu233.github.io/kableExtra/" class="external-link">kableExtra</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
@@ -174,7 +179,7 @@ models can describe the data.</li>
 <li>subsampling method assuming the main effects model is potentially
 misspecified.</li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Selecting 100% of the big data and prepare it</span></span>
 <span><span class="va">Original_Data</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">Bike_sharing</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,<span class="fl">1</span>,<span class="va">Bike_sharing</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Y"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"X"</span>,<span class="fl">0</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -312,9 +317,9 @@ X3
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Setting the sample sizes</span></span>
-<span><span class="va">N</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">)</span>; <span class="va">M</span><span class="op">&lt;-</span><span class="fl">250</span>; <span class="va">k</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">6</span>,<span class="fl">18</span>,by<span class="op">=</span><span class="fl">3</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span>; <span class="va">rep_k</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">k</span>,each<span class="op">=</span><span class="va">M</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">N</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">)</span>; <span class="va">M</span><span class="op">&lt;-</span><span class="fl">250</span>; <span class="va">k</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">8</span>,<span class="fl">20</span>,by<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span>; <span class="va">rep_k</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">k</span>,each<span class="op">=</span><span class="va">M</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="model-robust-or-average-subsampling">Model robust or average subsampling<a class="anchor" aria-label="anchor" href="#model-robust-or-average-subsampling"></a>
 </h3>
@@ -327,13 +332,13 @@ effects model with all the squared terms (<span class="math inline">\(\beta_0+\b
 For each model <span class="math inline">\(j\)</span> the mean squared
 error of the model parameters <span class="math inline">\(MSE_l(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ}
 \sum_{i=1}^M \sum_{j=1}^J (\tilde{\beta}_{k,j} -
-\hat{\beta}_j)^2\)</span> are calculated for the <span class="math inline">\(M=100\)</span> simulations across the sample sizes
-<span class="math inline">\(k=(600,\ldots,1500)\)</span> and the initial
-sample size is <span class="math inline">\(r1=300\)</span>. Here, for
+\hat{\beta}_j)^2\)</span> are calculated for the <span class="math inline">\(M=250\)</span> simulations across the sample sizes
+<span class="math inline">\(k=(800,\ldots,2000)\)</span> and the initial
+sample size is <span class="math inline">\(r1=400\)</span>. Here, for
 the <span class="math inline">\(l\)</span>-th model <span class="math inline">\(\tilde{\beta}_k\)</span> is the estimated model
 parameters from the sample of size <span class="math inline">\(k\)</span> and <span class="math inline">\(\hat{\beta}\)</span> is the estimated model
 parameters from the full big data, while <span class="math inline">\(j\)</span> is index of the model parameter.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the subsampling methods and their respective colours, shapes and line types</span></span>
 <span><span class="va">Method_Names</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A-Optimality"</span>,<span class="st">"L-Optimality"</span>,<span class="st">"A-Optimality MR"</span>,<span class="st">"L-Optimality MR"</span><span class="op">)</span></span>
 <span><span class="va">Method_Colour</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#D82632"</span>,<span class="st">"#A50021"</span>,<span class="st">"#50FF50"</span>,<span class="st">"#00BB00"</span><span class="op">)</span></span>
@@ -366,10 +371,10 @@ parameters from the full big data, while <span class="math inline">\(j\)</span> 
 <p>Consider for <span class="math inline">\(Q=5\)</span> each model has
 an equal a priori probability (i.e <span class="math inline">\(\alpha_q=1/5,q=1,\ldots,5\)</span>). Below is the
 code of implementation for this scenario.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">All_Covariates</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Original_Data_ModelRobust</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co"># A- and L-optimality model robust subsampling for poisson regression</span></span>
-<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/modelRobustPoiSub.html">modelRobustPoiSub</a></span><span class="op">(</span>r1<span class="op">=</span><span class="fl">300</span>,r2<span class="op">=</span><span class="va">rep_k</span>,</span>
+<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/modelRobustPoiSub.html">modelRobustPoiSub</a></span><span class="op">(</span>r1<span class="op">=</span><span class="fl">400</span>,r2<span class="op">=</span><span class="va">rep_k</span>,</span>
 <span>                                 Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data_ModelRobust</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>                                 X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data_ModelRobust</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>                                 N<span class="op">=</span><span class="va">N</span>,Apriori_probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">All_Models</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">All_Models</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -377,7 +382,7 @@ code of implementation for this scenario.</p>
 <span>                                 All_Covariates <span class="op">=</span> <span class="va">All_Covariates</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>
 <pre><code><span><span class="co">## Step 1 of the algorithm completed.</span></span></code></pre>
 <pre><code><span><span class="co">## Step 2 of the algorithm completed.</span></span></code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Final_Beta_modelRobust</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Beta_Estimates</span></span>
 <span></span>
 <span><span class="co"># Mean squared error and their respective plots for all five models</span></span>
@@ -439,7 +444,7 @@ mean squared error of the estimated model parameters, however as we
 assume the model is potentially misspecified the asymptotic
 approximation of the mean squared error from the predictions are
 calculated as well. Below is the code for this implementation.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the subsampling methods and their respective colors, shapes and line types</span></span>
 <span><span class="va">Method_Names</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A-Optimality"</span>,<span class="st">"L-Optimality"</span>,<span class="st">"RLmAMSE"</span>,</span>
 <span>                <span class="st">"RLmAMSE Log Odds 10"</span>,<span class="st">"RLmAMSE Power 10"</span><span class="op">)</span></span>
@@ -447,15 +452,15 @@ calculated as well. Below is the code for this implementation.</p>
 <span><span class="va">Method_Shape_Types</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">8</span>,<span class="fl">2</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">17</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># A- and L-optimality and RLmAMSE model misspecified subsampling for poisson regression </span></span>
-<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/modelMissPoiSub.html">modelMissPoiSub</a></span><span class="op">(</span>r1<span class="op">=</span><span class="fl">300</span>,r2<span class="op">=</span><span class="va">rep_k</span>,</span>
+<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/modelMissPoiSub.html">modelMissPoiSub</a></span><span class="op">(</span>r1<span class="op">=</span><span class="fl">400</span>,r2<span class="op">=</span><span class="va">rep_k</span>,</span>
 <span>                               Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>                               X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>                               N<span class="op">=</span><span class="va">N</span>,Alpha<span class="op">=</span><span class="fl">10</span>, proportion <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>
+<span>                               N<span class="op">=</span><span class="va">N</span>,Alpha<span class="op">=</span><span class="fl">10</span>, proportion <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>
 <pre><code><span><span class="co">## 50% or &gt;=50% of the big data is used to help find AMSE for the subsamples, </span></span>
 <span><span class="co">## this could take some time.</span></span></code></pre>
 <pre><code><span><span class="co">## Step 1 of the algorithm completed.</span></span></code></pre>
 <pre><code><span><span class="co">## Step 2 of the algorithm completed.</span></span></code></pre>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Final_Beta_modelMiss</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Beta_Estimates</span></span>
 <span><span class="va">Final_AMSE_modelMiss</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">AMSE_Estimates</span></span>
 <span></span>
