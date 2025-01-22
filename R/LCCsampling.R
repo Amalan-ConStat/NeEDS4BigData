@@ -105,7 +105,11 @@ LCCsampling<-function(r1,r2,Y,X,N){
   Sample.LCC[[1]]<-idx.prop
 
   beta.LCC[,1]<-r2
-  colnames(beta.LCC)<-c("r2",paste0("Beta",0:(ncol(X)-1)))
+  if(all(X[,1] == 1)){
+    colnames(beta.LCC)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
+  } else {
+    colnames(beta.LCC)<-c("r2",paste0("Beta_",1:(ncol(X))))
+  }
 
   ## local case control sampling
   PI.LCC <- abs(Y - P.prop)

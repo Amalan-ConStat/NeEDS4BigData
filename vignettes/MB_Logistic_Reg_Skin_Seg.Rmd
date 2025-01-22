@@ -1,0 +1,224 @@
+---
+title: "Model based Subsampling for Skin Segmentation Data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model based Subsampling for Skin Segmentation Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: Vignette_Ref.bib
+---
+
+<style>
+body {
+text-align: justify}
+</style>
+
+```{r knitr options,include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load packages and theme,message=FALSE}
+# Load the R packages
+library(NeEDS4BigData)
+library(ggplot2)
+library(ggpubr)
+library(kableExtra)
+library(tidyr)
+library(psych)
+library(gam)
+
+# Theme for plots
+Theme_special<-function(){
+  theme(legend.key.width= unit(1,"cm"),
+        axis.text.x= element_text(color= "black", size= 12, angle= 30, hjust=0.75),
+        axis.text.y= element_text(color= "black", size= 12), 
+        strip.text= element_text(colour= "black", size= 12, face= "bold"),
+        panel.grid.minor.x= element_blank(),
+        axis.title= element_text(color= "black", face= "bold", size= 12),
+        legend.text= element_text(color= "black", size= 11),
+        legend.position= "bottom",
+        legend.margin= margin(0,0,0,0),
+        legend.box.margin= margin(-1,-2,-1,-2)) 
+}
+```
+
+# Understanding the skin segmentation data
+
+@rajen2012skin addressed the challenge of detecting skin-like regions in images as a component of the intricate process of facial recognition.
+To achieve this goal, the ``Skin segmentation data'' was curated, this data contains $4$ columns and has $245,057$ observations, first column is the response variable and the rest are covariates.
+Aim of the logistic regression model is to classify if images are skin or not based on the a) Red, b) Green and c) Blue colour data.
+Skin presence is denoted as one and skin absence is denoted as zero.
+Each colour vector is scaled to have a mean of zero and a variance of one (initial range was between 0−255).
+For the given data subsampling methods are implemented assuming the main effects model can describe the data.
+
+```{r Exploring data}
+# Selecting 100% of the big data and prepare it
+indexes<-1:nrow(Skin_segmentation)
+Original_Data<-cbind(Skin_segmentation[indexes,1],1,Skin_segmentation[indexes,-1])
+colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
+
+# Scaling the covariate data
+for (j in 3:5) {
+  Original_Data[,j]<-scale(Original_Data[,j])
+}
+head(Skin_segmentation) %>% 
+  kable(format = "html",
+        caption = "First few observations of the skin segmentation data.")
+
+# Setting the sample sizes
+N<-nrow(Original_Data); M<-250; k<-seq(8,20,by=2)*100; rep_k<-rep(k,each=M)
+```
+
+Based on this model the methods random sampling, leverage sampling [@ma2014statistical;@ma2015leveraging], local case control sampling [@fithian2015local], $A$- and $L$-optimality subsampling [@ai2021optimal;@yao2021review] and $A$-optimality subsampling with response constraint [@zhang2021optimal] are implemented on the big data.
+
+```{r Define the methods}
+# define colours, shapes, line types for the methods
+Method_Names<-c("A-Optimality","L-Optimality","A-Optimality MC",
+                "Local case control sampling","Shrinkage Leverage",
+                "Basic Leverage","Unweighted Leverage","Random sampling")
+Method_Colour<-c("#BBFFBB","#50FF50","#00BB00",
+                 "#FFAD72","#F76D5E","#D82632","#A50021","#000000")
+Method_Shape_Types<-c(rep(17,3),rep(4,4),16)
+```
+
+The obtained samples and their respective model parameter estimates are over $M=250$ simulations across different sample sizes $k=(800,\ldots,2000)$.
+We set the initial sample size of $r1=400$ for the methods that requires a random sample. 
+From the final samples, model parameters of the assume model are estimated.
+These estimated model parameters are compared with the estimated model parameters of the full big data through the mean squared error $MSE(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ}\sum_{i=1}^M \sum_{j=1}^J(\tilde{\beta}_{k,j} - \hat{\beta}_j)^2$. 
+Here, $\tilde{\beta}_k$ is the estimated model parameters from the sample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter.
+
+## Random sampling
+
+Below is the code for this implementation.
+
+```{r Random sampling}
+# Random sampling
+Final_Beta_RS<-matrix(nrow = length(k)*M,ncol = ncol(Original_Data[,-1])+1)
+for (i in 1:length(rep_k)) {
+  Temp_Data<-Original_Data[sample(1:N,rep_k[i]),]
+  glm(Y~.-1,data=Temp_Data,family="binomial")->Results
+  Final_Beta_RS[i,]<-c(rep_k[i],coefficients(Results))
+  if(i==length(rep_k)){print("All simulations completed for random sampling")}
+}
+Final_Beta_RS<-cbind.data.frame("Random sampling",Final_Beta_RS)
+colnames(Final_Beta_RS)<-c("Method","Sample",paste0("Beta",0:3))
+```
+
+## Leverage sampling
+
+```{r Leverage sampling}
+# Leverage sampling
+## we set the shrinkage value of S_alpha=0.9
+NeEDS4BigData::LeverageSampling(r=rep_k,Y=as.matrix(Original_Data[,1]),
+                                X=as.matrix(Original_Data[,-1]),N=N,
+                                S_alpha = 0.9,family = "logistic")->Results
+Final_Beta_LS<-Results$Beta_Estimates
+colnames(Final_Beta_LS)<-c("Method","Sample",paste0("Beta",0:3))
+```
+
+## Local case control sampling
+
+```{r local case control sampling}
+# Local case control sampling
+NeEDS4BigData::LCCsampling(r1=400,r2=rep_k,
+                           Y=as.matrix(Original_Data[,1]),
+                           X=as.matrix(Original_Data[,-1]),
+                           N=N)->Results
+Final_Beta_LCCS<-Results$Beta_Estimates
+Final_Beta_LCCS$Method<-rep("Local case control sampling",nrow(Final_Beta_LCCS))
+colnames(Final_Beta_LCCS)<-c("Method","Sample",paste0("Beta",0:3))
+```
+
+## A- and L-optimality subsampling
+
+```{r A- and L-optimality subsampling}
+# A- and L-optimality subsampling for GLM 
+NeEDS4BigData::ALoptimalGLMSub(r1=400,r2=rep_k,
+                               Y=as.matrix(Original_Data[,1]),
+                               X=as.matrix(Original_Data[,-1]),
+                               N=N,family = "logistic")->Results
+Final_Beta_ALoptGLM<-Results$Beta_Estimates
+colnames(Final_Beta_ALoptGLM)<-c("Method","Sample",paste0("Beta",0:3))
+```
+
+## A-optimality subsampling under measurement constraints
+
+```{r A-optimality subsampling under measurement constraints}
+# A-optimality subsampling for without response
+NeEDS4BigData::AoptimalMCGLMSub(r1=400,r2=rep_k,
+                                Y=as.matrix(Original_Data[,1]),
+                                X=as.matrix(Original_Data[,-1]),
+                                N=N,family="logistic")->Results
+Final_Beta_AoptMCGLM<-Results$Beta_Estimates
+Final_Beta_AoptMCGLM$Method<-rep("A-Optimality MC",nrow(Final_Beta_AoptMCGLM))
+colnames(Final_Beta_AoptMCGLM)<-c("Method","Sample",paste0("Beta",0:3))
+```
+
+## Summary
+
+```{r summarising results}
+# Summarising Results of Scenario one
+Final_Beta<-rbind(Final_Beta_RS,Final_Beta_LS,Final_Beta_LCCS,
+                  Final_Beta_ALoptGLM,Final_Beta_AoptMCGLM)
+
+# Obtaining the model parameter estimates for the full big data model
+glm(Y~.-1,data = Original_Data,family="binomial")->All_Results
+coefficients(All_Results)->All_Beta
+matrix(rep(All_Beta,by=nrow(Final_Beta)),nrow = nrow(Final_Beta),
+       ncol = ncol(Final_Beta[,-c(1,2)]),byrow = TRUE)->All_Beta
+
+remove(Final_Beta_RS,Final_Beta_LS,Final_Beta_LCCS,Final_Beta_ALoptGLM,
+       Final_Beta_AoptMCGLM,Temp_Data,Results,All_Results)
+```
+
+The mean squared error is plotted below.
+
+```{r Model parameter estimates,fig.width=7,fig.height=10,fig.align='center',fig.cap="Mean squared error for a) all the subsampling methods and b) without leverage and local case control sampling, with 5% and 95% percentile intervals."}
+# Obtain the mean squared error for the model parameter estimates
+MSE_Beta<-data.frame("Method"=Final_Beta$Method,
+                     "Sample"=Final_Beta$Sample,
+                     "SE"=rowSums((All_Beta - Final_Beta[,-c(1,2)])^2)) 
+
+MSE_Beta$Method<-factor(MSE_Beta$Method,levels = Method_Names,labels = Method_Names)
+
+Mean_Data <- MSE_Beta |>
+    group_by(Method,Sample) |>
+    dplyr::summarise(Mean = mean(SE),
+                     min=quantile(SE,0.05),
+                     max=quantile(SE,0.95), .groups = "drop")
+
+# Plot for the mean squared error with all methods
+ggplot(data=Mean_Data,aes(x=factor(Sample),y=Mean,color=Method,shape=Method))+
+  xlab("Sample Size")+ylab("Squared Error")+
+  geom_point(size=3,position = position_dodge(width = 0.5))+
+  geom_line(data=Mean_Data,aes(x=factor(Sample),y=Mean,group=Method,color=Method),
+            position = position_dodge(width = 0.5))+
+  geom_errorbar(data=Mean_Data,aes(ymin=min,ymax=max),
+                width=0.3,position = position_dodge(width = 0.5))+
+  scale_color_manual(values = Method_Colour)+
+  scale_shape_manual(values = Method_Shape_Types)+
+  theme_bw()+Theme_special()+
+  guides(colour = guide_legend(nrow = 3))->p1
+
+Left_out<-c(paste0(c("Basic ","Shrinkage ","Unweighted "),"Leverage"),
+            "Local case control sampling")
+# Plot for the mean squared error except leverage and local case control sampling
+ggplot(data=Mean_Data[!(Mean_Data$Method %in% Left_out),],
+       aes(x=factor(Sample),y=Mean,color=Method,shape=Method))+
+  xlab("Sample Size")+ylab("Squared Error")+
+  geom_point(size=3,position = position_dodge(width = 0.5))+
+  geom_line(data=Mean_Data[!(Mean_Data$Method %in% Left_out),],
+            aes(x=factor(Sample),y=Mean,group=Method,color=Method),
+            position = position_dodge(width = 0.5))+
+  geom_errorbar(data=Mean_Data[!(Mean_Data$Method %in% Left_out),],
+                aes(ymin=min,ymax=max),
+                width=0.3,position = position_dodge(width = 0.5))+
+  scale_color_manual(values = Method_Colour[-c(4:7)])+
+  scale_shape_manual(values = Method_Shape_Types[-c(4:7)])+
+  theme_bw()+Theme_special()+
+  guides(colour = guide_legend(nrow = 2))->p2
+
+ggarrange(p1,p2,nrow = 2,ncol = 1,labels = "auto")
+```
+
+## References

@@ -35,14 +35,23 @@ with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-examples">Examples</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-examples">
     <a class="dropdown-item" href="../articles/Introduction.html">Introduction</a>
-    <a class="dropdown-item" href="../articles/Basic_Sampling_Lin_Reg.html">Linear Regression - Model based subsampling</a>
-    <a class="dropdown-item" href="../articles/Linear_Regression.html">Linear Regression - Model robust and misspecification</a>
-    <a class="dropdown-item" href="../articles/Basic_Sampling_Log_Reg.html">Logistic Regression - Model based subsampling</a>
-    <a class="dropdown-item" href="../articles/Logistic_Regression.html">Logistic Regression - Model robust and misspecification</a>
-    <a class="dropdown-item" href="../articles/Basic_Sampling_Poi_Reg.html">Poisson Regression - Model based subsampling</a>
-    <a class="dropdown-item" href="../articles/Poisson_Regression.html">Poisson Regression - Model robust and misspecification</a>
-    <a class="dropdown-item" href="../articles/Benchmarking_model_based.html">Benchmarking - Model based subsampling</a>
-    <a class="dropdown-item" href="../articles/Benchmarking_model_robust.html">Benchmarking - Model robust subsampling</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Model based subsampling</h6>
+    <a class="dropdown-item" href="../articles/MB_Linear_Reg_Electricity_Con.html">Linear Regression - Electricity Consumption Data</a>
+    <a class="dropdown-item" href="../articles/MB_Logistic_Reg_Skin_Seg.html">Logistic Regression - Skin Segmentation Data</a>
+    <a class="dropdown-item" href="../articles/MB_Poisson_Reg_Bike_Sharing.html">Poisson Regression - Bike Sharing Data</a>
+    <a class="dropdown-item" href="../articles/MB_Poisson_Reg_One_Million_Songs.html">Poisson Regression - One Million Songs Data</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Model robust and misspecification</h6>
+    <a class="dropdown-item" href="../articles/MR_MM_Linear_Reg_Electricity_Con.html">Linear Regression - Electricity Consumption Data</a>
+    <a class="dropdown-item" href="../articles/MR_MM_Logistic_Reg_Skin_Seg.html">Logistic Regression - Skin Segmentation Data</a>
+    <a class="dropdown-item" href="../articles/MR_MM_Poisson_Reg_Bike_Sharing.html">Poisson Regression - Bike Sharing Data</a>
+    <a class="dropdown-item" href="../articles/MR_MM_Poisson_Reg_One_Million_Songs.html">Poisson Regression - One Million Songs Data</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Benchmarking Functions</h6>
+    <a class="dropdown-item" href="../articles/Benchmark_model_based.html">Model based subsampling</a>
+    <a class="dropdown-item" href="../articles/Benchmark_model_robust.html">Model robust subsampling</a>
+    <a class="dropdown-item" href="../articles/Benchmark_model_misspecification.html">Model misspecified subsampling</a>
   </div>
 </li>
 <li class="nav-item">
@@ -107,7 +116,7 @@ with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">modelMissLogSub</span><span class="op">(</span><span class="va">r1</span>,<span class="va">r2</span>,<span class="va">Y</span>,<span class="va">X</span>,<span class="va">N</span>,<span class="va">Alpha</span>,<span class="va">proportion</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">modelMissLogSub</span><span class="op">(</span><span class="va">r1</span>,<span class="va">r2</span>,<span class="va">Y</span>,<span class="va">X</span>,<span class="va">N</span>,<span class="va">Alpha</span>,<span class="va">proportion</span>,model<span class="op">=</span><span class="st">"Auto"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -138,6 +147,10 @@ with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error
 
 <dt>proportion</dt>
 <dd><p>a proportion of the big data is used to help estimate AMSE values from the subsamples</p></dd>
+
+
+<dt>model</dt>
+<dd><p>formula for the model used in the GAM or the main effects ("s()"), squared term ("I()") or two-way interaction ("lo()") model</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -188,6 +201,10 @@ necessary error messages will be provided to go further.</p>
 if they are not aligned an error message will be produced.</p>
 <p>If \(\alpha &gt; 1\) for the scaling vector is not satisfied an error message will be produced.</p>
 <p>If proportion is not in the region of \((0,1]\) an error message will be produced.</p>
+<p><code>model</code> is a formula input formed based on the covariates through the spline terms (s()),
+squared term (I()), interaction terms (lo()) or automatically. If <code>model</code> is empty or NA
+or NAN or not one of the defined inputs an error message is printed, as a default we have set
+<code>model="Auto"</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

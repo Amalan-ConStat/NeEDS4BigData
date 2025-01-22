@@ -135,7 +135,14 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     Sample.blev<-Sample.uwlev<-Sample.slev<-list()
 
     beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-Var_Epsilon[,1]<-r
-    colnames(beta.blev)<-colnames(beta.uwlev)<-colnames(beta.slev)<-c("r",paste0("Beta",0:(ncol(X)-1)))
+
+    if(all(X[,1] == 1)){
+      colnames(beta.blev)<-colnames(beta.uwlev)<-
+        colnames(beta.slev)<-c("r",paste0("Beta_",0:(ncol(X)-1)))
+    } else {
+      colnames(beta.blev)<-colnames(beta.uwlev)<-
+        colnames(beta.slev)<-c("r",paste0("Beta_",1:(ncol(X))))
+    }
     colnames(Var_Epsilon)<-c("r","Basic Leverage","Unweighted Leverage","Shrinkage Leverage")
 
     message("Basic and shrinkage leverage probabilities calculated.\n")
@@ -258,7 +265,14 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     Sample.blev<-Sample.uwlev<-Sample.slev<-list()
 
     beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-r
-    colnames(beta.blev)<-colnames(beta.uwlev)<-colnames(beta.slev)<-c("r",paste0("Beta",0:(ncol(X)-1)))
+
+    if(all(X[,1] == 1)){
+      colnames(beta.blev)<-colnames(beta.uwlev)<-
+        colnames(beta.slev)<-c("r",paste0("Beta_",0:(ncol(X)-1)))
+    } else {
+      colnames(beta.blev)<-colnames(beta.uwlev)<-
+        colnames(beta.slev)<-c("r",paste0("Beta_",1:(ncol(X))))
+    }
 
     message("Basic and shrinkage leverage probabilities calculated.\n")
 
@@ -359,7 +373,13 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     Sample.blev<-Sample.uwlev<-Sample.slev<-list()
 
     beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-r
-    colnames(beta.blev)<-colnames(beta.uwlev)<-colnames(beta.slev)<-c("r",paste0("Beta",0:(ncol(X)-1)))
+    if(all(X[,1] == 1)){
+      colnames(beta.blev)<-colnames(beta.uwlev)<-
+        colnames(beta.slev)<-c("r",paste0("Beta_",0:(ncol(X)-1)))
+    } else {
+      colnames(beta.blev)<-colnames(beta.uwlev)<-
+        colnames(beta.slev)<-c("r",paste0("Beta_",1:(ncol(X))))
+    }
 
     message("Basic and shrinkage leverage probabilities calculated.\n")
 

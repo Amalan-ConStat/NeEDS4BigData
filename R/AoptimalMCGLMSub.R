@@ -144,7 +144,12 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     Sample.mMSE[[1]]<-idx.prop
 
     beta.mMSE[,1]<-Var_Epsilon[,1]<-r2
-    colnames(beta.mMSE)<-c("r2",paste0("Beta",0:(ncol(X)-1)))
+
+    if(all(X[,1] == 1)){
+      colnames(beta.mMSE)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
+    } else {
+      colnames(beta.mMSE)<-c("r2",paste0("Beta_",1:(ncol(X))))
+    }
     colnames(Var_Epsilon)<-c("r2","A-Optimality")
 
     ## mMSE
@@ -225,7 +230,12 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     Sample.mMSE[[1]]<-idx.prop
 
     beta.mMSE[,1]<-r2
-    colnames(beta.mMSE)<-c("r2",paste0("Beta",0:(ncol(X)-1)))
+    if(all(X[,1] == 1)){
+      colnames(beta.mMSE)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
+    } else {
+      colnames(beta.mMSE)<-c("r2",paste0("Beta_",1:(ncol(X))))
+    }
+
 
     ## mMSE
     p.prop <- P.prop[idx.prop]
@@ -297,7 +307,11 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     Sample.mMSE[[1]]<-idx.prop
 
     beta.mMSE[,1]<-r2
-    colnames(beta.mMSE)<-c("r2",paste0("Beta",0:(ncol(X)-1)))
+    if(all(X[,1] == 1)){
+      colnames(beta.mMSE)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
+    } else {
+      colnames(beta.mMSE)<-c("r2",paste0("Beta_",1:(ncol(X))))
+    }
 
     ## mMSE
     w.prop <- P.prop[idx.prop]
@@ -346,4 +360,3 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     return(ans)
   }
 }
-

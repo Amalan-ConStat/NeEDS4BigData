@@ -23,22 +23,34 @@ navbar:
       menu:
         - text: Introduction
           href: articles/Introduction.html
-        - text: Linear Regression - Model based subsampling
-          href: articles/Basic_Sampling_Lin_Reg.html
-        - text: Linear Regression - Model robust and misspecification
-          href: articles/Linear_Regression.html
-        - text: Logistic Regression - Model based subsampling
-          href: articles/Basic_Sampling_Log_Reg.html
-        - text: Logistic Regression - Model robust and misspecification
-          href: articles/Logistic_Regression.html
-        - text: Poisson Regression - Model based subsampling
-          href: articles/Basic_Sampling_Poi_Reg.html
-        - text: Poisson Regression - Model robust and misspecification
-          href: articles/Poisson_Regression.html
-        - text: Benchmarking - Model based subsampling
-          href: articles/Benchmarking_model_based.html
-        - text: Benchmarking - Model robust subsampling
-          href: articles/Benchmarking_model_robust.html
+        - text: -------
+        - text: "Model based subsampling"
+        - text: Linear Regression - Electricity Consumption Data
+          href: articles/MB_Linear_Reg_Electricity_Con.html
+        - text: Logistic Regression - Skin Segmentation Data
+          href: articles/MB_Logistic_Reg_Skin_Seg.html
+        - text: Poisson Regression - Bike Sharing Data
+          href: articles/MB_Poisson_Reg_Bike_Sharing.html
+        - text: Poisson Regression - One Million Songs Data
+          href: articles/MB_Poisson_Reg_One_Million_Songs.html
+        - text: -------
+        - text: "Model robust and misspecification"
+        - text: Linear Regression - Electricity Consumption Data
+          href: articles/MR_MM_Linear_Reg_Electricity_Con.html
+        - text: Logistic Regression - Skin Segmentation Data
+          href: articles/MR_MM_Logistic_Reg_Skin_Seg.html
+        - text: Poisson Regression - Bike Sharing Data
+          href: articles/MR_MM_Poisson_Reg_Bike_Sharing.html
+        - text: Poisson Regression - One Million Songs Data
+          href: articles/MR_MM_Poisson_Reg_One_Million_Songs.html
+        - text: -------
+        - text: "Benchmarking Functions"
+        - text: Model based subsampling
+          href: articles/Benchmark_model_based.html
+        - text: Model robust subsampling
+          href: articles/Benchmark_model_robust.html
+        - text: Model misspecified subsampling
+          href: articles/Benchmark_model_misspecification.html
     - text: Versions
       href: news/index.html
   right:
@@ -61,6 +73,7 @@ reference:
     contents:
         - Bike_sharing
         - Electric_consumption
+        - One_Million_Songs
         - Skin_segmentation
   - title: Generate Big Data
     desc: Simulating big data under different conditions

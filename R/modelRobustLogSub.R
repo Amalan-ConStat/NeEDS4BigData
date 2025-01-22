@@ -188,8 +188,13 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
     Sample.mMSE_Single[[a]][[1]]<-Sample.mVc_Single[[a]][[1]]<-
       Sample.mMSE_MR[[a]][[1]]<-Sample.mVc_MR[[a]][[1]]<-idx.prop
 
-    colnames(beta.mVc_Single[[a]])<-colnames(beta.mMSE_Single[[a]])<-colnames(beta.mVc_MR[[a]])<-
-      colnames(beta.mMSE_MR[[a]])<-c("r2",paste0("beta_",0:(length(All_Combinations[[a]])-1)))
+    if(all(x.prop[[a]][,1] == 1)){
+      colnames(beta.mVc_Single[[a]])<-colnames(beta.mMSE_Single[[a]])<-colnames(beta.mVc_MR[[a]])<-
+        colnames(beta.mMSE_MR[[a]])<-c("r2",paste0("Beta_",0:(length(All_Combinations[[a]])-1)))
+    } else {
+      colnames(beta.mVc_Single[[a]])<-colnames(beta.mMSE_Single[[a]])<-colnames(beta.mVc_MR[[a]])<-
+        colnames(beta.mMSE_MR[[a]])<-c("r2",paste0("Beta_",1:(length(All_Combinations[[a]]))))
+    }
 
     colnames(Utility_mVc_Single[[a]])<-colnames(Utility_mMSE_Single[[a]])<-
       colnames(Utility_mVc_MR[[a]])<-colnames(Utility_mMSE_MR[[a]])<-c("r2","Variance","Information")

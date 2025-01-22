@@ -54,11 +54,12 @@ plot_Beta.LocalCaseControl<-function(object){
   Temp_Data<-data.frame(object$Beta_Estimates)
   Temp_Data |>
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
-  label_values<-0:(length(unique(Temp_Data$Beta))-1)
+  label_values<-as.numeric(gsub("[^0-9]", "", unique(Temp_Data$Beta)))
+  #label_values<-0:(length(unique(Temp_Data$Beta))-1)
 
   method_colors<-c("#A50021")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
-                         levels = paste0("Beta",label_values),
+                         levels = paste0("Beta_",label_values),
                          labels = paste0("beta[",label_values,"]"))
 
   Mean_Data <- Temp_Data |>
@@ -85,11 +86,12 @@ plot_Beta.Leverage<-function(object){
   Temp_Data<-data.frame(object$Beta_Estimates)
   Temp_Data |>
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
-  label_values<-0:(length(unique(Temp_Data$Beta))-1)
+  label_values<-as.numeric(gsub("[^0-9]", "", unique(Temp_Data$Beta)))
+  #label_values<-0:(length(unique(Temp_Data$Beta))-1)
 
   method_colors<-c("#F76D5E","#D82632","#A50021")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
-                         levels = paste0("Beta",label_values),
+                         levels = paste0("Beta_",label_values),
                          labels = paste0("beta[",label_values,"]"))
 
   Mean_Data <- Temp_Data |>
@@ -116,11 +118,12 @@ plot_Beta.A_L_OptimalSubsampling<-function(object){
   Temp_Data<-data.frame(object$Beta_Estimates)
   Temp_Data |>
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
-  label_values<-0:(length(unique(Temp_Data$Beta))-1)
+  label_values<-as.numeric(gsub("[^0-9]", "", unique(Temp_Data$Beta)))
+  #label_values<-0:(length(unique(Temp_Data$Beta))-1)
 
   method_colors<-c("#A50021","#F76D5E")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
-                         levels = paste0("Beta",label_values),
+                         levels = paste0("Beta_",label_values),
                          labels = paste0("beta[",label_values,"]"))
 
   Mean_Data <- Temp_Data |>
@@ -147,11 +150,12 @@ plot_Beta.AoptimalSubsampling<-function(object){
   Temp_Data<-data.frame(object$Beta_Estimates)
   Temp_Data |>
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
-  label_values<-0:(length(unique(Temp_Data$Beta))-1)
+  #label_values<-0:(length(unique(Temp_Data$Beta))-1)
+  label_values<-as.numeric(gsub("[^0-9]", "", unique(Temp_Data$Beta)))
 
   method_colors<-c("#A50021")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
-                         levels = paste0("Beta",label_values),
+                         levels = paste0("Beta_",label_values),
                          labels = paste0("beta[",label_values,"]"))
 
   Mean_Data <- Temp_Data |>
@@ -178,11 +182,12 @@ plot_Beta.A_OptimalSamplingMC<-function(object){
   Temp_Data<-data.frame(object$Beta_Estimates)
   Temp_Data |>
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
-  label_values<-0:(length(unique(Temp_Data$Beta))-1)
+  #label_values<-0:(length(unique(Temp_Data$Beta))-1)
+  label_values<-as.numeric(gsub("[^0-9]", "", unique(Temp_Data$Beta)))
 
   method_colors<-c("#A50021")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
-                         levels = paste0("Beta",label_values),
+                         levels = paste0("Beta_",label_values),
                          labels = paste0("beta[",label_values,"]"))
 
   Mean_Data <- Temp_Data |>
@@ -210,11 +215,12 @@ plot_Beta.ModelRobust<-function(object){
     for (i in 1:length(object$Beta_Estimates)) {
       Temp_Data<-data.frame(object$Beta_Estimates[[i]])
       Temp_Data |>
-        tidyr::pivot_longer(cols=tidyr::starts_with("beta"),names_to="Beta",values_to="Values")->Temp_Data
-      label_values<-0:(length(unique(Temp_Data$Beta))-1)
+        tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
+      label_values<-as.numeric(gsub("[^0-9]", "", unique(Temp_Data$Beta)))
+      #label_values<-0:(length(unique(Temp_Data$Beta))-1)
 
       Temp_Data$Beta<-factor(Temp_Data$Beta,
-                             levels = paste0("beta_",label_values),
+                             levels = paste0("Beta_",label_values),
                              labels = paste0("beta[",label_values,"]"))
 
       Mean_Data <- Temp_Data |>
@@ -246,14 +252,14 @@ plot_Beta.ModelMisspecified<-function(object){
   Temp_Data<-data.frame(object$Beta_Estimates)
   Temp_Data |>
     tidyr::pivot_longer(cols=tidyr::starts_with("Beta"),names_to="Beta",values_to="Values")->Temp_Data
-  label_values<-0:(length(unique(Temp_Data$Beta))-1)
+  label_values<-as.numeric(gsub("[^0-9]", "", unique(Temp_Data$Beta)))
   method_labels<-levels(Temp_Data$Method)
   Log_Odds_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Log Odds")]
   Power_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Power")]
 
   method_colors<-c("#A50021","#F76D5E","#BBFFBB","#50FF50","#00BB00")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
-                         levels = paste0("Beta",label_values),
+                         levels = paste0("Beta_",label_values),
                          labels = paste0("beta[",label_values,"]"))
 
   Mean_Data <- Temp_Data |>

@@ -83,6 +83,37 @@
 #'
 "Bike_sharing"
 
+#' One Million Songs data
+#'
+#' This data set contains 1,019,318 unique users' music play counts in the Echo Nest,
+#' which is available at "http://millionsongdataset.com/tasteprofile/".
+#' As a basic step, it is interesting to predict the play counts using the song
+#' information collected in the Million Song Dataset (Bertin-Mahieux et al. (2011)).
+#' After cleaning up and feature engineering the data in total contains 205,032
+#' observations where we consider the covariates duration, loudness, tempo, artist
+#' hotness, song hotness, and album hotness to model the response,
+#' the number of song counts.
+#'
+#' @format A data frame with 4 columns and 309,685 rows.
+#' \describe{
+#' \item{\code{Counts}}{Number of playback counts for songs}
+#' \item{\code{Duration}}{Duration of the song}
+#' \item{\code{Loudness}}{Loudness of the song}
+#' \item{\code{Tempo}}{Tempo of the song}
+#' \item{\code{Artist_Hotness}}{A value between 0 and 1}
+#' \item{\code{Song_Hotness}}{A value between 0 and 1}
+#' \item{\code{Album_Hotness}}{A value between 0 and 1}
+#' }
+#'
+#' @examples
+#' nrow(One_Million_Songs)
+#'
+#' @references
+#' \insertRef{mcfee2012million}{NeEDS4BigData}
+#' \insertRef{ai2021optimal}{NeEDS4BigData}
+#'
+"One_Million_Songs"
+
 #' Generate data for Generalised Linear Models
 #'
 #' Function to simulate big data under linear, logistic and Poisson regression for sampling.

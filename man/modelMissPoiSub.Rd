@@ -4,7 +4,7 @@
 \alias{modelMissPoiSub}
 \title{Subsampling under Poisson regression for a potentially misspecified model}
 \usage{
-modelMissPoiSub(r1,r2,Y,X,N,Alpha,proportion)
+modelMissPoiSub(r1,r2,Y,X,N,Alpha,proportion,model="Auto")
 }
 \arguments{
 \item{r1}{sample size for initial random sampling}
@@ -20,6 +20,8 @@ modelMissPoiSub(r1,r2,Y,X,N,Alpha,proportion)
 \item{Alpha}{scaling factor when using Log Odds or Power functions to magnify the probabilities}
 
 \item{proportion}{a proportion of the big data is used to help estimate AMSE values from the subsamples}
+
+\item{model}{formula for the model used in the GAM or the main effects ("s()"), squared term ("I()") or two-way interaction ("lo()") model}
 }
 \value{
 The output of \code{modelMissPoiSub} gives a list of
@@ -71,6 +73,11 @@ if they are not aligned an error message will be produced.
 If \eqn{\alpha > 1} for the scaling vector is not satisfied an error message will be produced.
 
 If proportion is not in the region of \eqn{(0,1]} an error message will be produced.
+
+\code{model} is a formula input formed based on the covariates through the spline terms (s()),
+squared term (I()), interaction terms (lo()) or automatically. If \code{model} is empty or NA
+or NAN or not one of the defined inputs an error message is printed, as a default we have set
+\code{model="Auto"}.
 }
 \examples{
 Beta<-c(-1,0.75,0.75,1); family <- "poisson"; N<-10000

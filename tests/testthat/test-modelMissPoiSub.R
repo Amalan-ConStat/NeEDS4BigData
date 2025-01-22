@@ -110,5 +110,18 @@ test_that("Error on proportion value",{
 test_that("Error on length of r1 or N",{
   expect_error(modelMissPoiSub(r1,r2,Y = as.matrix(Original_Data[,1]),
                                X = as.matrix(Original_Data[,-1]),
-                               N = c(N,2),Alpha = 10, proportion = 0.3),"proportion, r1 or N has a value greater than length one")
+                               N = c(N,2),Alpha = 10, proportion = 0.3),
+               "proportion, r1 or N has a value greater than length one")
+})
+test_that("Error on model formula",{
+  expect_error(modelMissPoiSub(r1,r2,Y = as.matrix(Original_Data[,1]),
+                               X = as.matrix(Original_Data[,-1]),
+                               N = N,Alpha = 10, proportion = 0.3, model=NULL),
+               "The model formula for GAM is NA or NAN or NULL")
+})
+test_that("Wrong input on model formula",{
+  expect_error(modelMissPoiSub(r1,r2,Y = as.matrix(Original_Data[,1]),
+                               X = as.matrix(Original_Data[,-1]),
+                               N = N,Alpha = 10, proportion = 0.3, model="New"),
+               "The model for GAM is not a valid formula or input")
 })

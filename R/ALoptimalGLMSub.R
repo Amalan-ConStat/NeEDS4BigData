@@ -150,7 +150,12 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
     Sample.mMSE[[1]]<-Sample.mVc[[1]]<-idx.prop
 
     beta.mVc[,1]<-beta.mMSE[,1]<-Var_Epsilon[,1]<-r2
-    colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta",0:(ncol(X)-1)))
+
+    if(all(X[,1] == 1)){
+      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
+    } else {
+      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",1:(ncol(X))))
+    }
     colnames(Var_Epsilon)<-c("r2","A-Optimality","L-Optimality")
 
     ## mVc
@@ -261,7 +266,11 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 
     beta.mVc[,1]<-beta.mMSE[,1]<-Utility_mVc[,1]<-Utility_mMSE[,1]<-r2
 
-    colnames(beta.mVc)<-colnames(beta.mMSE)<-c("r2",paste0("Beta",0:(ncol(X)-1)))
+    if(all(X[,1] == 1)){
+      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
+    } else {
+      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",1:(ncol(X))))
+    }
     colnames(Utility_mVc)<-colnames(Utility_mMSE)<-c("r2","Variance","Information")
 
     ## mVc
@@ -377,7 +386,11 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 
     beta.mVc[,1]<-beta.mMSE[,1]<-Utility_mVc[,1]<-Utility_mMSE[,1]<-r2
 
-    colnames(beta.mVc)<-colnames(beta.mMSE)<-c("r2",paste0("Beta",0:(ncol(X)-1)))
+    if(all(X[,1] == 1)){
+      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
+    } else {
+      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",1:(ncol(X))))
+    }
     colnames(Utility_mVc)<-colnames(Utility_mMSE)<-c("r2","Variance","Information")
 
     ## mVc

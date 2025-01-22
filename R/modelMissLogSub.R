@@ -5,15 +5,16 @@
 #' with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error).
 #'
 #' @usage
-#' modelMissLogSub(r1,r2,Y,X,N,Alpha,proportion)
+#' modelMissLogSub(r1,r2,Y,X,N,Alpha,proportion,model="Auto")
 #'
-#' @param r1                 sample size for initial random sampling
-#' @param r2                 sample size for optimal sampling
-#' @param Y                  response data or Y
-#' @param X                  covariate data or X matrix that has all the covariates (first column is for the intercept)
-#' @param N                  size of the big data
-#' @param Alpha              scaling factor when using Log Odds or Power functions to magnify the probabilities
-#' @param proportion         a proportion of the big data is used to help estimate AMSE values from the subsamples
+#' @param r1          sample size for initial random sampling
+#' @param r2          sample size for optimal sampling
+#' @param Y           response data or Y
+#' @param X           covariate data or X matrix that has all the covariates (first column is for the intercept)
+#' @param N           size of the big data
+#' @param Alpha       scaling factor when using Log Odds or Power functions to magnify the probabilities
+#' @param proportion  a proportion of the big data is used to help estimate AMSE values from the subsamples
+#' @param model       formula for the model used in the GAM or the main effects ("s()"), squared term ("I()") or two-way interaction ("lo()") model
 #'
 #' @details
 #' \strong{The article for this function is in preparation for publication. Please be patient.}
@@ -41,6 +42,11 @@
 #' If \eqn{\alpha > 1} for the scaling vector is not satisfied an error message will be produced.
 #'
 #' If proportion is not in the region of \eqn{(0,1]} an error message will be produced.
+#'
+#' \code{model} is a formula input formed based on the covariates through the spline terms (s()),
+#' squared term (I()), interaction terms (lo()) or automatically. If \code{model} is empty or NA
+#' or NAN or not one of the defined inputs an error message is printed, as a default we have set
+#' \code{model="Auto"}.
 #'
 #' @return
 #' The output of \code{modelMissLogSub} gives a list of
@@ -98,8 +104,9 @@
 #' @importFrom Rfast rowprods
 #' @importFrom utils combn
 #' @importFrom psych tr
+#' @importFrom rlang is_formula
 #' @export
-modelMissLogSub <- function(r1,r2,Y,X,N,Alpha,proportion){
+modelMissLogSub <- function(r1,r2,Y,X,N,Alpha,proportion,model="Auto"){
   if(any(is.na(c(r1,r2,N,Alpha,proportion))) | any(is.nan(c(r1,r2,N,Alpha,proportion)))){
     stop("NA or Infinite or NAN values in the r1,r2,N,Alpha or proportion")
   }
@@ -131,16 +138,86 @@ modelMissLogSub <- function(r1,r2,Y,X,N,Alpha,proportion){
     message("50% or >=50% of the big data is used to help find AMSE for the subsamples, \nthis could take some time.")
   }
 
-  main_effects <- paste0("s(X", 1:ncol(X[, -1]), ")")
+  if(anyNA(model) | any(is.nan(model)) | is.null(model) ){
 
-  if(ncol(X[,-1]) == 2 ){
-    two_way_interactions <- utils::combn(colnames(X[, -1]), 2,
-                                         function(cols){paste0("lo(", paste(cols, collapse = "*"), ")")})
+    stop("The model formula for GAM is NA or NAN or NULL")
 
-    my_formula<-stats::as.formula(paste("Y ~ ",paste(main_effects,collapse = " + "),"+",
-                                        paste(two_way_interactions,collapse = " + ")))
-  } else{
-    my_formula<-stats::as.formula(paste("Y ~ ",paste(main_effects,collapse = " + ")))
+  } else if(model == "s()"){
+
+    if(all(X[,1] == 1)){
+      main_effects <- paste0("s(", colnames(X[,-1]),")")
+      my_formula<-stats::as.formula(paste("Y ~ ",paste(main_effects,collapse = " + ")))
+    } else {
+      main_effects <- paste0("s(", colnames(X),")")
+      my_formula<-stats::as.formula(paste("Y ~ ",paste(main_effects,collapse = " + ")))
+    }
+
+  } else if(model == "lo()"){
+
+    if(all(X[,1] == 1)){
+      main_effects <- paste0("s(", colnames(X[,-1]),")")
+      two_way_interactions <- utils::combn(colnames(X[,-1]), 2,
+                                           function(cols){paste0("lo(", paste(cols, collapse = "*"), ")")})
+
+      my_formula<-stats::as.formula(paste("Y ~ ",paste(main_effects,collapse = " + "),"+",
+                                          paste(two_way_interactions,collapse = " + ")))
+    } else {
+      main_effects <- paste0("s(",colnames(X),")")
+      two_way_interactions <- utils::combn(colnames(X), 2,
+                                           function(cols){paste0("lo(", paste(cols, collapse = "*"), ")")})
+
+      my_formula<-stats::as.formula(paste("Y ~ ",paste(main_effects,collapse = " + "),"+",
+                                          paste(two_way_interactions,collapse = " + ")))
+    }
+
+  } else if(model == "I()"){
+
+    if(all(X[,1] == 1)){
+      main_effects <- paste0("s(",colnames(X[,-1]),")")
+      squared_terms <- paste0("s(I(",colnames(X[, -1]),"^2))")
+
+      my_formula<-stats::as.formula(paste("Y ~ ",paste(main_effects,collapse = " + "),"+",
+                                          paste(squared_terms,collapse = " + ")))
+    } else {
+      main_effects <- paste0("s(", colnames(X),")")
+      squared_terms <- paste0("s(I(",colnames(X),"^2))")
+
+      my_formula<-stats::as.formula(paste("Y ~ ",paste(main_effects,collapse = " + "),"+",
+                                          paste(squared_terms,collapse = " + ")))
+    }
+
+  } else if(model == "Auto"){
+
+    if(all(X[,1] == 1)){
+      main_effects <- paste0("s(",colnames(X[, -1]),")")
+
+      if(ncol(X[,-1]) == 2 ){
+        two_way_interactions <- utils::combn(colnames(X[, -1]), 2,
+                                             function(cols){paste0("lo(", paste(cols, collapse = "*"), ")")})
+
+        my_formula<-stats::as.formula(paste("Y ~ ",paste(main_effects,collapse = " + "),"+",
+                                            paste(two_way_interactions,collapse = " + ")))
+      } else{
+        my_formula<-stats::as.formula(paste("Y ~ ",paste(main_effects,collapse = " + ")))
+      }
+    } else{
+      main_effects <- paste0("s(",colnames(X),")")
+
+      if(ncol(X) == 2 ){
+        two_way_interactions <- utils::combn(colnames(X), 2,
+                                             function(cols){paste0("lo(", paste(cols, collapse = "*"), ")")})
+
+        my_formula<-stats::as.formula(paste("Y ~ ",paste(main_effects,collapse = " + "),"+",
+                                            paste(two_way_interactions,collapse = " + ")))
+      } else{
+        my_formula<-stats::as.formula(paste("Y ~ ",paste(main_effects,collapse = " + ")))
+      }
+    }
+
+  } else if(rlang::is_formula(model)){
+    my_formula <- model
+  } else {
+    stop("The model for GAM is not a valid formula or input")
   }
 
   n1 <- sum(Y)
@@ -404,7 +481,7 @@ modelMissLogSub <- function(r1,r2,Y,X,N,Alpha,proportion){
 
       p_r1<-1-1/(1+exp(x.RLmAMSE%*%Beta_Estimate_Full))
       W_r1<-as.vector(p_r1*(1-p_r1))
-      H_r1 <-solve(t(x.RLmAMSE) %*% (x.RLmAMSE * W_r1))
+      H_r1 <-solve(crossprod(x.RLmAMSE, x.RLmAMSE * W_r1))
       Temp1<-(W_r1 * x.RLmAMSE)%*%H_r1
 
       p_Tr1<-1-1/(1+exp((x.RLmAMSE %*% Beta_Estimate_Full) + F_Estimate_Full[c(idx.RLmAMSE)]))
@@ -435,7 +512,12 @@ modelMissLogSub <- function(r1,r2,Y,X,N,Alpha,proportion){
                               rbind(beta_mMSE,beta_mVc,beta_RLmAMSE,
                                     do.call(rbind,beta_RLmAMSE_LO),
                                     do.call(rbind,beta_RLmAMSE_Pow)))
-  colnames(Beta_Data)[-1]<-c("r2",paste0("Beta",0:(ncol(X)-1)))
+
+  if(all(X[,1] == 1)){
+    colnames(Beta_Data)[-1]<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
+  } else {
+    colnames(Beta_Data)[-1]<-c("r2",paste0("Beta_",1:(ncol(X))))
+  }
 
   # AMSE Sample Data
   AMSE_Sample_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),

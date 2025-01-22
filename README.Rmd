@@ -58,19 +58,17 @@ install.packages("NeEDS4BigData")
 6. Model robust subsampling method for GLMs.
 7. Subsampling method for GLMs when the model is potentially misspecified.
 
-These seven methods are described in the following articles
+These seven methods are described in the following articles under the topics
 
 1. Introduction - explains the need for subsampling methods.
-2. Linear Regression - Model based subsampling.
-3. Linear Regression - Model robust and misspecification.
-4. Logistic Regression - Model based subsampling.
-5. Logistic Regression - Model robust and misspecification. 
-6. Poisson Regression - Model based subsampling.
-7. Poisson Regression - Model robust and misspecification.
+2. Model based subsampling
+3. Model robust and misspecification
+4. Benchmarking Functions
 
-For $2,4$ and $6$ we assume the main effects model can describe the data. 
-While for $3,5$ and $7$ first we consider there are several models that can describe the big data, then later we assume the given main effects model is misspecified. 
-Under these conditions from $2-7$ we explore subsampling for three given big data sets.
+For $2)$ we assume the main effects model can describe the data. 
+While for $3)$ first we consider there are several models that can describe the big data, then later we assume the given main effects model is misspecified. 
+Under these conditions from $2)$ and $3)$ we explore subsampling for four given big data sets.
+Further, to explore the computation time we ran simulations for the scenarios $2)$ and $3)$ where we compare our subsampling functions against full data modelling.
 
 #### Thank You
 
