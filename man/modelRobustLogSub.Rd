@@ -28,7 +28,7 @@ The output of \code{modelRobustLinSub} gives a list of
 
 \code{Beta_Data} estimated model parameters for each model in a list after subsampling
 
-\code{Utility_Data} estimated Variance and Information of the model parameters after subsampling
+\code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
 
 \code{Sample_L-optimality} list of indexes for the initial and optimal samples obtained based on L-optimality criteria
 

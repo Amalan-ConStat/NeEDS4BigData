@@ -38,6 +38,8 @@
 #'
 #' \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after subsampling
 #'
+#' \code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
+#'
 #' \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 #'
 #' \code{Subsampling_Probability} matrix of calculated subsampling probabilities for A-optimality criteria
@@ -104,18 +106,20 @@ AoptimalGauLMSub <- function(r1,r2,Y,X,N){
   ML_Inv <- solve(crossprod(X))
 
   beta.mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
+  Utility.mMSE<-matrix(nrow = length(r2),ncol = 4 )
   Var_Epsilon<-matrix(nrow = length(r2),ncol = 2)
   Sample.mMSE<-list()
 
   Sample.mMSE[[1]]<-idx.prop
 
-  beta.mMSE[,1]<-Var_Epsilon[,1]<-r2
+  beta.mMSE[,1]<-Utility.mMSE[,1]<-Var_Epsilon[,1]<-r2
 
   if(all(X[,1] == 1)){
     colnames(beta.mMSE)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
   } else {
     colnames(beta.mMSE)<-c("r2",paste0("Beta_",1:(ncol(X))))
   }
+  colnames(Utility.mMSE)<-c("r2","D-optimality","A-optimality","L-optimality")
   colnames(Var_Epsilon)<-c("r2","A-Optimality")
 
   ## mMSE
@@ -140,9 +144,16 @@ AoptimalGauLMSub <- function(r1,r2,Y,X,N){
     Xbeta_Final<-X%*%beta.prop
     Var.prop<-sum((Y-Xbeta_Final)^2)/N
 
+    Temp<-Var.prop*crossprod(x.mMSE)
+    Temp_Inv<-solve(Temp)
+    x.mMSE_t<-t(x.mMSE)
+    Temp_Int<-Temp_Inv%*%x.mMSE_t
+    Temp1<-x.mMSE%*%Temp_Int
+
     Sample.mMSE[[i+1]]<-idx.mMSE;
     beta.mMSE[i,-1] <- beta.prop
     Var_Epsilon[i,2]<-Var.prop
+    Utility.mMSE[i,-1]<-c(log(det(Temp)),psych::tr(Temp_Inv),psych::tr(Temp1))
 
     if(anyNA(beta.prop)){
       stop("There are NA or NaN values in the model parameters")
@@ -156,6 +167,8 @@ AoptimalGauLMSub <- function(r1,r2,Y,X,N){
 
   Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),beta.mMSE)
 
+  Utility_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),Utility.mMSE)
+
   Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
                                      "Sample"=r2,"Var Epsilon"=Var_Epsilon[,"A-Optimality"])
 
@@ -164,6 +177,7 @@ AoptimalGauLMSub <- function(r1,r2,Y,X,N){
   message("Step 2 of the algorithm completed.")
 
   ans<-list("Beta_Estimates"=Beta_Data,
+            "Utility_Estimates"=Utility_Data,
             "Variance_Epsilon_Estimates"=Var_Epsilon_Data,
             "Sample_A-Optimality"=Sample.mMSE,
             "Subsampling_Probability"=Full_SP)

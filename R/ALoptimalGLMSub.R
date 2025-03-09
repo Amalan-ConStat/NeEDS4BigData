@@ -42,9 +42,9 @@
 #'
 #' \code{Beta_Estimates} estimated model parameters in a data.frame after subsampling
 #'
-#' \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after subsampling (valid only for linear regression)
+#' \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after subsampling
 #'
-#' \code{Utility_Estimates} estimated log scaled Information and variance for the estimated model parameters
+#' \code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
 #'
 #' \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 #'
@@ -144,12 +144,13 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
     }
 
     beta.mVc<-beta.mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
+    Utility.mVc<-Utility.mMSE<-matrix(nrow = length(r2),ncol = 4 )
     Var_Epsilon<-matrix(nrow = length(r2),ncol = 3)
     Sample.mMSE<-Sample.mVc<-list()
 
     Sample.mMSE[[1]]<-Sample.mVc[[1]]<-idx.prop
 
-    beta.mVc[,1]<-beta.mMSE[,1]<-Var_Epsilon[,1]<-r2
+    beta.mVc[,1]<-beta.mMSE[,1]<-Utility.mVc[,1]<-Utility.mMSE[,1]<-Var_Epsilon[,1]<-r2
 
     if(all(X[,1] == 1)){
       colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
@@ -157,6 +158,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
       colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",1:(ncol(X))))
     }
     colnames(Var_Epsilon)<-c("r2","A-Optimality","L-Optimality")
+    colnames(Utility.mVc)<-colnames(Utility.mMSE)<-c("r2","D-optimality","A-optimality","L-optimality")
 
     ## mVc
     PI.mVc<-sqrt(Epsilon.prop^2 * matrixStats::rowSums2(X^2))
@@ -184,9 +186,16 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
       Xbeta_Final<-X%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
 
-      Sample.mVc[[i+1]]<-idx.mVc;
+      Temp<-Var.prop*crossprod(x.mVc)
+      Temp_Inv<-solve(Temp)
+      x.mVc_t<-t(x.mVc)
+      Temp_Int<-Temp_Inv%*%x.mVc_t
+      Temp1<-x.mVc%*%Temp_Int
+
+      Sample.mVc[[i+1]]<-idx.mVc
       beta.mVc[i,-1] <- beta.prop
       Var_Epsilon[i,3]<-Var.prop
+      Utility.mVc[i,-1]<-c(log(det(Temp)),psych::tr(Temp_Inv),psych::tr(Temp1))
 
       if(anyNA(beta.prop)){
         stop("There are NA or NaN values in the model parameters")
@@ -206,9 +215,16 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
       Xbeta_Final<-X%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
 
+      Temp<-Var.prop*crossprod(x.mMSE)
+      Temp_Inv<-solve(Temp)
+      x.mMSE_t<-t(x.mMSE)
+      Temp_Int<-Temp_Inv%*%x.mMSE_t
+      Temp1<-x.mMSE%*%Temp_Int
+
       Sample.mMSE[[i+1]]<-idx.mMSE;
       beta.mMSE[i,-1] <- beta.prop
       Var_Epsilon[i,2]<-Var.prop
+      Utility.mMSE[i,-1]<-c(log(det(Temp)),psych::tr(Temp_Inv),psych::tr(Temp1))
 
       if(anyNA(beta.prop)){
         stop("There are NA or NaN values in the model parameters")
@@ -222,6 +238,9 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 
     Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),rbind(beta.mMSE,beta.mVc))
 
+    Utility_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
+                                   rbind(Utility.mMSE,Utility.mVc))
+
     Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
                                        "Sample"=rep(r2,times=length(Subsampling_Methods)),
                                        "Var Epsilon"=c(Var_Epsilon[,"A-Optimality"],
@@ -232,6 +251,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
     message("Step 2 of the algorithm completed.")
 
     ans<-list("Beta_Estimates"=Beta_Data,
+              "Utility_Estimates"=Utility_Data,
               "Variance_Epsilon_Estimates"=Var_Epsilon_Data,
               "Sample_A-Optimality"=Sample.mMSE,
               "Sample_L-Optimality"=Sample.mVc,
@@ -256,22 +276,23 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
       stop("There are NA or NaN values in the model parameters")
     }
 
-    P.prop  <- 1 - 1 / (1 + exp(X%*% beta.prop))
+    Xbeta_Final<-X%*%beta.prop
+    P.prop  <- 1 - 1 / (1 + exp(Xbeta_Final))
 
     beta.mVc<-beta.mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
-    Utility_mVc<-Utility_mMSE<-matrix(nrow = length(r2),ncol = 3 )
+    Utility.mVc<-Utility.mMSE<-matrix(nrow = length(r2),ncol = 4 )
     Sample.mMSE<-Sample.mVc<-list()
 
     Sample.mMSE[[1]]<-Sample.mVc[[1]]<-idx.prop
 
-    beta.mVc[,1]<-beta.mMSE[,1]<-Utility_mVc[,1]<-Utility_mMSE[,1]<-r2
+    beta.mVc[,1]<-beta.mMSE[,1]<-Utility.mVc[,1]<-Utility.mMSE[,1]<-r2
 
     if(all(X[,1] == 1)){
       colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
     } else {
       colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",1:(ncol(X))))
     }
-    colnames(Utility_mVc)<-colnames(Utility_mMSE)<-c("r2","Variance","Information")
+    colnames(Utility.mVc)<-colnames(Utility.mMSE)<-c("r2","D-optimality","A-optimality","L-optimality")
 
     ## mVc
     PI.mVc<-sqrt((Y - P.prop)^2 * matrixStats::rowSums2(X^2))
@@ -294,7 +315,8 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 
       x.mVc <- X[c(idx.mVc, idx.prop), ]
       y.mVc <- Y[c(idx.mVc, idx.prop)]
-      fit.mVc <-.getMLE(x=x.mVc, y=y.mVc,w=c(1 / PI.mVc[idx.mVc], pinv.prop))
+      SS_Prob<-c(1 / PI.mVc[idx.mVc], pinv.prop)
+      fit.mVc <-.getMLE(x=x.mVc, y=y.mVc,w=SS_Prob)
 
       Sample.mVc[[i+1]]<-idx.mVc;
       beta.mVc[i,-1] <- fit.mVc$par
@@ -303,20 +325,23 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
         stop("There are NA or NaN values in the model parameters")
       }
 
-      pi<-1-1/(1 + exp(x.mVc %*% beta.mVc[i,-1]))
-      W<-as.vector(pi*(1-pi)*c(1 / PI.mVc[idx.mVc], pinv.prop))
-      Mx<-solve((t(x.mVc) %*% (x.mVc * W)))
-      Middle<-((as.vector(y.mVc)-as.vector(pi))*as.vector(c(1 / PI.mVc[idx.mVc], pinv.prop)))^2
-      V_Temp<-(t(x.mVc) %*% (x.mVc * Middle) )
-      V_Final<- Mx %*% V_Temp %*% Mx
+      LP_data<-x.mVc %*% beta.mVc[i,-1]
+      pi<-c(1-1/(1 + exp(LP_data)))
+      W<-pi*(1-pi)
+      Mx<-crossprod(x.mVc,(x.mVc * W))
+      Mx_Inv<-solve(Mx)
+      x.mVc_t<-t(x.mVc)
+      V_Mx_Temp <- Mx_Inv %*% x.mVc_t
+      V_Final<- x.mVc%*% V_Mx_Temp
 
-      Utility_mVc[i,-1]<-c(psych::tr(V_Final),det(solve(V_Final)))
+      Utility.mVc[i,-1]<-c(log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
 
       ## mMSE
       idx.mMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mMSE)
 
       x.mMSE <- X[c(idx.mMSE, idx.prop),]
       y.mMSE <- Y[c(idx.mMSE, idx.prop)]
+      SS_Prob<-c(1 / PI.mMSE[idx.mMSE], pinv.prop)
       fit.mMSE <- .getMLE(x=x.mMSE, y=y.mMSE,w=c(1 / PI.mMSE[idx.mMSE], pinv.prop))
 
       Sample.mMSE[[i+1]]<-idx.mMSE;
@@ -326,14 +351,16 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
         stop("There are NA or NaN values in the model parameters")
       }
 
-      pi<-1-1/(1 + exp(x.mMSE %*% beta.mMSE[i,-1]))
-      W<-as.vector(pi*(1-pi)*c(1 / PI.mMSE[idx.mMSE], pinv.prop))
-      Mx<-solve((t(x.mMSE) %*% (x.mMSE * W)))
-      Middle<-((as.vector(y.mMSE)-as.vector(pi))*as.vector(c(1 / PI.mMSE[idx.mMSE], pinv.prop)))^2
-      V_Temp<-(t(x.mMSE) %*% (x.mMSE * Middle))
-      V_Final<-Mx %*% V_Temp %*% Mx
+      LP_data<-x.mMSE %*% beta.mMSE[i,-1]
+      pi<-c(1-1/(1 + exp(LP_data)))
+      W<-pi*(1-pi)
+      Mx<-crossprod(x.mMSE,(x.mMSE * W))
+      Mx_Inv<-solve(Mx)
+      x.mMSE_t<-t(x.mMSE)
+      V_Mx_Temp <- Mx_Inv %*% x.mMSE_t
+      V_Final<- x.mMSE%*% V_Mx_Temp
 
-      Utility_mMSE[i,-1]<-c(psych::tr(V_Final),det(solve(V_Final)))
+      Utility.mMSE[i,-1]<-c(log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
     }
 
     Full_SP<-cbind.data.frame(PI.mMSE,PI.mVc)
@@ -345,7 +372,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
                                 rbind(beta.mMSE,beta.mVc))
 
     Utility_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
-                                   rbind(Utility_mMSE,Utility_mVc))
+                                   rbind(Utility.mMSE,Utility.mVc))
 
     names(Sample.mMSE)<-names(Sample.mVc)<-c(r1,r2)
 
@@ -376,22 +403,23 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
       stop("There are NA or NaN values in the model parameters")
     }
 
-    P.prop  <- exp(X %*% beta.prop)
+    Xbeta_Final<-X %*% beta.prop
+    P.prop  <- exp(Xbeta_Final)
 
     beta.mVc<-beta.mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
-    Utility_mVc<-Utility_mMSE<-matrix(nrow = length(r2),ncol = 3 )
+    Utility.mVc<-Utility.mMSE<-matrix(nrow = length(r2),ncol = 4 )
     Sample.mMSE<-Sample.mVc<-list()
 
     Sample.mMSE[[1]]<-Sample.mVc[[1]]<-idx.prop
 
-    beta.mVc[,1]<-beta.mMSE[,1]<-Utility_mVc[,1]<-Utility_mMSE[,1]<-r2
+    beta.mVc[,1]<-beta.mMSE[,1]<-Utility.mVc[,1]<-Utility.mMSE[,1]<-r2
 
     if(all(X[,1] == 1)){
       colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
     } else {
       colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",1:(ncol(X))))
     }
-    colnames(Utility_mVc)<-colnames(Utility_mMSE)<-c("r2","Variance","Information")
+    colnames(Utility.mVc)<-colnames(Utility.mMSE)<-c("r2","D-optimality","A-optimality","L-optimality")
 
     ## mVc
     PI.mVc <- sqrt((Y - P.prop)^2 * matrixStats::rowSums2(X^2))
@@ -423,13 +451,16 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
         stop("There are NA or NaN values in the model parameters")
       }
 
-      pi<-c(exp(x.mVc %*% beta.mVc[i,-1]))
-      pinv.mVc<-c(1 / PI.mVc[idx.mVc], pinv.prop)
-      Mx<-solve(t(x.mVc) %*% (x.mVc * pi * pinv.mVc))
-      V_Temp<-t(x.mVc) %*% (x.mVc*((as.vector(y.mVc)-pi)*pinv.mVc)^2)
-      V_Final<- Mx %*% V_Temp %*% Mx
+      LP_data<-x.mVc %*% beta.mVc[i,-1]
+      pi<-c(exp(LP_data))
+      W<-pi
+      Mx<-crossprod(x.mVc,(x.mVc * W))
+      Mx_Inv<-solve(Mx)
+      x.mVc_t<-t(x.mVc)
+      V_Mx_Temp <- Mx_Inv %*% x.mVc_t
+      V_Final<- x.mVc %*% V_Mx_Temp
 
-      Utility_mVc[i,-1]<-c(psych::tr(V_Final),det(solve(V_Final)))
+      Utility.mVc[i,-1]<-c(log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
 
       ## mMSE
       idx.mMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mMSE)
@@ -446,13 +477,16 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
         stop("There are NA or NaN values in the model parameters")
       }
 
-      pi<-c(exp(x.mMSE %*% beta.mMSE[i,-1]))
-      pinv.mMSE<-c(1 / PI.mMSE[idx.mMSE], pinv.prop)
-      Mx<-solve(t(x.mMSE) %*% (x.mMSE*pi*pinv.mMSE))
-      V_Temp<-t(x.mMSE) %*% (x.mMSE*((as.vector(y.mMSE)-pi)*pinv.mMSE)^2)
-      V_Final<-Mx %*% V_Temp %*% Mx
+      LP_data<-x.mMSE %*% beta.mMSE[i,-1]
+      pi<-c(exp(LP_data))
+      W<-pi
+      Mx<-crossprod(x.mMSE,(x.mMSE * W))
+      Mx_Inv<-solve(Mx)
+      x.mMSE_t<-t(x.mMSE)
+      V_Mx_Temp <- Mx_Inv %*% x.mMSE_t
+      V_Final<- x.mMSE %*% V_Mx_Temp
 
-      Utility_mMSE[i,-1]<-c(psych::tr(V_Final),det(solve(V_Final)))
+      Utility.mMSE[i,-1]<-c(log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
     }
 
     Full_SP<-cbind.data.frame(PI.mMSE,PI.mVc)
@@ -464,7 +498,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
                                 rbind(beta.mMSE,beta.mVc))
 
     Utility_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
-                                   rbind(Utility_mMSE,Utility_mVc))
+                                   rbind(Utility.mMSE,Utility.mVc))
 
     names(Sample.mMSE)<-names(Sample.mVc)<-c(r1,r2)
 

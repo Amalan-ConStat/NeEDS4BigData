@@ -45,7 +45,7 @@
 #'
 #' \code{Beta_Data} estimated model parameters for each model in a list after subsampling
 #'
-#' \code{Utility_Data} estimated Variance and Information of the model parameters after subsampling
+#' \code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
 #'
 #' \code{Sample_L-optimality} list of indexes for the initial and optimal samples obtained based on L-optimality criteria
 #'
@@ -176,15 +176,15 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   for (a in 1:length(All_Combinations))
   {
     beta.mVc_Single[[a]]<-matrix(nrow = length(r2),ncol = length(All_Combinations[[a]])+1 ) # Single Model Results
-    Utility_mVc_Single[[a]]<-matrix(nrow = length(r2),ncol = 3 )
+    Utility_mVc_Single[[a]]<-matrix(nrow = length(r2),ncol = 4 )
     beta.mMSE_Single[[a]]<-matrix(nrow = length(r2),ncol = length(All_Combinations[[a]])+1 )
-    Utility_mMSE_Single[[a]]<-matrix(nrow = length(r2),ncol = 3 )
+    Utility_mMSE_Single[[a]]<-matrix(nrow = length(r2),ncol = 4 )
     Sample.mMSE_Single[[a]]<-Sample.mVc_Single[[a]]<-list()
 
     beta.mVc_MR[[a]]<-matrix(nrow = length(r2),ncol = length(All_Combinations[[a]])+1 ) # Model Robust Results
-    Utility_mVc_MR[[a]]<-matrix(nrow = length(r2),ncol = 3 )
+    Utility_mVc_MR[[a]]<-matrix(nrow = length(r2),ncol = 4 )
     beta.mMSE_MR[[a]]<-matrix(nrow = length(r2),ncol = length(All_Combinations[[a]])+1 )
-    Utility_mMSE_MR[[a]]<-matrix(nrow = length(r2),ncol = 3 )
+    Utility_mMSE_MR[[a]]<-matrix(nrow = length(r2),ncol = 4 )
     Sample.mMSE_MR[[a]]<-Sample.mVc_MR[[a]]<-list()
 
     Sample.mMSE_Single[[a]][[1]]<-Sample.mVc_Single[[a]][[1]]<-
@@ -202,7 +202,8 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
     #   colnames(beta.mMSE_MR[[a]])<-c("r2",paste0("beta_",0:(length(All_Combinations[[a]])-1)))
 
     colnames(Utility_mVc_Single[[a]])<-colnames(Utility_mMSE_Single[[a]])<-
-      colnames(Utility_mVc_MR[[a]])<-colnames(Utility_mMSE_MR[[a]])<-c("r2","Variance","Information")
+      colnames(Utility_mVc_MR[[a]])<-
+      colnames(Utility_mMSE_MR[[a]])<-c("r2","D-optimality","A-optimality","L-optimality")
   }
 
   ## mVc
@@ -269,33 +270,28 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
       if(anyNA(fit_Single.mVc[[j]]$coefficients) || anyNA(fit_MR.mVc[[j]]$coefficients)){
         stop("There are NA or NaN values in the model parameters")
       }
-    }
 
-    # Single Model Results
-    V_Final<-lapply(1:length(All_Combinations),function(j){
-      pi<-c(exp(x_Single.mVc[[j]] %*% beta.mVc_Single[[j]][i,-1]))
-      pinv_Single.mVc<-c(1 / PI_Single.mVc[[j]][idx_Single.mVc[[j]]], pinv.prop)
-      Mx<-solve(crossprod(x_Single.mVc[[j]], x_Single.mVc[[j]] * pi * pinv_Single.mVc))
-      V_Temp<-crossprod(x_Single.mVc[[j]], x_Single.mVc[[j]]*((as.vector(y_Single.mVc[[j]])-pi)*pinv_Single.mVc)^2)
-      Mx %*% V_Temp %*% Mx
-    })
+      LP_data<-x_Single.mVc[[j]] %*% fit_Single.mVc[[j]]$coefficients
+      pi<-c(exp(LP_data))
+      W<-pi
+      Mx<-crossprod(x_Single.mVc[[j]],(x_Single.mVc[[j]] * W))
+      Mx_Inv<-solve(Mx)
+      x.mVc_t<-t(x_Single.mVc[[j]])
+      V_Mx_Temp <- Mx_Inv %*% x.mVc_t
+      V_Final<- x_Single.mVc[[j]] %*% V_Mx_Temp
 
-    for (j in 1:length(All_Combinations))
-    {
-      Utility_mVc_Single[[j]][i,]<-cbind(r2[i],psych::tr(V_Final[[j]]),det(solve(V_Final[[j]])))
-    }
+      Utility_mVc_Single[[j]][i,]<-c(r2[i],log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
 
-    # Model Robust Results
-    V_Final<-lapply(1:length(All_Combinations),function(j){
-      pi<- c(exp(x_MR.mVc[[j]] %*% beta.mVc_MR[[j]][i,-1]))
-      Mx<-solve(crossprod(x_MR.mVc[[j]], x_MR.mVc[[j]]*pi*pinv_MR.mVc))
-      V_Temp<-crossprod(x_MR.mVc[[j]], x_MR.mVc[[j]]*((as.vector(y_MR.mVc)-pi)*pinv_MR.mVc)^2)
-      Mx %*% V_Temp %*% Mx
-    })
+      LP_data<-x_MR.mVc[[j]] %*% fit_MR.mVc[[j]]$coefficients
+      pi<-c(exp(LP_data))
+      W<-pi
+      Mx<-crossprod(x_MR.mVc[[j]],(x_MR.mVc[[j]] * W))
+      Mx_Inv<-solve(Mx)
+      x.mVc_t<-t(x_MR.mVc[[j]])
+      V_Mx_Temp <- Mx_Inv %*% x.mVc_t
+      V_Final<- x_Single.mVc[[j]] %*% V_Mx_Temp
 
-    for (j in 1:length(All_Combinations))
-    {
-      Utility_mVc_MR[[j]][i,]<-cbind(r2[i],psych::tr(V_Final[[j]]),det(solve(V_Final[[j]])))
+      Utility_mVc_MR[[j]][i,]<-c(r2[i],log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
     }
 
     ## mMSE
@@ -339,33 +335,28 @@ modelRobustPoiSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
       if(anyNA(fit_Single.mMSE[[j]]$coefficients) || anyNA(fit_MR.mMSE[[j]]$coefficients)){
         stop("There are NA or NaN values in the model parameters")
       }
-    }
 
-    # Single Model Results
-    V_Final<-lapply(1:length(All_Combinations),function(j){
-      pi<-c(exp(x_Single.mMSE[[j]] %*% beta.mMSE_Single[[j]][i,-1]))
-      pinv_Single.mMSE<-c(1 / PI_Single.mMSE[[j]][idx_Single.mMSE[[j]]], pinv.prop)
-      Mx<-solve(crossprod(x_Single.mMSE[[j]], x_Single.mMSE[[j]]*pi*pinv_Single.mMSE))
-      V_Temp<-crossprod(x_Single.mMSE[[j]], x_Single.mMSE[[j]]*((as.vector(y_Single.mMSE[[j]])-pi)*pinv_Single.mMSE)^2)
-      Mx %*% V_Temp %*% Mx
-    })
+      LP_data<-x_Single.mMSE[[j]] %*% fit_Single.mMSE[[j]]$coefficients
+      pi<-c(exp(LP_data))
+      W<-pi
+      Mx<-crossprod(x_Single.mMSE[[j]],(x_Single.mMSE[[j]] * W))
+      Mx_Inv<-solve(Mx)
+      x.mMSE_t<-t(x_Single.mMSE[[j]])
+      V_Mx_Temp <- Mx_Inv %*% x.mMSE_t
+      V_Final<- x_Single.mMSE[[j]] %*% V_Mx_Temp
 
-    for (j in 1:length(All_Combinations))
-    {
-      Utility_mMSE_Single[[j]][i,]<-cbind(r2[i],psych::tr(V_Final[[j]]),det(solve(V_Final[[j]])))
-    }
+      Utility_mMSE_Single[[j]][i,]<-c(r2[i],log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
 
-    # Model Robust Results
-    V_Final<-lapply(1:length(All_Combinations),function(j){
-      pi<-c(exp(x_MR.mMSE[[j]] %*% beta.mMSE_MR[[j]][i,-1]))
-      Mx<-solve(crossprod(x_MR.mMSE[[j]], x_MR.mMSE[[j]]*pi*pinv_MR.mMSE))
-      V_Temp<-crossprod(x_MR.mMSE[[j]], x_MR.mMSE[[j]]*((as.vector(y_MR.mMSE)-pi)*pinv_MR.mMSE)^2)
-      Mx %*% V_Temp %*% Mx
-    })
+      LP_data<-x_MR.mMSE[[j]] %*% fit_MR.mMSE[[j]]$coefficients
+      pi<-c(exp(LP_data))
+      W<-pi
+      Mx<-crossprod(x_MR.mMSE[[j]],(x_MR.mMSE[[j]] * W))
+      Mx_Inv<-solve(Mx)
+      x.mMSE_t<-t(x_MR.mMSE[[j]])
+      V_Mx_Temp <- Mx_Inv %*% x.mMSE_t
+      V_Final<- x_Single.mMSE[[j]] %*% V_Mx_Temp
 
-    for (j in 1:length(All_Combinations))
-    {
-      Utility_mMSE_MR[[j]][i,]<-cbind(r2[i],psych::tr(V_Final[[j]]),det(solve(V_Final[[j]])))
+      Utility_mMSE_MR[[j]][i,]<-c(r2[i],log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
     }
   }
 

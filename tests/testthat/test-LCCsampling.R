@@ -14,7 +14,7 @@ test_that("type of the Results",{
 })
 
 test_that("length of the Results output",{
-  expect_equal(length(Results),3)
+  expect_equal(length(Results),4)
 })
 
 test_that("dimension of the Beta Estimates",{

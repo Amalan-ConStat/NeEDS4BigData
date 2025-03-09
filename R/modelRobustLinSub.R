@@ -47,6 +47,8 @@
 #'
 #' \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon for each model after subsampling
 #'
+#' \code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
+#'
 #' \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 #'
 #' \code{Sample_A-Optimality_MR} list of indexes for the initial and model robust optimal samples obtained based on A-Optimality criteria
@@ -162,11 +164,13 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
 
   # Single Model Results
   beta.mVc_Single<-beta.mMSE_Single<-list()
+  Utility.mVc_Single<-Utility.mMSE_Single<-list()
   Var_Epsilon_mVc<-Var_Epsilon_mMSE<-matrix(nrow = length(r2),ncol = length(All_Combinations) + 1)
   Sample.mMSE_Single<-Sample.mVc_Single<-list()
 
   # Model Robust Results
   beta.mVc_MR<-beta.mMSE_MR<-list()
+  Utility.mVc_MR<-Utility.mMSE_MR<-list()
   Var_Epsilon_mVc_MR<-Var_Epsilon_mMSE_MR<-matrix(nrow = length(r2),ncol = length(All_Combinations) + 1)
   Sample.mMSE_MR<-Sample.mVc_MR<-list()
 
@@ -177,10 +181,14 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   {
     beta.mVc_Single[[a]]<-matrix(nrow = length(r2),ncol = length(All_Combinations[[a]])+1 ) # Single Model Results
     beta.mMSE_Single[[a]]<-matrix(nrow = length(r2),ncol = length(All_Combinations[[a]])+1 )
+    Utility.mVc_Single[[a]]<-matrix(nrow = length(r2),ncol = 4) # Single Model Results
+    Utility.mMSE_Single[[a]]<-matrix(nrow = length(r2),ncol = 4)
     Sample.mMSE_Single[[a]]<-Sample.mVc_Single[[a]]<-list()
 
     beta.mVc_MR[[a]]<-matrix(nrow = length(r2),ncol = length(All_Combinations[[a]])+1 ) # Model Robust Results
     beta.mMSE_MR[[a]]<-matrix(nrow = length(r2),ncol = length(All_Combinations[[a]])+1 )
+    Utility.mVc_MR[[a]]<-matrix(nrow = length(r2),ncol = 4) # Model Robust Results
+    Utility.mMSE_MR[[a]]<-matrix(nrow = length(r2),ncol = 4)
     Sample.mMSE_MR[[a]]<-Sample.mVc_MR[[a]]<-list()
 
     Sample.mMSE_Single[[a]][[1]]<-Sample.mVc_Single[[a]][[1]]<-
@@ -193,6 +201,10 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
       colnames(beta.mVc_Single[[a]])<-colnames(beta.mMSE_Single[[a]])<-colnames(beta.mVc_MR[[a]])<-
         colnames(beta.mMSE_MR[[a]])<-c("r2",paste0("Beta_",1:(length(All_Combinations[[a]]))))
     }
+
+    colnames(Utility.mVc_Single[[a]])<-colnames(Utility.mMSE_Single[[a]])<-
+      colnames(Utility.mVc_MR[[a]])<-
+      colnames(Utility.mMSE_MR[[a]])<-c("r2","D-optimality","A-optimality","L-optimality")
 
   }
 
@@ -269,6 +281,20 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
       Var_Epsilon_mVc[i,j+1]<-fit_Single.mVc[[j]]$Var.prop
       Var_Epsilon_mVc_MR[i,j+1]<-fit_MR.mVc[[j]]$Var.prop
 
+      Temp<-Var_Epsilon_mVc[i,j+1]*crossprod(x_Single.mVc[[j]])
+      Temp_Inv<-solve(Temp)
+      x.mVc_t<-t(x_Single.mVc[[j]])
+      Temp_Int<-Temp_Inv%*%x.mVc_t
+      Temp1<-x_Single.mVc[[j]]%*%Temp_Int
+      Utility.mVc_Single[[j]][i,]<-c(r2[i],log(det(Temp)),psych::tr(Temp_Inv),psych::tr(Temp1))
+
+      Temp<-Var_Epsilon_mVc_MR[i,j+1]*crossprod(x_MR.mVc[[j]])
+      Temp_Inv<-solve(Temp)
+      x.mVc_t<-t(x_MR.mVc[[j]])
+      Temp_Int<-Temp_Inv%*%x.mVc_t
+      Temp1<-x_MR.mVc[[j]]%*%Temp_Int
+      Utility.mVc_MR[[j]][i,]<-c(r2[i],log(det(Temp)),psych::tr(Temp_Inv),psych::tr(Temp1))
+
       if(anyNA(fit_Single.mVc[[j]]$beta.prop) || anyNA(fit_MR.mVc[[j]]$beta.prop)){
         stop("There are NA or NaN values in the model parameters")
       }
@@ -325,6 +351,20 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
       Var_Epsilon_mMSE[i,j+1]<-fit_Single.mMSE[[j]]$Var.prop
       Var_Epsilon_mMSE_MR[i,j+1]<-fit_MR.mMSE[[j]]$Var.prop
 
+      Temp<-Var_Epsilon_mMSE[i,j+1]*crossprod(x_Single.mMSE[[j]])
+      Temp_Inv<-solve(Temp)
+      x.mMSE_t<-t(x_Single.mMSE[[j]])
+      Temp_Int<-Temp_Inv%*%x.mMSE_t
+      Temp1<-x_Single.mMSE[[j]]%*%Temp_Int
+      Utility.mMSE_Single[[j]][i,]<-c(r2[i],log(det(Temp)),psych::tr(Temp_Inv),psych::tr(Temp1))
+
+      Temp<-Var_Epsilon_mMSE_MR[i,j+1]*crossprod(x_MR.mMSE[[j]])
+      Temp_Inv<-solve(Temp)
+      x.mMSE_t<-t(x_MR.mMSE[[j]])
+      Temp_Int<-Temp_Inv%*%x.mMSE_t
+      Temp1<-x_MR.mMSE[[j]]%*%Temp_Int
+      Utility.mMSE_MR[[j]][i,]<-c(r2[i],log(det(Temp)),psych::tr(Temp_Inv),psych::tr(Temp1))
+
       if(anyNA(fit_Single.mMSE[[j]]$beta.prop) || anyNA(fit_MR.mMSE[[j]]$beta.prop)){
         stop("There are NA or NaN values in the model parameters")
       }
@@ -342,13 +382,17 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
                        "MR A-Optimality","MR L-Optimality")
 
   Subsampling_Methods<-factor(c("A-Optimality","L-Optimality","MR A-Optimality","MR L-Optimality"))
-  Beta_Data<-list()
+  Beta_Data<-Utility_Data<-list()
 
   for (j in 1:length(All_Combinations))
   {
     Beta_Data[[j]]<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
                                      rbind(beta.mMSE_Single[[j]],beta.mVc_Single[[j]],
                                            beta.mMSE_MR[[j]],beta.mVc_MR[[j]]))
+
+    Utility_Data[[j]]<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
+                                        rbind(Utility.mMSE_Single[[j]],Utility.mVc_Single[[j]],
+                                              Utility.mMSE_MR[[j]],Utility.mVc_MR[[j]]))
 
     names(Sample.mVc_Single[[j]])<-names(Sample.mMSE_Single[[j]])<-
       names(Sample.mVc_MR[[j]])<-names(Sample.mMSE_MR[[j]])<-c(r1,r2)
@@ -358,7 +402,7 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
                                      rbind(Var_Epsilon_mMSE,Var_Epsilon_mVc,
                                            Var_Epsilon_mMSE_MR,Var_Epsilon_mVc_MR))
 
-  names(Beta_Data)<-paste0("Model_",1:length(All_Combinations))
+  names(Beta_Data)<-names(Utility_Data)<-paste0("Model_",1:length(All_Combinations))
   colnames(Var_Epsilon_Data)[-1]<-c("r2",paste0("Model_",1:length(All_Combinations)))
 
   names(Sample.mVc_Single)<-names(Sample.mVc_MR)<-paste0("Model_",1:length(All_Combinations))
@@ -367,6 +411,7 @@ modelRobustLinSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   message("Step 2 of the algorithm completed.")
 
   ans<-list("Beta_Estimates"=Beta_Data,
+            "Utility_Estimates"=Utility_Data,
             "Variance_Epsilon_Estimates"=Var_Epsilon_Data,
             "Sample_A-Optimality"=Sample.mMSE_Single,
             "Sample_A-Optimality_MR"=Sample.mMSE_MR,

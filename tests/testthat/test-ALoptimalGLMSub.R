@@ -15,7 +15,7 @@ test_that("type of the Results",{
 })
 
 test_that("length of the Results output",{
-  expect_equal(length(Results),5)
+  expect_equal(length(Results),6)
 })
 
 test_that("dimension of the Beta Estimates",{
@@ -99,7 +99,7 @@ test_that("class of the Beta Estimates",{
 })
 
 test_that("dimension of the Utility Estimates",{
-  expect_equal(dim(Results$Utility_Estimates),c(length(r2)*2,4))
+  expect_equal(dim(Results$Utility_Estimates),c(length(r2)*2,5))
 })
 
 test_that("class of the Utility Estimates",{
@@ -107,11 +107,11 @@ test_that("class of the Utility Estimates",{
 })
 
 test_that("value in Utility estimates Var gt",{
-  expect_gt(min(Results$Utility_Estimates$Variance),0)
+  expect_gt(min(Results$Utility_Estimates$`A-optimality`),0)
 })
 
 test_that("value in Utility estimates Information gt",{
-  expect_gt(min(Results$Utility_Estimates$Information),0)
+  expect_gt(min(Results$Utility_Estimates$`D-optimality`),0)
 })
 
 test_that("dimension of the subsampling probability",{
@@ -216,7 +216,7 @@ test_that("class of the Beta Estimates",{
 })
 
 test_that("dimension of the Utility Estimates",{
-  expect_equal(dim(Results$Utility_Estimates),c(length(r2)*2,4))
+  expect_equal(dim(Results$Utility_Estimates),c(length(r2)*2,5))
 })
 
 test_that("class of the Utility Estimates",{
@@ -224,11 +224,11 @@ test_that("class of the Utility Estimates",{
 })
 
 test_that("value in Utility estimates Var gt",{
-  expect_gt(min(Results$Utility_Estimates$Variance),0)
+  expect_gt(min(Results$Utility_Estimates$`A-optimality`),0)
 })
 
 test_that("value in Utility estimates Information gt",{
-  expect_gt(min(Results$Utility_Estimates$Information),0)
+  expect_gt(min(Results$Utility_Estimates$`D-optimality`),0)
 })
 
 test_that("dimension of the subsampling probability",{

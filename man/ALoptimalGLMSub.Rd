@@ -24,9 +24,9 @@ The output of \code{ALoptimalGLMSub} gives a list of
 
 \code{Beta_Estimates} estimated model parameters in a data.frame after subsampling
 
-\code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after subsampling (valid only for linear regression)
+\code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after subsampling
 
-\code{Utility_Estimates} estimated log scaled Information and variance for the estimated model parameters
+\code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
 
 \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 

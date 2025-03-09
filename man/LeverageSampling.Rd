@@ -26,6 +26,8 @@ The output of \code{LeverageSampling} gives a list of
 
 \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after sampling (valid only for linear regression)
 
+\code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
+
 \code{Sample_Basic_Leverage} list of indexes for the optimal samples obtained based on basic leverage
 
 \code{Sample_Shrinkage_Leverage} list of indexes for the optimal samples obtained based on shrinkage leverage

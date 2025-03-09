@@ -24,6 +24,8 @@ The output of \code{AoptimalGauLMSub} gives a list of
 
 \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after subsampling
 
+\code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
+
 \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 
 \code{Subsampling_Probability} matrix of calculated subsampling probabilities for A-optimality criteria

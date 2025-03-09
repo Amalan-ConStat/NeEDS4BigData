@@ -30,6 +30,8 @@ The output of \code{modelRobustLinSub} gives a list of
 
 \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon for each model after subsampling
 
+\code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
+
 \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 
 \code{Sample_A-Optimality_MR} list of indexes for the initial and model robust optimal samples obtained based on A-Optimality criteria

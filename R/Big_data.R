@@ -223,7 +223,8 @@ GenGLMdata<-function(Dist,Dist_Par,No_Of_Var,Beta,N,family){
     Complete_Data<-cbind(1,X);
     colnames(Complete_Data)<-c(paste0("X",0:ncol(X)))
     Residual<-stats::rnorm(n=N,mean=0,sd=sqrt(Dist_Par$Error_Variance))
-    Y <- Complete_Data%*%Beta + Residual
+    Linear_Predictor_data <- Complete_Data%*%Beta
+    Y <- Linear_Predictor_data + Residual
 
     Complete_Data<-cbind(Y,Complete_Data)
     colnames(Complete_Data)<-c("Y",paste0("X",0:ncol(X)))
@@ -355,16 +356,19 @@ GenModelMissGLMdata<-function(N,X_Data,Misspecification,Beta,Var_Epsilon,family)
 
   if(family == "linear"){
     if(is.null(Var_Epsilon) == TRUE){Var_Epsilon<-0.5}
-    Y_Data <- X_Data_Real%*%Beta + stats::rnorm(n = N,mean = 0,sd = sqrt(Var_Epsilon))
+    Linear_Predictor_data <- X_Data_Real%*%Beta
+    Y_Data <- Linear_Predictor_data + stats::rnorm(n = N,mean = 0,sd = sqrt(Var_Epsilon))
   }
 
   if(family == "logistic"){
-    Pi_Data<-1-1/(1+exp(X_Data_Real%*%Beta))
+    Linear_Predictor_data <- X_Data_Real%*%Beta
+    Pi_Data<-1-1/(1+exp(Linear_Predictor_data))
     Y_Data <- stats::rbinom(N,1,Pi_Data)
   }
 
   if(family == "poisson"){
-    Lambda_Data<-exp(X_Data_Real%*%Beta)
+    Linear_Predictor_data <- X_Data_Real%*%Beta
+    Lambda_Data<-exp(Linear_Predictor_data)
     Y_Data <- stats::rpois(N,Lambda_Data)
   }
 
