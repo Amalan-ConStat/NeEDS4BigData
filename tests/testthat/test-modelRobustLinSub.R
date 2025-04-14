@@ -2,7 +2,7 @@ indexes<-1:ceiling(nrow(Electric_consumption)*0.005)
 Original_Data<-cbind(Electric_consumption[indexes,1],1,
                      Electric_consumption[indexes,-1])
 colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
-for (j in 3:5) {
+for (j in 3:6) {
   Original_Data[,j]<-scale(Original_Data[,j])
 }
 
@@ -23,7 +23,7 @@ for (i in 1:No_of_Variables){
     }
   }
 
-All_Models<-All_Models[-c(5:7)]
+All_Models<-All_Models[c(1,12:16)]
 names(All_Models)<-paste0("Model_",1:length(All_Models))
 r1<-300; r2<-rep(100*c(6,9,12),5);
 
@@ -111,7 +111,7 @@ test_that("Error on input for r2",{
                "NA or Infinite or NAN values in the r1,r2,N,Apriori_probs or All_Covariates")
 })
 Temp_Data<-Original_Data
-Temp_Data[100,]<-rep(NA,8)
+Temp_Data[100,]<-rep(NA,10)
 test_that("Error on X input",{
   expect_error(modelRobustLinSub(r1 = r1, r2 = r2,
                                  Y = as.matrix(Temp_Data[,colnames(Temp_Data) %in% c("Y")]),

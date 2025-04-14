@@ -8,6 +8,7 @@
 A data frame with 4 columns and 2,049,280 rows.
 \describe{
 \item{\code{Intensity}}{Minute-averaged current intensity}
+\item{\code{Voltage}}{Voltage}
 \item{\code{EE_Kitchen}}{Active electrical energy (watt-hour) in the kitchen}
 \item{\code{EE_Laundry}}{Active electrical energy (watt-hour) in the laundry room}
 \item{\code{EE_WH_AC}}{Active electrical energy (watt-hour) of electric water-heater and an air-conditioner}
@@ -28,7 +29,7 @@ Electric_consumption
 Hebrail and Berard (2012) described data which contains 2,049,280 completed measurements for a house
 located at Sceaux, France between December 2006 and November 2010.
 The log scale minute-averaged current intensity is selected as the response and
-the covariates are active electrical energy (watt-hour) in the kitchen, the laundry room,
+the covariates are voltage, active electrical energy (watt-hour) in the kitchen, the laundry room,
 and electric water-heater and an air-conditioner.
 }
 \examples{

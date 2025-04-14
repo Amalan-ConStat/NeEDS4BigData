@@ -13,7 +13,6 @@ A data frame with 4 columns and 309,685 rows.
 \item{\code{Tempo}}{Tempo of the song}
 \item{\code{Artist_Hotness}}{A value between 0 and 1}
 \item{\code{Song_Hotness}}{A value between 0 and 1}
-\item{\code{Album_Hotness}}{A value between 0 and 1}
 }
 }
 \usage{
@@ -26,7 +25,7 @@ As a basic step, it is interesting to predict the play counts using the song
 information collected in the Million Song Dataset (Bertin-Mahieux et al. (2011)).
 After cleaning up and feature engineering the data in total contains 205,032
 observations where we consider the covariates duration, loudness, tempo, artist
-hotness, song hotness, and album hotness to model the response,
+hotness and song hotness to model the response,
 the number of song counts.
 }
 \examples{

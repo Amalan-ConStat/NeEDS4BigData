@@ -21,18 +21,22 @@ modelMissLogSub(r1,r2,Y,X,N,Alpha,proportion,model="Auto")
 
 \item{proportion}{a proportion of the big data is used to help estimate AMSE values from the subsamples}
 
-\item{model}{formula for the model used in the GAM or the main effects ("s()"), squared term ("I()") or two-way interaction ("lo()") model}
+\item{model}{formula for the model used in the GAM or the default choice}
 }
 \value{
 The output of \code{modelMissLogSub} gives a list of
 
 \code{Beta_Estimates} estimated model parameters after subsampling
 
+\code{Utility_Estimates} estimated A-, L- and L1- optimality values for the obtained subsamples
+
 \code{AMSE_Estimates} matrix of estimated AMSE values after subsampling
 
 \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 
 \code{Sample_L-Optimality} list of indexes for the initial and optimal samples obtained based on L-Optimality criteria
+
+\code{Sample_L1-Optimality} list of indexes for the initial and optimal samples obtained based on L1-Optimality criteria
 
 \code{Sample_RLmAMSE} list of indexes for the optimal samples obtained based on RLmAMSE
 
@@ -44,7 +48,7 @@ The output of \code{modelMissLogSub} gives a list of
 }
 \description{
 Using this function sample from big data under logistic regression for a potentially misspecified model.
-Subsampling probabilities are obtained based on the A- and L- optimality criteria
+Subsampling probabilities are obtained based on the A-, L- and L1- optimality criteria
 with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error).
 }
 \details{
@@ -53,12 +57,12 @@ with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error
 Two stage subsampling algorithm for big data under logistic regression for potential model misspecification.
 
 First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
-Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria,
+Using the estimated parameters subsampling probabilities are evaluated for A-, L-, L1-optimality criteria,
 RLmAMSE and enhanced RLmAMSE(log-odds and power) subsampling methods.
 
 Through the estimated subsampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
-Finally, the two samples are combined and the model parameters are estimated for A- and L-optimality,
-while for RLmAMSE and enhanced RLmAMSE (log-odds and power) only the optimal sample is used.
+Finally, the two samples are combined and the model parameters are estimated for A-, L-, L1-optimality,
+RLmAMSE and enhanced RLmAMSE (log-odds and power).
 
 \strong{NOTE} :  If input parameters are not in given domain conditions
 necessary error messages will be provided to go further.
@@ -76,8 +80,8 @@ If proportion is not in the region of \eqn{(0,1]} an error message will be produ
 
 \code{model} is a formula input formed based on the covariates through the spline terms (s()),
 squared term (I()), interaction terms (lo()) or automatically. If \code{model} is empty or NA
-or NAN or not one of the defined inputs an error message is printed, as a default we have set
-\code{model="Auto"}.
+or NAN or not one of the defined inputs an error message is printed. As a default we have set
+\code{model="Auto"}, which is the main effects model wit the spline terms.
 }
 \examples{
 Beta<-c(-1,0.75,0.75,1); family <- "logistic"; N<-10000

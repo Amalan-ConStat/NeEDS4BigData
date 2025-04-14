@@ -196,10 +196,10 @@ Below is the code for this implementation.
 
 ```{r Potential model misspecification methods,fig.width=6,fig.height=10,fig.align='center', warning=FALSE,fig.cap="MSE for the model parameters (a) and AMSE (b) for the potentially misspecified main effects model across the subsampling methods under comparison, with 5% and 95% percentile intervals." }
 # Define the subsampling methods and their respective colours, shapes and line types
-Method_Names<-c("A-Optimality","L-Optimality","RLmAMSE",
+Method_Names<-c("A-Optimality","L-Optimality","L1-Optimality","RLmAMSE",
                 "RLmAMSE Log Odds 10","RLmAMSE Power 10")
-Method_Colour<-c("#D82632","#A50021","#BBFFBB","#50FF50","#00BB00")
-Method_Shape_Types<-c(rep(8,2),rep(17,3))
+Method_Colour<-c("#D82632","#A50021","greenyellow","#BBFFBB","#50FF50","#00BB00")
+Method_Shape_Types<-c(rep(8,3),rep(17,3))
 
 # A- and L-optimality and RLmAMSE model misspecified subsampling for logistic regression 
 NeEDS4BigData::modelMissLogSub(r1=400,r2=rep_k,

@@ -47,7 +47,7 @@ Theme_special<-function(){
 
 ``Electric power consumption'' data [@hebrailindividual], which contains $2,049,280$ measurements for a house located at Sceaux, France between December 2006 and November 2010.
 The data contains $4$ columns and has $2,049,280$ observations, first column is the response variable and the rest are covariates, however we only use the first $10\%$ of the data for this explanation. 
-The response $y$ is the log scaled intensity, while the covariates are active electrical energy in the a) kitchen ($X_1$), b) laundry room ($X_2$) and c) water-heater and air-conditioner ($X_3$). 
+The response $y$ is the log scaled intensity, while the covariates are active electrical energy in the a) voltage ($X_1$) b) kitchen ($X_2$), c) laundry room ($X_3$) and d) water-heater and air-conditioner ($X_4$). 
 The covariates are scaled to be mean of zero and variance of one. 
 
 Given data is analysed under two different scenarios,
@@ -63,7 +63,7 @@ Original_Data<-cbind(Electric_consumption[indexes,1],1,
 colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
 
 # Scaling the covariate data
-for (j in 3:5) {
+for (j in 3:6) {
   Original_Data[,j]<-scale(Original_Data[,j])
 }
 head(Electric_consumption) %>% 
@@ -77,7 +77,7 @@ N<-nrow(Original_Data); M<-250; k<-seq(8,20,by=2)*100; rep_k<-rep(k,each=M)
 ## Model robust or average subsampling
 
 The method $A$- and $L$-optimality of model robust or average subsampling [@mahendran2023model] is compared against the $A$- and $L$-optimality subsampling [@ai2021optimal;@yao2021review] method. 
-Here five models are selected out of eight models, which are 1) main effects model ($\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3$), 2-4) main effects model with the squared term of each covariate ($X^2_1 / X^2_2 / X^2_3$), 5-7) main effects model with two squared terms ($X^2_1+X^2_2 / X^2_1+X^2_3 / X^2_2+X^2_3$) and 8) main effects model with all squared terms. 
+Here five models are selected out of sixteen models, which are 1) main effects model ($\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3+\beta_4X_4$), 2-5) main effects model with the squared term of each covariate ($X^2_1 / X^2_2 / X^2_3 / X^2_4$), 6-11) main effects model with two squared terms of the covariates, 12-15) main effects model with three squared terms of the covariates, and 16) main effects model with all squared terms. 
 The five models are selected based on the smallest AIC values.  
 For each model $l$ the mean squared error of the model parameters $MSE_l(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ} \sum_{i=1}^M \sum_{j=1}^J (\tilde{\beta}_{k,j} - \hat{\beta}_j)^2$ are calculated for the $M=250$ simulations across the sample sizes $k=(800,\ldots,2000)$ and the initial sample size is $r1=400$. 
 Here, for the $l$-th model $\tilde{\beta}_k$ is the estimated model parameters from the sample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter.
@@ -195,10 +195,10 @@ Below is the code for this implementation.
 
 ```{r Potential model misspecification methods,fig.width=6,fig.height=10,fig.align='center', fig.cap="MSE for model parameters (a) and AMSE (b) for the potentially misspecified main effects model across the subsampling methods under comparison, with 5% and 95% percentile intervals."}
 # Define the subsampling methods and their respective colours, shapes and line types
-Method_Names<-c("A-Optimality","L-Optimality","RLmAMSE",
+Method_Names<-c("A-Optimality","L-Optimality","L1-Optimality","RLmAMSE",
                 "RLmAMSE Log Odds 10","RLmAMSE Power 10")
-Method_Colour<-c("#D82632","#A50021","#BBFFBB","#50FF50","#00BB00")
-Method_Shape_Types<-c(rep(8,2),rep(17,3))
+Method_Colour<-c("#D82632","#A50021","greenyellow","#BBFFBB","#50FF50","#00BB00")
+Method_Shape_Types<-c(rep(8,3),rep(17,3))
 
 # A- and L-optimality and RLmAMSE model misspecified subsampling for linear regression 
 NeEDS4BigData::modelMissLinSub(r1=400,r2=rep_k,

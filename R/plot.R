@@ -257,7 +257,7 @@ plot_Beta.ModelMisspecified<-function(object){
   Log_Odds_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Log Odds")]
   Power_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Power")]
 
-  method_colors<-c("#A50021","#F76D5E","#BBFFBB","#50FF50","#00BB00")
+  method_colors<-c("#A50021","#F76D5E","greenyellow","#BBFFBB","#50FF50","#00BB00")
   Temp_Data$Beta<-factor(Temp_Data$Beta,
                          levels = paste0("Beta_",label_values),
                          labels = paste0("beta[",label_values,"]"))
@@ -327,7 +327,7 @@ plot_AMSE.ModelMisspecified<-function(object){
 
   Log_Odds_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Log Odds")]
   Power_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Power")]
-  method_colors<-c("#A50021","#F76D5E","#BBFFBB","#50FF50","#00BB00")
+  method_colors<-c("#A50021","#F76D5E","greenyellow","#BBFFBB","#50FF50","#00BB00")
   method_linetypes<-c(rep("dashed",2),"solid",rep("dotted",length(Log_Odds_Labels)),
                       rep("dotdash",length(Power_Labels)))
 

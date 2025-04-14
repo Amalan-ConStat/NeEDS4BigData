@@ -20,11 +20,11 @@ test_that("type of the Results",{
 })
 
 test_that("length of the Results output",{
-  expect_equal(length(Results),9)
+  expect_equal(length(Results),11)
 })
 
 test_that("dimension of the Beta Estimates",{
-  expect_equal(dim(Results$Beta_Estimates),c(length(r2)*5,length(Beta)-1+2))
+  expect_equal(dim(Results$Beta_Estimates),c(length(r2)*6,length(Beta)-1+2))
 })
 
 test_that("class of the Beta Estimates",{
@@ -32,7 +32,7 @@ test_that("class of the Beta Estimates",{
 })
 
 test_that("dimension of the Var Epsilon Estimates",{
-  expect_equal(dim(Results$Variance_Epsilon_Estimates),c(length(r2),5+1))
+  expect_equal(dim(Results$Variance_Epsilon_Estimates),c(length(r2),6+1))
 })
 
 test_that("class of the Var Epsilon Estimates",{
@@ -44,7 +44,7 @@ test_that("value in variance epsilon estimates",{
 })
 
 test_that("dimension of the subsampling probability",{
-  expect_equal(dim(Results$Subsampling_Probability),c(N,5))
+  expect_equal(dim(Results$Subsampling_Probability),c(N,6))
 })
 
 test_that("class of the subsampling probability",{
@@ -65,6 +65,10 @@ test_that("dimension of the A-optimality sample",{
 
 test_that("dimension of the L-optimality sample",{
   expect_equal(length(Results$`Sample_L-Optimality`),c(length(r2)+1))
+})
+
+test_that("dimension of the L1-optimality sample",{
+  expect_equal(length(Results$`Sample_L1-Optimality`),c(length(r2)+1))
 })
 
 test_that("dimension of the RLmAMSE sample",{
