@@ -46,7 +46,7 @@ Theme_special<-function(){
 
 ``Electric power consumption'' data [@hebrailindividual], which contains $2,049,280$ measurements for a house located at Sceaux, France between December 2006 and November 2010.
 The data contains $4$ columns, the first column is the response variable and the rest are covariates, however we only use the first $25\%$ of the data for this demonstration. 
-The response $y$ is the log scaled intensity, while the covariates are active electrical energy in the a) kitchen ($X_1$), b) laundry room ($X_2$) and c) water-heater and air-conditioner ($X_3$). 
+The response $y$ is the log scaled intensity, while the covariates are active electrical energy in the a) voltage ($X_1$), b) kitchen ($X_2$), b) laundry room ($X_3$) and d) water-heater and air-conditioner ($X_4$). 
 The covariates are scaled to be mean of zero and variance of one. 
 For the given data subsampling methods are implemented assuming the main effects model can describe the data.
 
@@ -57,7 +57,7 @@ Original_Data<-cbind(Electric_consumption[indexes,1],1,Electric_consumption[inde
 colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
 
 # Scaling the covariate data
-for (j in 3:5) {
+for (j in 3:6) {
   Original_Data[,j]<-scale(Original_Data[,j])
 }
 
@@ -101,7 +101,7 @@ for (i in 1:length(rep_k)) {
   if(i==length(rep_k)){print("All simulations completed for random sampling")}
 }
 Final_Beta_RS<-cbind.data.frame("Random Sampling",Final_Beta_RS)
-colnames(Final_Beta_RS)<-c("Method","Sample",paste0("Beta",0:3))
+colnames(Final_Beta_RS)<-c("Method","Sample",paste0("Beta",0:4))
 ```
 
 ## Leverage sampling
@@ -113,7 +113,7 @@ NeEDS4BigData::LeverageSampling(r=rep_k,Y=as.matrix(Original_Data[,1]),
                                 X=as.matrix(Original_Data[,-1]),N=N,
                                 S_alpha = 0.9,family = "linear")->Results
 Final_Beta_LS<-Results$Beta_Estimates
-colnames(Final_Beta_LS)<-c("Method","Sample",paste0("Beta",0:3))
+colnames(Final_Beta_LS)<-c("Method","Sample",paste0("Beta",0:4))
 ```
 
 ## A-optimality subsampling for Gaussian Linear Model
@@ -125,7 +125,7 @@ NeEDS4BigData::AoptimalGauLMSub(r1=400,r2=rep_k,
                                 X=as.matrix(Original_Data[,-1]),N=N)->Results
 Final_Beta_AoptGauLM<-Results$Beta_Estimates
 Final_Beta_AoptGauLM$Method<-rep("A-Optimality GauLM",nrow(Final_Beta_AoptGauLM))
-colnames(Final_Beta_AoptGauLM)<-c("Method","Sample",paste0("Beta",0:3))
+colnames(Final_Beta_AoptGauLM)<-c("Method","Sample",paste0("Beta",0:4))
 ```
 
 ## A- and L-optimality subsampling
@@ -137,7 +137,7 @@ NeEDS4BigData::ALoptimalGLMSub(r1=400,r2=rep_k,
                                X=as.matrix(Original_Data[,-1]),
                                N=N,family = "linear")->Results
 Final_Beta_ALoptGLM<-Results$Beta_Estimates
-colnames(Final_Beta_ALoptGLM)<-c("Method","Sample",paste0("Beta",0:3))
+colnames(Final_Beta_ALoptGLM)<-c("Method","Sample",paste0("Beta",0:4))
 ```
 
 ## A-optimality subsampling with measurement constraints
@@ -150,7 +150,7 @@ NeEDS4BigData::AoptimalMCGLMSub(r1=400,r2=rep_k,
                                 N=N,family="linear")->Results
 Final_Beta_AoptMCGLM<-Results$Beta_Estimates
 Final_Beta_AoptMCGLM$Method<-rep("A-Optimality MC",nrow(Final_Beta_AoptMCGLM))
-colnames(Final_Beta_AoptMCGLM)<-c("Method","Sample",paste0("Beta",0:3))
+colnames(Final_Beta_AoptMCGLM)<-c("Method","Sample",paste0("Beta",0:4))
 ```
 
 ## Summary

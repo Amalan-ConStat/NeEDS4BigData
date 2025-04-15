@@ -44,10 +44,10 @@ Theme_special<-function(){
 
 # Understanding the one million songs data
 
-Echo nest collected data to understand songs and their popularity using their paly counts over 1 million users based on the songs basic information, such as duration, tempo, loudness, etc.
+Echo nest collected data to understand songs and their popularity using their play counts over 1 million users based on the songs basic information, such as duration, tempo, loudness, etc.
 This data was transformed accordingly as in the works @bertin2011million to study the number of counts through the songs features. 
-This data contains $7$ columns and has $205,032$ observations, first column is the response variable and the rest are covariates. 
-We consider the covariates a) duration ($x_1$), b) loudness ($x_2$), c) tempo ($x_3$), d) artist hotness ($x_4$), e) song hotness ($x_5$), and f) album hotness ($x_6$) to model the response, the number of play counts for each song.
+This data contains $6$ columns and has $205,032$ observations, first column is the response variable and the rest are covariates. 
+We consider the covariates a) duration ($x_1$), b) loudness ($x_2$), c) tempo ($x_3$), d) artist hotness ($x_4$), and e) song hotness ($x_5$) to model the response, the number of play counts for each song.
 The covariates $x_1,x_2,x_3$ are scaled to be mean of zero and variance of one, while the remaining covariates are in between $0-1$.
 For the given data subsampling methods are implemented assuming the main effects model can describe the data.
 
@@ -101,7 +101,7 @@ for (i in 1:length(rep_k)) {
   if(i==length(rep_k)){print("All simulations completed for random sampling")}
 }
 Final_Beta_RS<-cbind.data.frame("Random Sampling",Final_Beta_RS)
-colnames(Final_Beta_RS)<-c("Method","Sample",paste0("Beta",1:6))
+colnames(Final_Beta_RS)<-c("Method","Sample",paste0("Beta",1:5))
 ```
 
 ## Leverage sampling
@@ -113,7 +113,7 @@ NeEDS4BigData::LeverageSampling(r=rep_k,Y=as.matrix(Original_Data[,1]),
                                 X=as.matrix(Original_Data[,-1]),N=N,
                                 S_alpha = 0.9,family = "poisson")->Results
 Final_Beta_LS<-Results$Beta_Estimates
-colnames(Final_Beta_LS)<-c("Method","Sample",paste0("Beta",1:6))
+colnames(Final_Beta_LS)<-c("Method","Sample",paste0("Beta",1:5))
 ```
 
 ## A- and L-optimality subsampling
@@ -125,7 +125,7 @@ NeEDS4BigData::ALoptimalGLMSub(r1=400,r2=rep_k,
                                X=as.matrix(Original_Data[,-1]),
                                N=N,family = "poisson")->Results
 Final_Beta_ALoptGLM<-Results$Beta_Estimates
-colnames(Final_Beta_ALoptGLM)<-c("Method","Sample",paste0("Beta",1:6))
+colnames(Final_Beta_ALoptGLM)<-c("Method","Sample",paste0("Beta",1:5))
 ```
 
 ## A-optimality subsampling with measurement constraints
@@ -138,7 +138,7 @@ NeEDS4BigData::AoptimalMCGLMSub(r1=400,r2=rep_k,
                                 N=N,family="poisson")->Results
 Final_Beta_AoptMCGLM<-Results$Beta_Estimates
 Final_Beta_AoptMCGLM$Method<-rep("A-Optimality MC",nrow(Final_Beta_AoptMCGLM))
-colnames(Final_Beta_AoptMCGLM)<-c("Method","Sample",paste0("Beta",1:6))
+colnames(Final_Beta_AoptMCGLM)<-c("Method","Sample",paste0("Beta",1:5))
 ```
 
 ## Summary

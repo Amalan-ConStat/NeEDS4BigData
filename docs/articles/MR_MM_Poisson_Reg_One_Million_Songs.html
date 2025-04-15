@@ -177,10 +177,10 @@ text-align: justify}
 using their paly counts over 1 million users based on the songs basic
 information, such as duration, tempo, loudness, etc. This data was
 transformed accordingly as in the works <span class="citation">Bertin-Mahieux et al. (2011)</span> to study the number
-of counts through the songs features. This data contains <span class="math inline">\(7\)</span> columns and has <span class="math inline">\(205,032\)</span> observations, first column is the
+of counts through the songs features. This data contains <span class="math inline">\(6\)</span> columns and has <span class="math inline">\(205,032\)</span> observations, first column is the
 response variable and the rest are covariates. We consider the
 covariates a) duration (<span class="math inline">\(x_1\)</span>), b)
-loudness (<span class="math inline">\(x_2\)</span>), c) tempo (<span class="math inline">\(x_3\)</span>), d) artist hotness (<span class="math inline">\(x_4\)</span>), e) song hotness (<span class="math inline">\(x_5\)</span>), and f) album hotness (<span class="math inline">\(x_6\)</span>) to model the response, the number of
+loudness (<span class="math inline">\(x_2\)</span>), c) tempo (<span class="math inline">\(x_3\)</span>), d) artist hotness (<span class="math inline">\(x_4\)</span>), and e) song hotness (<span class="math inline">\(x_5\)</span>) to model the response, the number of
 play counts for each song. The covariates <span class="math inline">\(x_1,x_2,x_3\)</span> are scaled to be mean of zero
 and variance of one, while the remaining covariates are in between <span class="math inline">\(0-1\)</span>. For the given data subsampling
 methods are implemented assuming the main effects model can describe the
@@ -228,9 +228,6 @@ Artist_Hotness
 <th style="text-align:right;">
 Song_Hotness
 </th>
-<th style="text-align:right;">
-Album_Hotness
-</th>
 </tr></thead>
 <tbody>
 <tr>
@@ -248,9 +245,6 @@ Album_Hotness
 </td>
 <td style="text-align:right;">
 0.3953858
-</td>
-<td style="text-align:right;">
-0.4395641
 </td>
 <td style="text-align:right;">
 0.4395641
@@ -275,9 +269,6 @@ Album_Hotness
 <td style="text-align:right;">
 0.0000000
 </td>
-<td style="text-align:right;">
-0.5996604
-</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -298,9 +289,6 @@ Album_Hotness
 <td style="text-align:right;">
 0.5654475
 </td>
-<td style="text-align:right;">
-0.5903855
-</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -317,9 +305,6 @@ Album_Hotness
 </td>
 <td style="text-align:right;">
 0.4894737
-</td>
-<td style="text-align:right;">
-0.5076695
 </td>
 <td style="text-align:right;">
 0.5076695
@@ -344,9 +329,6 @@ Album_Hotness
 <td style="text-align:right;">
 0.5317221
 </td>
-<td style="text-align:right;">
-0.6273346
-</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -367,9 +349,6 @@ Album_Hotness
 <td style="text-align:right;">
 0.6275047
 </td>
-<td style="text-align:right;">
-0.6275047
-</td>
 </tr>
 </tbody>
 </table>
@@ -383,14 +362,13 @@ Album_Hotness
 subsampling <span class="citation">(Mahendran, Thompson, and McGree
 2023)</span> is compared against the <span class="math inline">\(A\)</span>- and <span class="math inline">\(L\)</span>-optimality subsampling <span class="citation">(Ai et al. 2021; Yao and Wang 2021)</span> method. Here
 five models are selected out of eight models, which are 1) main effects
-model (<span class="math inline">\(\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3+\beta_4X_4+\beta_5X_5+\beta_6X_6\)</span>),
-2-7) main effects model with the squared term of each covariate (<span class="math inline">\(X^2_1 / X^2_2 / X^2_3 / X^2_4 / X^2_5 /
-X^2_6\)</span>), 8-22) main effects model with a pair of squared terms,
-23-42) main effects model with three of a kind squared terms, 43-57)
-main effects model with four of a kind squared terms, 58-63) main
-effects model with five of a kind squared terms and 64) main effects
-model with all squared terms. The five models are selected based on the
-smallest AIC values.<br>
+model (<span class="math inline">\(\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3+\beta_4X_4+\beta_5X_5\)</span>),
+2-6) main effects model with the squared term of each covariate (<span class="math inline">\(X^2_1 / X^2_2 / X^2_3 / X^2_4 / X^2_5\)</span>),
+7-16) main effects model with a pair of squared terms, 17-26) main
+effects model with three of a kind squared terms, 27-31) main effects
+model with four of a kind squared terms and 32) main effects model with
+all squared terms. The five models are selected based on the smallest
+AIC values.<br>
 For each model <span class="math inline">\(j\)</span> the mean squared
 error of the model parameters <span class="math inline">\(MSE_l(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ}
 \sum_{i=1}^M \sum_{j=1}^J (\tilde{\beta}_{k,j} -
@@ -441,11 +419,11 @@ parameters from the full big data, while <span class="math inline">\(j\)</span> 
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">All_Models</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Model_"</span>,<span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">All_Models</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Covariates in the selected five models</p>
 <ol style="list-style-type: decimal">
-<li>X1, X2, X3, X4, X5, X6, X1^2, X4^2, X6^2</li>
-<li>X1, X2, X3, X4, X5, X6, X1^2, X4^2</li>
-<li>X1, X2, X3, X4, X5, X6, X1^2, X3^2, X4^2, X6^2</li>
-<li>X1, X2, X3, X4, X5, X6, X1^2, X4^2, X5^2</li>
-<li>X1, X2, X3, X4, X5, X6, X1^2, X2^2, X4^2, X6^2</li>
+<li>X1, X2, X3, X4, X5, X1^2, X4^2</li>
+<li>X1, X2, X3, X4, X5, X1^2, X4^2, X5^2</li>
+<li>X1, X2, X3, X4, X5, X1^2, X3^2, X4^2</li>
+<li>X1, X2, X3, X4, X5, X1^2, X2^2, X4^2</li>
+<li>X1, X2, X3, X4, X5, X4^2</li>
 </ol>
 <div class="section level4">
 <h4 id="a-priori-probabilities-are-equal">A priori probabilities are equal<a class="anchor" aria-label="anchor" href="#a-priori-probabilities-are-equal"></a>
@@ -529,10 +507,10 @@ approximation of the mean squared error from the predictions are
 calculated as well. Below is the code for this implementation.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the subsampling methods and their respective colors, shapes and line types</span></span>
-<span><span class="va">Method_Names</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A-Optimality"</span>,<span class="st">"L-Optimality"</span>,<span class="st">"RLmAMSE"</span>,</span>
+<span><span class="va">Method_Names</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A-Optimality"</span>,<span class="st">"L-Optimality"</span>,<span class="st">"L1-Optimality"</span>,<span class="st">"RLmAMSE"</span>,</span>
 <span>                <span class="st">"RLmAMSE Log Odds 10"</span>,<span class="st">"RLmAMSE Power 10"</span><span class="op">)</span></span>
-<span><span class="va">Method_Colour</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#D82632"</span>,<span class="st">"#A50021"</span>,<span class="st">"#BBFFBB"</span>,<span class="st">"#50FF50"</span>,<span class="st">"#00BB00"</span><span class="op">)</span></span>
-<span><span class="va">Method_Shape_Types</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">8</span>,<span class="fl">2</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">17</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">Method_Colour</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#D82632"</span>,<span class="st">"#A50021"</span>,<span class="st">"greenyellow"</span>,<span class="st">"#BBFFBB"</span>,<span class="st">"#50FF50"</span>,<span class="st">"#00BB00"</span><span class="op">)</span></span>
+<span><span class="va">Method_Shape_Types</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">8</span>,<span class="fl">3</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">17</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># A- and L-optimality and RLmAMSE model misspecified subsampling for poisson regression </span></span>
 <span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/modelMissPoiSub.html">modelMissPoiSub</a></span><span class="op">(</span>r1<span class="op">=</span><span class="fl">400</span>,r2<span class="op">=</span><span class="va">rep_k</span>,</span>

@@ -174,13 +174,13 @@ text-align: justify}
 <h2 id="understanding-the-one-million-songs-data">Understanding the one million songs data<a class="anchor" aria-label="anchor" href="#understanding-the-one-million-songs-data"></a>
 </h2>
 <p>Echo nest collected data to understand songs and their popularity
-using their paly counts over 1 million users based on the songs basic
+using their play counts over 1 million users based on the songs basic
 information, such as duration, tempo, loudness, etc. This data was
 transformed accordingly as in the works <span class="citation">Bertin-Mahieux et al. (2011)</span> to study the number
-of counts through the songs features. This data contains <span class="math inline">\(7\)</span> columns and has <span class="math inline">\(205,032\)</span> observations, first column is the
+of counts through the songs features. This data contains <span class="math inline">\(6\)</span> columns and has <span class="math inline">\(205,032\)</span> observations, first column is the
 response variable and the rest are covariates. We consider the
 covariates a) duration (<span class="math inline">\(x_1\)</span>), b)
-loudness (<span class="math inline">\(x_2\)</span>), c) tempo (<span class="math inline">\(x_3\)</span>), d) artist hotness (<span class="math inline">\(x_4\)</span>), e) song hotness (<span class="math inline">\(x_5\)</span>), and f) album hotness (<span class="math inline">\(x_6\)</span>) to model the response, the number of
+loudness (<span class="math inline">\(x_2\)</span>), c) tempo (<span class="math inline">\(x_3\)</span>), d) artist hotness (<span class="math inline">\(x_4\)</span>), and e) song hotness (<span class="math inline">\(x_5\)</span>) to model the response, the number of
 play counts for each song. The covariates <span class="math inline">\(x_1,x_2,x_3\)</span> are scaled to be mean of zero
 and variance of one, while the remaining covariates are in between <span class="math inline">\(0-1\)</span>. For the given data subsampling
 methods are implemented assuming the main effects model can describe the
@@ -221,9 +221,6 @@ Artist_Hotness
 <th style="text-align:right;">
 Song_Hotness
 </th>
-<th style="text-align:right;">
-Album_Hotness
-</th>
 </tr></thead>
 <tbody>
 <tr>
@@ -241,9 +238,6 @@ Album_Hotness
 </td>
 <td style="text-align:right;">
 0.3953858
-</td>
-<td style="text-align:right;">
-0.4395641
 </td>
 <td style="text-align:right;">
 0.4395641
@@ -268,9 +262,6 @@ Album_Hotness
 <td style="text-align:right;">
 0.0000000
 </td>
-<td style="text-align:right;">
-0.5996604
-</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -291,9 +282,6 @@ Album_Hotness
 <td style="text-align:right;">
 0.5654475
 </td>
-<td style="text-align:right;">
-0.5903855
-</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -310,9 +298,6 @@ Album_Hotness
 </td>
 <td style="text-align:right;">
 0.4894737
-</td>
-<td style="text-align:right;">
-0.5076695
 </td>
 <td style="text-align:right;">
 0.5076695
@@ -337,9 +322,6 @@ Album_Hotness
 <td style="text-align:right;">
 0.5317221
 </td>
-<td style="text-align:right;">
-0.6273346
-</td>
 </tr>
 <tr>
 <td style="text-align:right;">
@@ -356,9 +338,6 @@ Album_Hotness
 </td>
 <td style="text-align:right;">
 0.4855715
-</td>
-<td style="text-align:right;">
-0.6275047
 </td>
 <td style="text-align:right;">
 0.6275047
@@ -410,7 +389,7 @@ parameters from the full big data, while <span class="math inline">\(j\)</span> 
 <pre><code><span><span class="co">## [1] "All simulations completed for random sampling"</span></span></code></pre>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Final_Beta_RS</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind.data.frame</a></span><span class="op">(</span><span class="st">"Random Sampling"</span>,<span class="va">Final_Beta_RS</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Final_Beta_RS</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>,<span class="st">"Sample"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Beta"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Final_Beta_RS</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>,<span class="st">"Sample"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Beta"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="leverage-sampling">Leverage sampling<a class="anchor" aria-label="anchor" href="#leverage-sampling"></a>
@@ -425,7 +404,7 @@ parameters from the full big data, while <span class="math inline">\(j\)</span> 
 <pre><code><span><span class="co">## Sampling completed.</span></span></code></pre>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Final_Beta_LS</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Beta_Estimates</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Final_Beta_LS</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>,<span class="st">"Sample"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Beta"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Final_Beta_LS</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>,<span class="st">"Sample"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Beta"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="a--and-l-optimality-subsampling">A- and L-optimality subsampling<a class="anchor" aria-label="anchor" href="#a--and-l-optimality-subsampling"></a>
@@ -440,7 +419,7 @@ parameters from the full big data, while <span class="math inline">\(j\)</span> 
 <pre><code><span><span class="co">## Step 2 of the algorithm completed.</span></span></code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Final_Beta_ALoptGLM</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Beta_Estimates</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Final_Beta_ALoptGLM</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>,<span class="st">"Sample"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Beta"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Final_Beta_ALoptGLM</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>,<span class="st">"Sample"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Beta"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="a-optimality-subsampling-with-measurement-constraints">A-optimality subsampling with measurement constraints<a class="anchor" aria-label="anchor" href="#a-optimality-subsampling-with-measurement-constraints"></a>
@@ -456,7 +435,7 @@ parameters from the full big data, while <span class="math inline">\(j\)</span> 
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Final_Beta_AoptMCGLM</span><span class="op">&lt;-</span><span class="va">Results</span><span class="op">$</span><span class="va">Beta_Estimates</span></span>
 <span><span class="va">Final_Beta_AoptMCGLM</span><span class="op">$</span><span class="va">Method</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"A-Optimality MC"</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Final_Beta_AoptMCGLM</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Final_Beta_AoptMCGLM</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>,<span class="st">"Sample"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Beta"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Final_Beta_AoptMCGLM</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>,<span class="st">"Sample"</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Beta"</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
