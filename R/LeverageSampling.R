@@ -61,7 +61,7 @@
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"linear"
 #' Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 #'
-#' r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
+#' r<-rep(100*c(6,10),25); Original_Data<-Full_Data$Complete_Data;
 #'
 #' LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
@@ -74,7 +74,7 @@
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"logistic"
 #' Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 #'
-#' r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
+#' r<-rep(100*c(6,10),25); Original_Data<-Full_Data$Complete_Data;
 #'
 #' LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
@@ -87,7 +87,7 @@
 #' No_Of_Var<-2; Beta<-c(-1,0.5,0.5); N<-5000; Family<-"poisson"
 #' Full_Data<-GenGLMdata(Dist,NULL,No_Of_Var,Beta,N,Family)
 #'
-#' r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
+#' r<-rep(100*c(6,10),25); Original_Data<-Full_Data$Complete_Data;
 #'
 #' LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),

@@ -328,7 +328,7 @@ plot_AMSE.ModelMisspecified<-function(object){
   Log_Odds_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Log Odds")]
   Power_Labels<-method_labels[startsWith(method_labels,"RLmAMSE Power")]
   method_colors<-c("#A50021","#F76D5E","greenyellow","#BBFFBB","#50FF50","#00BB00")
-  method_linetypes<-c(rep("dashed",2),"solid",rep("dotted",length(Log_Odds_Labels)),
+  method_linetypes<-c(rep("dashed",3),"solid",rep("dotted",length(Log_Odds_Labels)),
                       rep("dotdash",length(Power_Labels)))
 
   ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$r2,y=.data$Mean,color=.data$Method,

@@ -46,7 +46,7 @@ load("additionaldata/Results_Model_Robust.Rdata")
 
 The `lm()`, `biglm()`, `glm()`, and `bigglm()` functions are benchmarked against the model-robust subsampling functions. 
 This benchmarking is conducted across all three regression problems using a consistent setup throughout.
-For large data sizes $N = \{10^4,5 \times 10^4,10^5,5 \times 10^5,10^6,5 \times 10^6\}$, three different covariate sizes $\{10,25,50\}$, and three different model sizes $\{3,5,10\}$, the functions were replicated 50 times.
+For large data sizes $N = \{10^4,5 \times 10^4,10^5,5 \times 10^5,10^6,5 \times 10^6\}$, three different covariate sizes $\{10,25,50\}$, and three different model sizes $\{3,5,10\}$, the functions were replicated $100$ times.
 When using the model-robust subsampling functions, the initial subsample sizes $\{100,250,500\}$ were selected based on the covariate sizes, while the final subsample size was fixed at $2500$. 
 Here, the models included in the model set are selected based on their AIC values, with a squared term derived from the main effects.
 
@@ -78,7 +78,7 @@ indexC <- as.numeric(Sys.getenv("indexC"))
 N_size<-c(1,5,10,50,100,500)*10000
 Covariate_size<-c(10,25,50)
 No_of_Models<-c(3,5,10)
-Replicates<-50
+Replicates<-100
 
 # set the initial and final subsample sizes, 
 # with the distribution parameters to generate data
@@ -179,13 +179,11 @@ save(Plot_Data,
 For linear regression, the `modelRobustLinSub()` function from the NeEDS4BigData package was compared against `lm()` and `biglm()`.
 
 ```{r linear regression, fig.height=4*3,fig.width=4*6,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under model robust linear regression."}
-Methods_FCT<-c("lm()","biglm()","modelRobustLinSub()")
-Method_Colors<-c("grey","black","#50FF50")
+Functions_FCT<-c("lm()","biglm()","modelRobustLinSub()")
+Functions_Colors<-c("grey","black","#50FF50")
 
 Final_Linear_Regression %>%
-  pivot_longer(cols = `lm()`:`modelRobustLinSub()`,
-               names_to = "Methods",values_to = "Time") %>%
-  mutate(Methods=factor(Methods,levels = Methods_FCT,labels = Methods_FCT),
+  mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),
          `N size`=factor(`N size`,levels = N_size,labels = N_size_labels),
          `N and Covariate size`=paste0("N = ",`N size`,
                                        " and \nNumber of Covariates ",
@@ -193,17 +191,17 @@ Final_Linear_Regression %>%
   mutate(`N and Covariate size`=factor(`N and Covariate size`,
                                        levels = N_and_CS_size,
                                        labels = N_and_CS_size)) %>%
-  select(`N and Covariate size`,`No of Models`,Methods,Time) %>%
-  group_by(`N and Covariate size`,`No of Models`,Methods) %>%
+  select(`N and Covariate size`,`No of Models`,Functions,Time) %>%
+  group_by(`N and Covariate size`,`No of Models`,Functions) %>%
   summarise(Mean=mean(Time),min=quantile(Time,0.05),max=quantile(Time,0.95),
             .groups = "drop") %>%
-  ggplot(.,aes(x=factor(`No of Models`),y=Mean,color=Methods,group=Methods))+
+  ggplot(.,aes(x=factor(`No of Models`),y=Mean,color=Functions,group=Functions))+
   geom_point(position = position_dodge(width = 0.5))+
   geom_line(position = position_dodge(width = 0.5))+
   geom_errorbar(aes(ymin=min,ymax=max),position = position_dodge(width = 0.5))+
   facet_wrap(.~factor(`N and Covariate size`),scales = "free",ncol=length(N_size))+
   xlab("Number of Models")+ylab("Time in Seconds")+
-  scale_color_manual(values = Method_Colors)+
+  scale_color_manual(values = Functions_Colors)+
   theme_bw()+Theme_special()+ggtitle("Linear Regression")
 ```
 
@@ -215,13 +213,11 @@ Even when a solution for linear regression is available in an analytical form, t
 For logistic regression, the `modelRobustLogSub()` function was compared against `glm()` and `bigglm()`.
 
 ```{r logistic regression, fig.height=4*3,fig.width=4*6,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under model robust logistic regression."}
-Methods_FCT<-c("glm()","bigglm()","modelRobustLogSub()")
-Method_Colors<-c("grey","black","#50FF50")
+Functions_FCT<-c("glm()","bigglm()","modelRobustLogSub()")
+Functions_Colors<-c("grey","black","#50FF50")
 
 Final_Logistic_Regression %>%
-  pivot_longer(cols = `glm()`:`modelRobustLogSub()`,
-               names_to = "Methods",values_to = "Time") %>%
-  mutate(Methods=factor(Methods,levels = Methods_FCT,labels = Methods_FCT),
+  mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),
          `N size`=factor(`N size`,levels = N_size,labels = N_size_labels),
          `N and Covariate size`=paste0("N = ",`N size`,
                                        " and \nNumber of Covariates ",
@@ -229,17 +225,17 @@ Final_Logistic_Regression %>%
   mutate(`N and Covariate size`=factor(`N and Covariate size`,
                                        levels = N_and_CS_size,
                                        labels = N_and_CS_size)) %>%
-  select(`N and Covariate size`,`No of Models`,Methods,Time) %>%
-  group_by(`N and Covariate size`,`No of Models`,Methods) %>%
+  select(`N and Covariate size`,`No of Models`,Functions,Time) %>%
+  group_by(`N and Covariate size`,`No of Models`,Functions) %>%
   summarise(Mean=mean(Time),min=quantile(Time,0.05),max=quantile(Time,0.95),
             .groups = "drop") %>%
-  ggplot(.,aes(x=factor(`No of Models`),y=Mean,color=Methods,group=Methods))+
+  ggplot(.,aes(x=factor(`No of Models`),y=Mean,color=Functions,group=Functions))+
   geom_point(position = position_dodge(width = 0.5))+
   geom_line(position = position_dodge(width = 0.5))+
   geom_errorbar(aes(ymin=min,ymax=max),position = position_dodge(width = 0.5))+
   facet_wrap(.~factor(`N and Covariate size`),scales = "free",ncol=length(N_size))+
   xlab("Number of Models")+ylab("Time in Seconds")+
-  scale_color_manual(values = Method_Colors)+
+  scale_color_manual(values = Functions_Colors)+
   theme_bw()+Theme_special()+ggtitle("Logistic Regression")
 ```
 
@@ -251,13 +247,11 @@ This performance gap increases as the size of the big data, the number of covari
 For Poisson regression, the function `modelRobustPoiSub()` was compared against `glm()` and `bigglm()`.
 
 ```{r poisson regression, fig.height=4*3,fig.width=4*6,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under model robust Poisson regression."}
-Methods_FCT<-c("glm()","bigglm()","modelRobustPoiSub()")
-Method_Colors<-c("grey","black","#50FF50")
+Functions_FCT<-c("glm()","bigglm()","modelRobustPoiSub()")
+Functions_Colors<-c("grey","black","#50FF50")
 
 Final_Poisson_Regression %>%
-  pivot_longer(cols = `glm()`:`modelRobustPoiSub()`,
-               names_to = "Methods",values_to = "Time") %>%
-  mutate(Methods=factor(Methods,levels = Methods_FCT,labels = Methods_FCT),
+  mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),
          `N size`=factor(`N size`,levels = N_size,labels = N_size_labels),
          `N and Covariate size`=paste0("N = ",`N size`,
                                        " and \nNumber of Covariates ",
@@ -265,17 +259,17 @@ Final_Poisson_Regression %>%
   mutate(`N and Covariate size`=factor(`N and Covariate size`,
                                        levels = N_and_CS_size,
                                        labels = N_and_CS_size)) %>%
-  select(`N and Covariate size`,`No of Models`,Methods,Time) %>%
-  group_by(`N and Covariate size`,`No of Models`,Methods) %>%
+  select(`N and Covariate size`,`No of Models`,Functions,Time) %>%
+  group_by(`N and Covariate size`,`No of Models`,Functions) %>%
   summarise(Mean=mean(Time),min=quantile(Time,0.05),max=quantile(Time,0.95),
             .groups = "drop") %>%
-  ggplot(.,aes(x=factor(`No of Models`),y=Mean,color=Methods,group=Methods))+
+  ggplot(.,aes(x=factor(`No of Models`),y=Mean,color=Functions,group=Functions))+
   geom_point(position = position_dodge(width = 0.5))+
   geom_line(position = position_dodge(width = 0.5))+
   geom_errorbar(aes(ymin=min,ymax=max),position = position_dodge(width = 0.5))+
   facet_wrap(.~factor(`N and Covariate size`),scales = "free",ncol=length(N_size))+
   xlab("Number of Models")+ylab("Time in Seconds")+
-  scale_color_manual(values = Method_Colors)+
+  scale_color_manual(values = Functions_Colors)+
   theme_bw()+Theme_special()+ggtitle("Poisson Regression")
 ```
 

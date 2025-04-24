@@ -46,7 +46,7 @@ load("additionaldata/Results_Model_Misspecification.Rdata")
 
 The `lm()`, `biglm()`, `glm()`, and `bigglm()` functions are benchmarked against the model-misspecification subsampling functions. 
 This benchmarking is conducted across all three regression problems using a consistent setup throughout.
-For large data sizes $N = \{10^4,5 \times 10^4,10^5,5 \times 10^5,10^6\}$, three different covariate sizes $\{5,10,25\}$, and two different misspecification types $\{1,2\}$, the functions were replicated 50 times.
+For large data sizes $N = \{10^4,5 \times 10^4,10^5,5 \times 10^5,10^6\}$, three different covariate sizes $\{5,10,25\}$, and two different misspecification types $\{1,2\}$, the functions were replicated $100$ times.
 When using the model-misspecification subsampling functions, the initial subsample sizes $\{100,200,500\}$ were selected based on the covariate sizes, while the final subsample size was fixed at $2500$. 
 Further based on the size of big data we set different proportion sizes to estimate the AMSE, that is $\{0.5,0.1,0.05,0.02,0.005\}$, such that the sample size is $5000$.
 
@@ -78,7 +78,7 @@ indexC <- as.numeric(Sys.getenv("indexC"))
 # set N, covariate size and assign replicates
 N_size<-c(1,5,10,50,100)*10000
 Covariate_size<-c(5,10,25)
-Replicates<-50
+Replicates<-100
 
 # set the initial and final subsample sizes, 
 # with the proportion values for AMSE calculation
@@ -105,7 +105,7 @@ if(Type_idx == 1){
 
 if(Type_idx == 2){
   X_1 <- replicate(No_Of_Var,stats::runif(n=N,min = -1,max = 1))
-  Temp<-Rfast::rowprods(X_1)
+  Temp<-Rfast::rowprods(X_1[,c(1,2)])
   Misspecification <- (Temp-mean(Temp))/sqrt(mean(Temp^2)-mean(Temp)^2)
   X_Data <- cbind(X0=1,X_1)
   
@@ -168,13 +168,11 @@ save(Plot_Data,
 For linear regression, the `modelMissLinSub()` function from the NeEDS4BigData package was compared against `lm()` and `biglm()`.
 
 ```{r linear regression, fig.height=4*3,fig.width=4*6,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under model misspecified linear regression."}
-Methods_FCT<-c("lm()","biglm()","modelMissLinSub()")
-Method_Colors<-c("grey","black","#50FF50")
+Functions_FCT<-c("lm()","biglm()","modelMissLinSub()")
+Functions_Colors<-c("grey","black","#50FF50")
 
 Final_Linear_Regression %>%
-  pivot_longer(cols = `lm()`:`modelMissLinSub()`,
-               names_to = "Methods",values_to = "Time") %>%
-  mutate(Methods=factor(Methods,levels = Methods_FCT,labels = Methods_FCT),
+  mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),
          `N size`=factor(`N size`,levels = N_size,labels = N_size_labels),
          `N and Covariate size`=paste0("N = ",`N size`,
                                        " and \nNumber of Covariates ",
@@ -182,11 +180,12 @@ Final_Linear_Regression %>%
   mutate(`N and Covariate size`=factor(`N and Covariate size`,
                                        levels = N_and_CS_size,
                                        labels = N_and_CS_size)) %>%
-  select(`N and Covariate size`,Misspecification,Methods,Time) %>%
-  group_by(`N and Covariate size`,Misspecification,Methods) %>%
-  summarise(Mean=mean(Time),min=quantile(Time,0.05),max=quantile(Time,0.95)) %>%
+  select(`N and Covariate size`,Misspecification,Functions,Time) %>%
+  group_by(`N and Covariate size`,Misspecification,Functions) %>%
+  summarise(Mean=mean(Time),min=quantile(Time,0.05),max=quantile(Time,0.95),
+            .groups="drop") %>%
   ggplot(.,aes(x=factor(Misspecification),y=Mean,
-               color=Methods,group=Methods))+
+               color=Functions,group=Functions))+
   geom_point(position = position_dodge(width = 0.5))+
   geom_line(position = position_dodge(width = 0.5))+
   geom_errorbar(aes(ymin=min,ymax=max),
@@ -194,7 +193,7 @@ Final_Linear_Regression %>%
   facet_wrap(.~factor(`N and Covariate size`),
              scales = "free",ncol=length(N_size))+
   xlab("Misspecification Type")+ylab("Time in Seconds")+
-  scale_color_manual(values = Method_Colors)+
+  scale_color_manual(values = Functions_Colors)+
   theme_bw()+Theme_special()+ggtitle("Linear Regression")
 ```
 
@@ -206,13 +205,11 @@ Calculating the reduction of loss value all data points is a significant bottlen
 For logistic regression, the `modelMissLogSub()` function was compared against `glm()` and `bigglm()`.
 
 ```{r logistic regression, fig.height=4*3,fig.width=4*6,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under model misspecified logistic regression."}
-Methods_FCT<-c("glm()","bigglm()","modelMissLogSub()")
-Method_Colors<-c("grey","black","#50FF50")
+Functions_FCT<-c("glm()","bigglm()","modelMissLogSub()")
+Functions_Colors<-c("grey","black","#50FF50")
 
 Final_Logistic_Regression %>%
-  pivot_longer(cols = `glm()`:`modelMissLogSub()`,
-               names_to = "Methods",values_to = "Time") %>%
-  mutate(Methods=factor(Methods,levels = Methods_FCT,labels = Methods_FCT),
+  mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),
          `N size`=factor(`N size`,levels = N_size,labels = N_size_labels),
          `N and Covariate size`=paste0("N = ",`N size`,
                                        " and \nNumber of Covariates ",
@@ -220,12 +217,12 @@ Final_Logistic_Regression %>%
   mutate(`N and Covariate size`=factor(`N and Covariate size`,
                                        levels = N_and_CS_size,
                                        labels = N_and_CS_size)) %>%
-  select(`N and Covariate size`,Misspecification,Methods,Time) %>%
-  group_by(`N and Covariate size`,Misspecification,Methods) %>%
+  select(`N and Covariate size`,Misspecification,Functions,Time) %>%
+  group_by(`N and Covariate size`,Misspecification,Functions) %>%
   summarise(Mean=mean(Time),min=quantile(Time,0.05),
-            max=quantile(Time,0.95)) %>%
-  ggplot(.,aes(x=factor(Misspecification),y=Mean,color=Methods,
-               group=Methods))+
+            max=quantile(Time,0.95),.groups="drop") %>%
+  ggplot(.,aes(x=factor(Misspecification),y=Mean,color=Functions,
+               group=Functions))+
   geom_point(position = position_dodge(width = 0.5))+
   geom_line(position = position_dodge(width = 0.5))+
   geom_errorbar(aes(ymin=min,ymax=max),
@@ -233,7 +230,7 @@ Final_Logistic_Regression %>%
   facet_wrap(.~factor(`N and Covariate size`),scales = "free",
              ncol=length(N_size))+
   xlab("Misspecification Type")+ylab("Time in Seconds")+
-  scale_color_manual(values = Method_Colors)+
+  scale_color_manual(values = Functions_Colors)+
   theme_bw()+Theme_special()+ggtitle("Logistic Regression")
 ```
 
@@ -246,13 +243,11 @@ As in model misspecified subsampling under linear regression the bottleneck occu
 For Poisson regression, the function `modelMissPoiSub()` was compared against `glm()` and `bigglm()`.
 
 ```{r poisson regression, fig.height=4*3,fig.width=4*6,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under model misspecified Poisson regression."}
-Methods_FCT<-c("glm()","bigglm()","modelMissPoiSub()")
-Method_Colors<-c("grey","black","#50FF50")
+Functions_FCT<-c("glm()","bigglm()","modelMissPoiSub()")
+Functions_Colors<-c("grey","black","#50FF50")
 
 Final_Poisson_Regression %>%
-  pivot_longer(cols = `glm()`:`modelMissPoiSub()`,
-               names_to = "Methods",values_to = "Time") %>%
-  mutate(Methods=factor(Methods,levels = Methods_FCT,labels = Methods_FCT),
+  mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),
          `N size`=factor(`N size`,levels = N_size,labels = N_size_labels),
          `N and Covariate size`=paste0("N = ",`N size`,
                                        " and \nNumber of Covariates ",
@@ -260,12 +255,12 @@ Final_Poisson_Regression %>%
   mutate(`N and Covariate size`=factor(`N and Covariate size`,
                                        levels = N_and_CS_size,
                                        labels = N_and_CS_size)) %>%
-  select(`N and Covariate size`,Misspecification,Methods,Time) %>%
-  group_by(`N and Covariate size`,Misspecification,Methods) %>%
+  select(`N and Covariate size`,Misspecification,Functions,Time) %>%
+  group_by(`N and Covariate size`,Misspecification,Functions) %>%
   summarise(Mean=mean(Time),min=quantile(Time,0.05),
-            max=quantile(Time,0.95)) %>%
-  ggplot(.,aes(x=factor(Misspecification),y=Mean,color=Methods,
-               group=Methods))+
+            max=quantile(Time,0.95),.groups="drop") %>%
+  ggplot(.,aes(x=factor(Misspecification),y=Mean,color=Functions,
+               group=Functions))+
   geom_point(position = position_dodge(width = 0.5))+
   geom_line(position = position_dodge(width = 0.5))+
   geom_errorbar(aes(ymin=min,ymax=max),
@@ -273,7 +268,7 @@ Final_Poisson_Regression %>%
   facet_wrap(.~factor(`N and Covariate size`),scales = "free",
              ncol=length(N_size))+
   xlab("Misspecification Type")+ylab("Time in Seconds")+
-  scale_color_manual(values = Method_Colors)+
+  scale_color_manual(values = Functions_Colors)+
   theme_bw()+Theme_special()+ggtitle("Poisson Regression")
 ```
 

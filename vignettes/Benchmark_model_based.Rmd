@@ -46,7 +46,7 @@ load("additionaldata/Results_Model_Based.Rdata")
 
 The `lm()`, `biglm()`, `glm()` and `bigglm()` functions are benchmarked against the model-based subsampling functions.
 Benchmarking is conducted across all three regression problems using a consistent setup throughout.
-For the big data sizes $N = \{10^4,5 \times 10^4,10^5,5 \times 10^5,10^6,5 \times 10^6\}$ and for five different Covariates sizes $\{5,10,25,50,100\}$, the functions were replicated $50$ times.
+For the big data sizes $N = \{10^4,5 \times 10^4,10^5,5 \times 10^5,10^6,5 \times 10^6\}$ and for five different Covariates sizes $\{5,10,25,50,100\}$, the functions were replicated $100$ times.
 When using the subsampling functions, the initial subsample sizes $\{100,100,250,500,1000\}$ were selected based on the covariate sizes, while the final subsample size was fixed at $2500$ to ensure successful implementation. 
 
 ```{r N and Covariate size}
@@ -182,26 +182,24 @@ save(Plot_Data,
 For linear regression, the following functions from the NeEDS4BigData package: (1) `AoptimalGauLMSub()`, (2) `LeverageSampling()`, (3) `ALoptimalGLMSub()`, and (4) `AoptimalMCGLMSub()` are compared against `lm()` and `biglm()`.
 
 ```{r linear regression,fig.width=5*3,fig.height=5*2,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under linear regression."}
-Methods_FCT<-c("lm()","biglm()","LeverageSampling()","AoptimalMCGLMSub()",
+Functions_FCT<-c("lm()","biglm()","LeverageSampling()","AoptimalMCGLMSub()",
                "AoptimalGauLMSub()","ALoptimalGLMSub()")
-Method_Colors<-c("grey","black","#F76D5E","#A50021","#BBFFBB","#50FF50")
+Functions_Colors<-c("grey","black","#F76D5E","#A50021","#BBFFBB","#50FF50")
 
 Final_Linear_Regression %>%
-  pivot_longer(cols = `lm()`:`AoptimalMCGLMSub()`,
-               names_to = "Methods",values_to = "Time") %>%
-  group_by(`N size`,`Covariate size`,Methods) %>%
+  group_by(`N size`,`Covariate size`,Functions) %>%
   summarise(Mean=mean(Time),min=quantile(Time,0.05),max=quantile(Time,0.95),
             .groups = "drop") %>%
-  mutate(Methods=factor(Methods,levels = Methods_FCT,labels = Methods_FCT),
+  mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),
          `N size`=factor(`N size`,levels = N_size,
                          labels=paste0("N = ",N_size_labels))) %>%
-ggplot(.,aes(x=factor(`Covariate size`),y=Mean,color=Methods,group=Methods))+
+ggplot(.,aes(x=factor(`Covariate size`),y=Mean,color=Functions,group=Functions))+
   geom_point(position = position_dodge(width = 0.5))+
   geom_line(position = position_dodge(width = 0.5))+
   geom_errorbar(aes(ymin=min,ymax=max),position = position_dodge(width = 0.5))+
   facet_wrap(~factor(`N size`),scales = "free",nrow=2)+
   xlab("Number of Covariates")+ylab("Time in Seconds")+
-  scale_color_manual(values = Method_Colors)+
+  scale_color_manual(values = Functions_Colors)+
   theme_bw()+ggtitle("Linear Regression")+Theme_special()
 ```
 
@@ -213,26 +211,24 @@ Even when a solution for linear regression is available in an analytical form, t
 For logistic regression, the following functions: (1) `LCCSampling()`, (2) `LeverageSampling()`, (3) `AoptimalMCGLMSub()`, and (4) `ALoptimalGLMSub()` are compared against `glm()` and `bigglm()`.
 
 ```{r logistic regression,fig.width=5*3,fig.height=5*2,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under logistic regression."}
-Methods_FCT<-c("glm()","bigglm()","LCCSampling()","LeverageSampling()",
+Functions_FCT<-c("glm()","bigglm()","LCCSampling()","LeverageSampling()",
                "AoptimalMCGLMSub()","ALoptimalGLMSub()")
-Method_Colors<-c("grey","black","#F76D5E","#A50021","#BBFFBB","#50FF50")
+Functions_Colors<-c("grey","black","#F76D5E","#A50021","#BBFFBB","#50FF50")
 
 Final_Logistic_Regression %>%
-  pivot_longer(cols = `glm()`:`AoptimalMCGLMSub()`,
-               names_to = "Methods",values_to = "Time") %>%
-  group_by(`N size`,`Covariate size`,Methods) %>%
+  group_by(`N size`,`Covariate size`,Functions) %>%
   summarise(Mean=mean(Time),min=quantile(Time,0.05),max=quantile(Time,0.95),
             .groups = "drop") %>%
-  mutate(Methods=factor(Methods,levels = Methods_FCT,labels = Methods_FCT),
+  mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),
          `N size`=factor(`N size`,levels = N_size,
                          labels=paste0("N = ",N_size_labels))) %>%
-ggplot(.,aes(x=factor(`Covariate size`),y=Mean,color=Methods,group=Methods))+
+ggplot(.,aes(x=factor(`Covariate size`),y=Mean,color=Functions,group=Functions))+
   geom_point(position = position_dodge(width = 0.5))+
   geom_line(position = position_dodge(width = 0.5))+
   geom_errorbar(aes(ymin=min,ymax=max),position = position_dodge(width = 0.5))+
   facet_wrap(~factor(`N size`),scales = "free",nrow=2)+
   xlab("Number of Covariates")+ylab("Time in Seconds")+
-  scale_color_manual(values = Method_Colors)+
+  scale_color_manual(values = Functions_Colors)+
   theme_bw()+Theme_special()+ggtitle("Logistic Regression")
 ```
 
@@ -243,26 +239,24 @@ There seems to be little difference between using `glm()` and `bigglm()`, while 
 For Poisson regression, the following functions: (1) `LeverageSampling()`, (2) `AoptimalMCGLMSub()`, and (3) `ALoptimalGLMSub()` are compared against `glm()` and `bigglm()`.
 
 ```{r poisson regression, fig.width=5*3,fig.height=5*2,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under Poisson regression."}
-Methods_FCT<-c("glm()","bigglm()","LeverageSampling()",
+Functions_FCT<-c("glm()","bigglm()","LeverageSampling()",
                "AoptimalMCGLMSub()","ALoptimalGLMSub()")
-Method_Colors<-c("grey","black","#A50021","#BBFFBB","#50FF50")
+Functions_Colors<-c("grey","black","#A50021","#BBFFBB","#50FF50")
 
 Final_Poisson_Regression %>%
-  pivot_longer(cols = `glm()`:`AoptimalMCGLMSub()`,
-               names_to = "Methods",values_to = "Time") %>%
-  group_by(`N size`,`Covariate size`,Methods) %>%
+  group_by(`N size`,`Covariate size`,Functions) %>%
   summarise(Mean=mean(Time),min=quantile(Time,0.05),max=quantile(Time,0.95),
             .groups = "drop") %>%
-  mutate(Methods=factor(Methods,levels = Methods_FCT,labels = Methods_FCT),
+  mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),
          `N size`=factor(`N size`,levels = N_size,
                          labels=paste0("N = ",N_size_labels))) %>%
-ggplot(.,aes(x=factor(`Covariate size`),y=Mean,color=Methods,group=Methods))+
+ggplot(.,aes(x=factor(`Covariate size`),y=Mean,color=Functions,group=Functions))+
   geom_point(position = position_dodge(width = 0.5))+
   geom_line(position = position_dodge(width = 0.5))+
   geom_errorbar(aes(ymin=min,ymax=max),position = position_dodge(width = 0.5))+
   facet_wrap(~factor(`N size`),scales = "free",nrow=2)+
   xlab("Number of Covariates")+ylab("Time in Seconds")+
-  scale_color_manual(values = Method_Colors)+
+  scale_color_manual(values = Functions_Colors)+
   theme_bw()+Theme_special()+ggtitle("Poisson Regression")
 ```
 

@@ -91,7 +91,7 @@
 #' All_Models<-All_Models[-c(5:7)]
 #' names(All_Models)<-paste0("Model_",1:length(All_Models))
 #'
-#' r1<-300; r2<-rep(100*c(6,12),25);
+#' r1<-300; r2<-rep(100*c(6,9),20);
 #'
 #' modelRobustPoiSub(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,1]),
 #'                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
