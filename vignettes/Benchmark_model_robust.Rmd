@@ -180,7 +180,7 @@ For linear regression, the `modelRobustLinSub()` function from the NeEDS4BigData
 
 ```{r linear regression, fig.height=4*3,fig.width=4*6,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under model robust linear regression."}
 Functions_FCT<-c("lm()","biglm()","modelRobustLinSub()")
-Functions_Colors<-c("grey","black","#50FF50")
+Functions_Colors<-c("cornsilk4","black","#50FF50")
 
 Final_Linear_Regression %>%
   mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),
@@ -214,7 +214,7 @@ For logistic regression, the `modelRobustLogSub()` function was compared against
 
 ```{r logistic regression, fig.height=4*3,fig.width=4*6,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under model robust logistic regression."}
 Functions_FCT<-c("glm()","bigglm()","modelRobustLogSub()")
-Functions_Colors<-c("grey","black","#50FF50")
+Functions_Colors<-c("cornsilk4","black","#50FF50")
 
 Final_Logistic_Regression %>%
   mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),
@@ -248,7 +248,7 @@ For Poisson regression, the function `modelRobustPoiSub()` was compared against 
 
 ```{r poisson regression, fig.height=4*3,fig.width=4*6,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under model robust Poisson regression."}
 Functions_FCT<-c("glm()","bigglm()","modelRobustPoiSub()")
-Functions_Colors<-c("grey","black","#50FF50")
+Functions_Colors<-c("cornsilk4","black","#50FF50")
 
 Final_Poisson_Regression %>%
   mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),

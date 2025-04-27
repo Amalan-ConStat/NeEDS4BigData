@@ -44,8 +44,6 @@
 #'
 #' \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after sampling (valid only for linear regression)
 #'
-#' \code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
-#'
 #' \code{Sample_Basic_Leverage} list of indexes for the optimal samples obtained based on basic leverage
 #'
 #' \code{Sample_Shrinkage_Leverage} list of indexes for the optimal samples obtained based on shrinkage leverage
@@ -61,7 +59,7 @@
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"linear"
 #' Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 #'
-#' r<-rep(100*c(6,10),25); Original_Data<-Full_Data$Complete_Data;
+#' r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
 #'
 #' LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
@@ -137,8 +135,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     Var_Epsilon<-matrix(nrow = length(r),ncol = 4)
     Sample.blev<-Sample.uwlev<-Sample.slev<-list()
 
-    beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-Var_Epsilon[,1]<-
-      Utility.blev[,1]<-Utility.uwlev[,1]<-Utility.slev[,1]<-r
+    beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-Var_Epsilon[,1]<-r
 
     if(all(X[,1] == 1)){
       colnames(beta.blev)<-colnames(beta.uwlev)<-
@@ -148,8 +145,6 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
         colnames(beta.slev)<-c("r",paste0("Beta_",1:(ncol(X))))
     }
     colnames(Var_Epsilon)<-c("r","Basic Leverage","Unweighted Leverage","Shrinkage Leverage")
-    colnames(Utility.blev)<-colnames(Utility.uwlev)<-
-      colnames(Utility.slev)<-c("r","D-optimality","A-optimality","L-optimality")
 
     message("Basic and shrinkage leverage probabilities calculated.\n")
 
@@ -168,16 +163,9 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       Xbeta_Final<-X%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
 
-      Temp<-Var.prop*crossprod(x.blev)
-      Temp_Inv<-solve(Temp)
-      x.blev_t<-t(x.blev)
-      Temp_Int<-Temp_Inv%*%x.blev_t
-      Temp1<-x.blev%*%Temp_Int
-
       Sample.blev[[i]]<-idx.blev
       beta.blev[i,-1] <- beta.prop
       Var_Epsilon[i,2]<-Var.prop
-      Utility.blev[i,-1]<-c(log(det(Temp)),psych::tr(Temp_Inv),psych::tr(Temp1))
 
       if(anyNA(beta.prop)){
         stop("There are NA or NaN values in the model parameters")
@@ -190,15 +178,9 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       Xbeta_Final<-X%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
 
-      Temp<-Var.prop*crossprod(x.blev)
-      Temp_Inv<-solve(Temp)
-      Temp_Int<-Temp_Inv%*%x.blev_t
-      Temp1<-x.blev%*%Temp_Int
-
       Sample.uwlev[[i]]<-idx.blev
       beta.uwlev[i,-1] <- beta.prop
       Var_Epsilon[i,3]<-Var.prop
-      Utility.uwlev[i,-1]<-c(log(det(Temp)),psych::tr(Temp_Inv),psych::tr(Temp1))
 
       if(anyNA(beta.prop)){
         stop("There are NA or NaN values in the model parameters")
@@ -218,16 +200,9 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       Xbeta_Final<-X%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
 
-      Temp<-Var.prop*crossprod(x.slev)
-      Temp_Inv<-solve(Temp)
-      x.slev_t<-t(x.slev)
-      Temp_Int<-Temp_Inv%*%x.slev_t
-      Temp1<-x.slev%*%Temp_Int
-
       Sample.slev[[i]]<-idx.slev
       beta.slev[i,-1] <- beta.prop
       Var_Epsilon[i,4]<-Var.prop
-      Utility.slev[i,-1]<-c(log(det(Temp)),psych::tr(Temp_Inv),psych::tr(Temp1))
 
       if(anyNA(beta.prop)){
         stop("There are NA or NaN values in the model parameters")
@@ -242,9 +217,6 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
                                 rbind(beta.blev,beta.uwlev,beta.slev))
 
-    Utility_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
-                                   rbind(Utility.blev,Utility.uwlev,Utility.slev))
-
     Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
                                        "Sample"=rep(r,times=length(Sampling_Methods)),
                                        "Var Epsilon"=c(Var_Epsilon[,"Basic Leverage"],
@@ -256,7 +228,6 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     message("Sampling completed.")
 
     ans<-list("Beta_Estimates"=Beta_Data,
-              "Utility_Estimates"=Utility_Data,
               "Variance_Epsilon_Estimates"=Var_Epsilon_Data,
               "Sample_Basic_Leverage"=Sample.blev,
               "Sample_Shrinkage_Leverage"=Sample.slev,
@@ -295,11 +266,9 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     PI.slev <- (S_alpha * PI.blev) + (1-S_alpha) / N
 
     beta.blev<-beta.uwlev<-beta.slev<-matrix(nrow = length(r),ncol = ncol(X)+1 )
-    Utility.blev<-Utility.uwlev<-Utility.slev<-matrix(nrow = length(r),ncol = 4 )
     Sample.blev<-Sample.uwlev<-Sample.slev<-list()
 
-    beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-
-      Utility.blev[,1]<-Utility.uwlev[,1]<-Utility.slev[,1]<-r
+    beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-r
 
     if(all(X[,1] == 1)){
       colnames(beta.blev)<-colnames(beta.uwlev)<-
@@ -308,8 +277,6 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       colnames(beta.blev)<-colnames(beta.uwlev)<-
         colnames(beta.slev)<-c("r",paste0("Beta_",1:(ncol(X))))
     }
-    colnames(Utility.blev)<-colnames(Utility.uwlev)<-
-      colnames(Utility.slev)<-c("r","D-optimality","A-optimality","L-optimality")
 
     message("Basic and shrinkage leverage probabilities calculated.\n")
 
@@ -331,17 +298,6 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
         stop("There are NA or NaN values in the model parameters")
       }
 
-      LP_data<-x.blev %*% beta.blev[i,-1]
-      pi<-c(1-1/(1 + exp(LP_data)))
-      W<-pi*(1-pi)
-      Mx<-crossprod(x.blev,(x.blev * W))
-      Mx_Inv<-solve(Mx)
-      x.blev_t<-t(x.blev)
-      V_Mx_Temp <- Mx_Inv %*% x.blev_t
-      V_Final<- x.blev%*% V_Mx_Temp
-
-      Utility.blev[i,-1]<-c(log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
-
       # unweighted leverage sampling
       fit.uwlev <- .getMLE(x=x.blev, y=as.vector(y.blev), w=rep(N,r[i]))
       beta.prop<-fit.uwlev$par
@@ -352,16 +308,6 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       if(anyNA(beta.prop)){
         stop("There are NA or NaN values in the model parameters")
       }
-
-      LP_data<-x.blev %*% beta.uwlev[i,-1]
-      pi<-c(1-1/(1 + exp(LP_data)))
-      W<-pi*(1-pi)
-      Mx<-crossprod(x.blev,(x.blev * W))
-      Mx_Inv<-solve(Mx)
-      V_Mx_Temp <- Mx_Inv %*% x.blev_t
-      V_Final<- x.blev%*% V_Mx_Temp
-
-      Utility.uwlev[i,-1]<-c(log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
 
       # shrinkage leverage sampling
       idx.slev <- sample(1:N, size = r[i], replace = TRUE, PI.slev)
@@ -379,17 +325,6 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       if(anyNA(beta.prop)){
         stop("There are NA or NaN values in the model parameters")
       }
-
-      LP_data<-x.slev %*% beta.slev[i,-1]
-      pi<-c(1-1/(1 + exp(LP_data)))
-      W<-pi*(1-pi)
-      Mx<-crossprod(x.slev,(x.slev * W))
-      Mx_Inv<-solve(Mx)
-      x.slev_t<-t(x.slev)
-      V_Mx_Temp <- Mx_Inv %*% x.slev_t
-      V_Final<- x.slev%*% V_Mx_Temp
-
-      Utility.slev[i,-1]<-c(log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
     }
 
     Full_SP<-cbind.data.frame(PI.blev,PI.slev)
@@ -441,11 +376,9 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     PI.slev <- (S_alpha * PI.blev) + ((1-S_alpha) / N)
 
     beta.blev<-beta.uwlev<-beta.slev<-matrix(nrow = length(r),ncol = ncol(X)+1 )
-    Utility.blev<-Utility.uwlev<-Utility.slev<-matrix(nrow = length(r),ncol = 4 )
     Sample.blev<-Sample.uwlev<-Sample.slev<-list()
 
-    beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-
-      Utility.blev[,1]<-Utility.uwlev[,1]<-Utility.slev[,1]<-r
+    beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-r
     if(all(X[,1] == 1)){
       colnames(beta.blev)<-colnames(beta.uwlev)<-
         colnames(beta.slev)<-c("r",paste0("Beta_",0:(ncol(X)-1)))
@@ -453,8 +386,6 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       colnames(beta.blev)<-colnames(beta.uwlev)<-
         colnames(beta.slev)<-c("r",paste0("Beta_",1:(ncol(X))))
     }
-    colnames(Utility.blev)<-colnames(Utility.uwlev)<-colnames(Utility.slev)<-
-      c("r","D-optimality","A-optimality","L-optimality")
 
     message("Basic and shrinkage leverage probabilities calculated.\n")
 
@@ -476,17 +407,6 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
         stop("There are NA or NaN values in the model parameters")
       }
 
-      LP_data<-x.blev %*% beta.blev[i,-1]
-      pi<-c(exp(LP_data))
-      W<-pi
-      Mx<-crossprod(x.blev,(x.blev * W))
-      Mx_Inv<-solve(Mx)
-      x.blev_t<-t(x.blev)
-      V_Mx_Temp <- Mx_Inv %*% x.blev_t
-      V_Final<- x.blev%*% V_Mx_Temp
-
-      Utility.blev[i,-1]<-c(log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
-
       # unweighted leverage sampling
       fit.uwlev <- stats::glm(y.blev~x.blev-1, family = "quasipoisson")
       beta.prop<-fit.uwlev$coefficients
@@ -497,16 +417,6 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       if(anyNA(beta.prop)){
         stop("There are NA or NaN values in the model parameters")
       }
-
-      LP_data<-x.blev %*% beta.uwlev[i,-1]
-      pi<-c(exp(LP_data))
-      W<-pi
-      Mx<-crossprod(x.blev,(x.blev * W))
-      Mx_Inv<-solve(Mx)
-      V_Mx_Temp <- Mx_Inv %*% x.blev_t
-      V_Final<- x.blev%*% V_Mx_Temp
-
-      Utility.uwlev[i,-1]<-c(log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
 
       # shrinkage leverage sampling
       idx.slev <- sample(1:N, size = r[i], replace = TRUE, prob = PI.slev)
@@ -524,17 +434,6 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       if(anyNA(beta.prop)){
         stop("There are NA or NaN values in the model parameters")
       }
-
-      LP_data<-x.slev %*% beta.slev[i,-1]
-      pi<-c(exp(LP_data))
-      W<-pi
-      Mx<-crossprod(x.slev,(x.slev * W))
-      Mx_Inv<-solve(Mx)
-      x.slev_t<-t(x.slev)
-      V_Mx_Temp <- Mx_Inv %*% x.slev_t
-      V_Final<- x.slev%*% V_Mx_Temp
-
-      Utility.slev[i,-1]<-c(log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
     }
 
     Full_SP<-cbind.data.frame(PI.blev,PI.slev)
@@ -545,15 +444,11 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
                                 rbind(beta.blev,beta.uwlev,beta.slev))
 
-    Utility_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
-                                   rbind(Utility.blev,Utility.uwlev,Utility.slev))
-
     names(Sample.blev)<-names(Sample.uwlev)<-names(Sample.slev)<-r
 
     message("Sampling completed.")
 
     ans<-list("Beta_Estimates"=Beta_Data,
-              "Utility_Estimates"=Utility_Data,
               "Sample_Basic_Leverage"=Sample.blev,
               "Sample_Shrinkage_Leverage"=Sample.slev,
               "Sampling_Probability"=Full_SP)

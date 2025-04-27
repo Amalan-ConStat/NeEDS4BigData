@@ -118,7 +118,8 @@ Full_Data<-Full_Data[,-ncol(Full_Data)]
 cat("N size :",N_size[N_idx]," and Covariate size :",Covariate_size[Covariate_idx],
     " and Misspecification Type :",Type_idx,"\n")
 
-lm_formula<-as.formula(paste("Y ~", paste(paste0("X",0:ncol(Full_Data[,-c(1,2)])), collapse = " + ")))
+lm_formula<-as.formula(paste("Y ~", paste(paste0("X",0:ncol(Full_Data[,-c(1,2)])), 
+                                          collapse = " + ")))
 
 # benchmarking the stats::lm() function
 lm<-sapply(1:Replicates,function(i){
@@ -169,7 +170,7 @@ For linear regression, the `modelMissLinSub()` function from the NeEDS4BigData p
 
 ```{r linear regression, fig.height=4*3,fig.width=4*6,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under model misspecified linear regression."}
 Functions_FCT<-c("lm()","biglm()","modelMissLinSub()")
-Functions_Colors<-c("grey","black","#50FF50")
+Functions_Colors<-c("cornsilk4","black","#50FF50")
 
 Final_Linear_Regression %>%
   mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),
@@ -206,7 +207,7 @@ For logistic regression, the `modelMissLogSub()` function was compared against `
 
 ```{r logistic regression, fig.height=4*3,fig.width=4*6,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under model misspecified logistic regression."}
 Functions_FCT<-c("glm()","bigglm()","modelMissLogSub()")
-Functions_Colors<-c("grey","black","#50FF50")
+Functions_Colors<-c("cornsilk4","black","#50FF50")
 
 Final_Logistic_Regression %>%
   mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),
@@ -244,7 +245,7 @@ For Poisson regression, the function `modelMissPoiSub()` was compared against `g
 
 ```{r poisson regression, fig.height=4*3,fig.width=4*6,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under model misspecified Poisson regression."}
 Functions_FCT<-c("glm()","bigglm()","modelMissPoiSub()")
-Functions_Colors<-c("grey","black","#50FF50")
+Functions_Colors<-c("cornsilk4","black","#50FF50")
 
 Final_Poisson_Regression %>%
   mutate(Functions=factor(Functions,levels = Functions_FCT,labels = Functions_FCT),

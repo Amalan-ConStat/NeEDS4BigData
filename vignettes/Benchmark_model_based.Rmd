@@ -184,7 +184,7 @@ For linear regression, the following functions from the NeEDS4BigData package: (
 ```{r linear regression,fig.width=5*3,fig.height=5*2,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under linear regression."}
 Functions_FCT<-c("lm()","biglm()","LeverageSampling()","AoptimalMCGLMSub()",
                "AoptimalGauLMSub()","ALoptimalGLMSub()")
-Functions_Colors<-c("grey","black","#F76D5E","#A50021","#BBFFBB","#50FF50")
+Functions_Colors<-c("cornsilk4","black","#F76D5E","#A50021","#BBFFBB","#50FF50")
 
 Final_Linear_Regression %>%
   group_by(`N size`,`Covariate size`,Functions) %>%
@@ -213,7 +213,7 @@ For logistic regression, the following functions: (1) `LCCSampling()`, (2) `Leve
 ```{r logistic regression,fig.width=5*3,fig.height=5*2,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under logistic regression."}
 Functions_FCT<-c("glm()","bigglm()","LCCSampling()","LeverageSampling()",
                "AoptimalMCGLMSub()","ALoptimalGLMSub()")
-Functions_Colors<-c("grey","black","#F76D5E","#A50021","#BBFFBB","#50FF50")
+Functions_Colors<-c("cornsilk4","black","#F76D5E","#A50021","#BBFFBB","#50FF50")
 
 Final_Logistic_Regression %>%
   group_by(`N size`,`Covariate size`,Functions) %>%
@@ -241,7 +241,7 @@ For Poisson regression, the following functions: (1) `LeverageSampling()`, (2) `
 ```{r poisson regression, fig.width=5*3,fig.height=5*2,fig.align='center',fig.cap="Average time for functions, with 5% and 95% percentile intervals under Poisson regression."}
 Functions_FCT<-c("glm()","bigglm()","LeverageSampling()",
                "AoptimalMCGLMSub()","ALoptimalGLMSub()")
-Functions_Colors<-c("grey","black","#A50021","#BBFFBB","#50FF50")
+Functions_Colors<-c("cornsilk4","black","#A50021","#BBFFBB","#50FF50")
 
 Final_Poisson_Regression %>%
   group_by(`N size`,`Covariate size`,Functions) %>%

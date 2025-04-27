@@ -28,8 +28,6 @@ The output of \code{modelRobustLinSub} gives a list of
 
 \code{Beta_Data} estimated model parameters for each model in a list after subsampling
 
-\code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
-
 \code{Sample_L-optimality} list of indexes for the initial and optimal samples obtained based on L-optimality criteria
 
 \code{Sample_L-optimality_MR} list of indexes for the initial and model robust optimal samples obtained based on L-optimality criteria
@@ -100,7 +98,7 @@ for (i in 1:No_of_Variables)
 All_Models<-All_Models[-c(5:7)]
 names(All_Models)<-paste0("Model_",1:length(All_Models))
 
-r1<-300; r2<-rep(100*c(6,9),20);
+r1<-300; r2<-rep(100*c(6,9),25);
 
 modelRobustPoiSub(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,1]),
                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),

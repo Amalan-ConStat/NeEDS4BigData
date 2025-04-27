@@ -45,8 +45,6 @@
 #'
 #' \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after subsampling (valid only for linear regression)
 #'
-#' \code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
-#'
 #' \code{Sample_A-Optimality} list of indexes for the initial and optimal samples obtained based on A-Optimality criteria
 #'
 #' \code{Subsampling_Probability} matrix of calculated subsampling probabilities for A-optimality criteria
@@ -140,13 +138,12 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     }
 
     beta.mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
-    Utility.mMSE<-matrix(nrow = length(r2),ncol = 4 )
     Var_Epsilon<-matrix(nrow = length(r2),ncol = 2)
     Sample.mMSE<-list()
 
     Sample.mMSE[[1]]<-idx.prop
 
-    beta.mMSE[,1]<-Utility.mMSE[,1]<-Var_Epsilon[,1]<-r2
+    beta.mMSE[,1]<-Var_Epsilon[,1]<-r2
 
     if(all(X[,1] == 1)){
       colnames(beta.mMSE)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
@@ -154,7 +151,6 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
       colnames(beta.mMSE)<-c("r2",paste0("Beta_",1:(ncol(X))))
     }
     colnames(Var_Epsilon)<-c("r2","A-Optimality")
-    colnames(Utility.mMSE)<-c("r2","D-optimality","A-optimality","L-optimality")
 
     ## mMSE
     PI.mMSE<-sqrt(matrixStats::rowSums2((X %*% solve(crossprod(X)))^2))
@@ -178,16 +174,9 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
       Xbeta_Final<-X%*%beta.prop
       Var.prop<-sum((Y-Xbeta_Final)^2)/N
 
-      Temp<-Var.prop*crossprod(x.mMSE)
-      Temp_Inv<-solve(Temp)
-      x.mMSE_t<-t(x.mMSE)
-      Temp_Int<-Temp_Inv%*%x.mMSE_t
-      Temp1<-x.mMSE%*%Temp_Int
-
       Sample.mMSE[[i+1]]<-idx.mMSE
       beta.mMSE[i,-1] <- beta.prop
       Var_Epsilon[i,2]<-Var.prop
-      Utility.mMSE[i,-1]<-c(log(det(Temp)),psych::tr(Temp_Inv),psych::tr(Temp1))
 
       if(anyNA(beta.prop)){
         stop("There are NA or NaN values in the model parameters")
@@ -201,9 +190,6 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
 
     Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),beta.mMSE)
 
-    Utility_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
-                                   Utility.mMSE)
-
     Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
                                        "Sample"=rep(r2,times=length(Sampling_Methods)),
                                        "Var Epsilon"=c(Var_Epsilon[,"A-Optimality"]))
@@ -213,7 +199,6 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     message("Step 2 of the algorithm completed.")
 
     ans<-list("Beta_Estimates"=Beta_Data,
-              "Utility_Estimates"=Utility_Data,
               "Variance_Epsilon_Estimates"=Var_Epsilon_Data,
               "Sample_A-Optimality"=Sample.mMSE,
               "Subsampling_Probability"=Full_SP)
@@ -241,18 +226,16 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     P.prop  <- 1 - 1 / (1 + exp(Xbeta_Final))
 
     beta.mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
-    Utility.mMSE<-matrix(nrow = length(r2),ncol = 4 )
     Sample.mMSE<-list()
 
     Sample.mMSE[[1]]<-idx.prop
 
-    beta.mMSE[,1]<-Utility.mMSE[,1]<-r2
+    beta.mMSE[,1]<-r2
     if(all(X[,1] == 1)){
       colnames(beta.mMSE)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
     } else {
       colnames(beta.mMSE)<-c("r2",paste0("Beta_",1:(ncol(X))))
     }
-    colnames(Utility.mMSE)<-c("r2","D-optimality","A-optimality","L-optimality")
 
     ## mMSE
     p.prop <- P.prop[idx.prop]
@@ -279,17 +262,6 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
       if(anyNA(fit.mMSE$par)){
         stop("There are NA or NaN values in the model parameters")
       }
-
-      LP_data<-x.mMSE %*% beta.mMSE[i,-1]
-      pi<-c(1-1/(1 + exp(LP_data)))
-      W<-pi*(1-pi)
-      Mx<-crossprod(x.mMSE,(x.mMSE * W))
-      Mx_Inv<-solve(Mx)
-      x.mMSE_t<-t(x.mMSE)
-      V_Mx_Temp <- Mx_Inv %*% x.mMSE_t
-      V_Final<- x.mMSE%*% V_Mx_Temp
-
-      Utility.mMSE[i,-1]<-c(log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
     }
 
     Full_SP<-cbind.data.frame(PI.mMSE)
@@ -300,15 +272,11 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
                                 beta.mMSE)
 
-    Utility_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
-                                   Utility.mMSE)
-
     names(Sample.mMSE)<-c(r1,r2)
 
     message("Step 2 of the algorithm completed.")
 
     ans<-list("Beta_Estimates"=Beta_Data,
-              "Utility_Estimates"=Utility_Data,
               "Sample_A-Optimality"=Sample.mMSE,
               "Subsampling_Probability"=Full_SP)
 
@@ -334,18 +302,16 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     P.prop  <- exp(X %*% beta.prop)
 
     beta.mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
-    Utility.mMSE<-matrix(nrow = length(r2),ncol = 4 )
     Sample.mMSE<-list()
 
     Sample.mMSE[[1]]<-idx.prop
 
-    beta.mMSE[,1]<-Utility.mMSE[,1]<-r2
+    beta.mMSE[,1]<-r2
     if(all(X[,1] == 1)){
       colnames(beta.mMSE)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
     } else {
       colnames(beta.mMSE)<-c("r2",paste0("Beta_",1:(ncol(X))))
     }
-    colnames(Utility.mMSE)<-c("r2","D-optimality","A-optimality","L-optimality")
 
     ## mMSE
     w.prop <- P.prop[idx.prop]
@@ -373,17 +339,6 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
       if(anyNA(fit.mMSE$coefficients)){
         stop("There are NA or NaN values in the model parameters")
       }
-
-      LP_data<-x.mMSE %*% beta.mMSE[i,-1]
-      pi<-c(exp(LP_data))
-      W<-pi
-      Mx<-crossprod(x.mMSE,(x.mMSE * W))
-      Mx_Inv<-solve(Mx)
-      x.mMSE_t<-t(x.mMSE)
-      V_Mx_Temp <- Mx_Inv %*% x.mMSE_t
-      V_Final<- x.mMSE %*% V_Mx_Temp
-
-      Utility.mMSE[i,-1]<-c(log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
     }
 
     Full_SP<-cbind.data.frame(PI.mMSE)
@@ -394,15 +349,11 @@ AoptimalMCGLMSub <- function(r1,r2,Y,X,N,family){
     Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
                                 beta.mMSE)
 
-    Utility_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
-                                   Utility.mMSE)
-
     names(Sample.mMSE)<-c(r1,r2)
 
     message("Step 2 of the algorithm completed.")
 
     ans<-list("Beta_Estimates"=Beta_Data,
-              "Utility_Estimates"=Utility_Data,
               "Sample_A-Optimality"=Sample.mMSE,
               "Subsampling_Probability"=Full_SP)
     class(ans)<-c("A_OptimalSamplingMC","poisson")

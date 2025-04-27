@@ -155,9 +155,6 @@ Sampling probabilities are obtained based on the basic and shrinkage leverage me
 <p><code>Variance_Epsilon_Estimates</code> matrix of estimated variance for epsilon in a data.frame after sampling (valid only for linear regression)</p>
 
 
-<p><code>Utility_Estimates</code> estimated D-(log scaled), A- and L- optimality values for the obtained subsamples</p>
-
-
 <p><code>Sample_Basic_Leverage</code> list of indexes for the optimal samples obtained based on basic leverage</p>
 
 
@@ -201,7 +198,7 @@ Ma P, Sun X (2015).
 <span class="r-in"><span><span class="va">No_Of_Var</span><span class="op">&lt;-</span><span class="fl">2</span>; <span class="va">Beta</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span>; <span class="va">N</span><span class="op">&lt;-</span><span class="fl">5000</span>; <span class="va">Family</span><span class="op">&lt;-</span><span class="st">"linear"</span></span></span>
 <span class="r-in"><span><span class="va">Full_Data</span><span class="op">&lt;-</span><span class="fu"><a href="GenGLMdata.html">GenGLMdata</a></span><span class="op">(</span><span class="va">Dist</span>,<span class="va">Dist_Par</span>,<span class="va">No_Of_Var</span>,<span class="va">Beta</span>,<span class="va">N</span>,<span class="va">Family</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">r</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">100</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>,<span class="fl">10</span><span class="op">)</span>,<span class="fl">25</span><span class="op">)</span>; <span class="va">Original_Data</span><span class="op">&lt;-</span><span class="va">Full_Data</span><span class="op">$</span><span class="va">Complete_Data</span>;</span></span>
+<span class="r-in"><span><span class="va">r</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">100</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>,<span class="fl">10</span><span class="op">)</span>,<span class="fl">50</span><span class="op">)</span>; <span class="va">Original_Data</span><span class="op">&lt;-</span><span class="va">Full_Data</span><span class="op">$</span><span class="va">Complete_Data</span>;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">LeverageSampling</span><span class="op">(</span>r <span class="op">=</span> <span class="va">r</span>, Y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                 X <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,N <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">)</span>,</span></span>
@@ -211,9 +208,9 @@ Ma P, Sun X (2015).
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sampling completed.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="plot_Beta.html">plot_Beta</a></span><span class="op">(</span><span class="va">Results</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0109</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.00749</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.00955</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0106</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.00846</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.00826</span>
 <span class="r-plt img"><img src="LeverageSampling-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">Dist</span><span class="op">&lt;-</span><span class="st">"Normal"</span>; <span class="va">Dist_Par</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Mean<span class="op">=</span><span class="fl">0</span>,Variance<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></span>
@@ -230,9 +227,9 @@ Ma P, Sun X (2015).
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sampling completed.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="plot_Beta.html">plot_Beta</a></span><span class="op">(</span><span class="va">Results</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.048</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0729</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0442</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0491</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0697</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0406</span>
 <span class="r-plt img"><img src="LeverageSampling-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">Dist</span><span class="op">&lt;-</span><span class="st">"Normal"</span>;</span></span>
@@ -249,9 +246,9 @@ Ma P, Sun X (2015).
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Sampling completed.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="plot_Beta.html">plot_Beta</a></span><span class="op">(</span><span class="va">Results</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0369</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0208</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0189</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0293</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0182</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0192</span>
 <span class="r-plt img"><img src="LeverageSampling-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

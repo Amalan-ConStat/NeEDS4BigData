@@ -36,8 +36,6 @@
 #'
 #' \code{Beta_Estimates} estimated model parameters in a data.frame after sampling
 #'
-#' \code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
-#'
 #' \code{Sample_LCC_Sampling} list of indexes for the initial and optimal samples obtained based on local case control sampling
 #'
 #' \code{Sampling_Probability} vector of calculated sampling probabilities for local case control sampling
@@ -112,7 +110,6 @@ LCCsampling<-function(r1,r2,Y,X,N){
   } else {
     colnames(beta.LCC)<-c("r2",paste0("Beta_",1:(ncol(X))))
   }
-  colnames(Utility.LCC)<-c("r2","D-optimality","A-optimality","L-optimality")
 
   ## local case control sampling
   PI.LCC <- abs(Y - P.prop)
@@ -136,17 +133,6 @@ LCCsampling<-function(r1,r2,Y,X,N){
     if(anyNA(beta.prop)){
       stop("There are NA or NaN values in the model parameters")
     }
-
-    LP_data<-x.LCC %*% beta.LCC[i,-1]
-    pi<-c(1-1/(1 + exp(LP_data)))
-    W<-pi*(1-pi)
-    Mx<-crossprod(x.LCC,(x.LCC * W))
-    Mx_Inv<-solve(Mx)
-    x.LCC_t<-t(x.LCC)
-    V_Mx_Temp <- Mx_Inv %*% x.LCC_t
-    V_Final<- x.LCC%*% V_Mx_Temp
-
-    Utility.LCC[i,-1]<-c(log(det(Mx)),psych::tr(Mx_Inv),psych::tr(V_Final))
   }
 
   Full_SP<-cbind.data.frame(PI.LCC)
@@ -154,15 +140,12 @@ LCCsampling<-function(r1,r2,Y,X,N){
 
   Sampling_Methods<-factor(c("Local case control"))
   Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),beta.LCC)
-  Utility_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
-                                 Utility.LCC)
 
   names(Sample.LCC)<-c(r1,r2)
 
   message("Step 2 of the algorithm completed.")
 
   ans<-list("Beta_Estimates"=Beta_Data,
-            "Utility_Estimates"=Utility_Data,
             "Sample_LCC_Sampling"=Sample.LCC,
             "Sampling_Probability"=Full_SP)
 

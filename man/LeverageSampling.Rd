@@ -26,8 +26,6 @@ The output of \code{LeverageSampling} gives a list of
 
 \code{Variance_Epsilon_Estimates} matrix of estimated variance for epsilon in a data.frame after sampling (valid only for linear regression)
 
-\code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
-
 \code{Sample_Basic_Leverage} list of indexes for the optimal samples obtained based on basic leverage
 
 \code{Sample_Shrinkage_Leverage} list of indexes for the optimal samples obtained based on shrinkage leverage
@@ -67,7 +65,7 @@ Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5)
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"linear"
 Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
-r<-rep(100*c(6,10),25); Original_Data<-Full_Data$Complete_Data;
+r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
 
 LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),

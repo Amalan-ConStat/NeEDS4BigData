@@ -22,8 +22,6 @@ The output of \code{LCCsampling} gives a list of
 
 \code{Beta_Estimates} estimated model parameters in a data.frame after sampling
 
-\code{Utility_Estimates} estimated D-(log scaled), A- and L- optimality values for the obtained subsamples
-
 \code{Sample_LCC_Sampling} list of indexes for the initial and optimal samples obtained based on local case control sampling
 
 \code{Sampling_Probability} vector of calculated sampling probabilities for local case control sampling

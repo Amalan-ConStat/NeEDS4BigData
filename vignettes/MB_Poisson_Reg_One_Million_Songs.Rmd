@@ -198,8 +198,8 @@ ggplot(data=Mean_Data[Mean_Data$Method != "Unweighted Leverage",],
   geom_errorbar(data=Mean_Data[Mean_Data$Method != "Unweighted Leverage",],
                 aes(ymin=min,ymax=max),width=0.3,
                 position = position_dodge(width = 0.5))+
-  scale_color_manual(values = Method_Colour[-7])+
-  scale_shape_manual(values = Method_Shape_Types[-7])+
+  scale_color_manual(values = Method_Colour[-6])+
+  scale_shape_manual(values = Method_Shape_Types[-6])+
   theme_bw()+Theme_special()+
   guides(colour = guide_legend(nrow = 3))->p2
 
