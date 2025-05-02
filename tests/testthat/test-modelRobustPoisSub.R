@@ -1,19 +1,19 @@
-indexes<-1:ceiling(nrow(Bike_sharing)*0.5)
-Original_Data<-cbind(Bike_sharing[indexes,1],1,Bike_sharing[indexes,-1])
-colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
+indexes<-1:ceiling(nrow(One_Million_Songs)*0.5)
+Original_Data<-One_Million_Songs[indexes,]
+colnames(Original_Data)<-c("Y",paste0("X",1:ncol(Original_Data[,-1])))
 
 # Scaling the covariate data
-for (j in 3:5) {
+for (j in 2:4) {
   Original_Data[,j]<-scale(Original_Data[,j])
 }
 
-No_of_Variables<-ncol(Original_Data[,-c(1,2)])
+No_of_Variables<-ncol(Original_Data[,-1])
 Squared_Terms<-paste0("X",1:No_of_Variables,"^2")
 term_no <- 2
-All_Models <- list(c("X0",paste0("X",1:No_of_Variables)))
+All_Models <- list(paste0("X",1:No_of_Variables))
 
-Original_Data<-cbind(Original_Data,Original_Data[,-c(1,2)]^2)
-colnames(Original_Data)<-c("Y","X0",paste0("X",1:No_of_Variables),
+Original_Data<-cbind(Original_Data,Original_Data[,-1]^2)
+colnames(Original_Data)<-c("Y",paste0("X",1:No_of_Variables),
                             paste0("X",1:No_of_Variables,"^2"))
 
 for (i in 1:No_of_Variables)
@@ -21,11 +21,11 @@ for (i in 1:No_of_Variables)
   x <- as.vector(combn(Squared_Terms,i,simplify = FALSE))
   for(j in 1:length(x))
   {
-    All_Models[[term_no]] <- c("X0",paste0("X",1:No_of_Variables),x[[j]])
+    All_Models[[term_no]] <- c(paste0("X",1:No_of_Variables),x[[j]])
     term_no <- term_no+1
   }
 }
-All_Models<-All_Models[-c(5:7)]
+All_Models<-All_Models[c(1,27:32)]
 names(All_Models)<-paste0("Model_",1:length(All_Models))
 r1<-300; r2<-rep(100*c(6,9,12),5)
 
@@ -93,7 +93,7 @@ test_that("Error on input for r2",{
                "NA or Infinite or NAN values in the r1,r2,N,Apriori_probs or All_Covariates")
 })
 Temp_Data<-Original_Data
-Temp_Data[100,]<-rep(NA,8)
+Temp_Data[100,]<-rep(NA,11)
 test_that("Error on X input",{
   expect_error(modelRobustPoiSub(r1 = r1, r2 = r2,
                                  Y = as.matrix(Temp_Data[,colnames(Temp_Data) %in% c("Y")]),
