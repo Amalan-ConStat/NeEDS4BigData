@@ -4,12 +4,12 @@
 \alias{LCCsampling}
 \title{Local case control sampling for logistic regression}
 \usage{
-LCCsampling(r1,r2,Y,X,N)
+LCCsampling(r0,r,Y,X,N)
 }
 \arguments{
-\item{r1}{sample size for initial random sampling}
+\item{r0}{sample size for initial random sample}
 
-\item{r2}{sample size for local case control sampling}
+\item{r}{final sample size including initial(r0) and case control(r1) samples}
 
 \item{Y}{response data or Y}
 
@@ -33,16 +33,16 @@ Sampling probabilities are obtained based on local case control method.
 \details{
 Two stage sampling algorithm for big data under logistic regression.
 
-First obtain a random sample of size \eqn{r_1} and estimate the model parameters.
+First obtain a random sample of size \eqn{r_0} and estimate the model parameters.
 Using the estimated parameters sampling probabilities are evaluated for local case control.
 
-Through the estimated sampling probabilities an optimal sample of size \eqn{r_2 \ge r_1} is obtained.
+Through the estimated sampling probabilities an optimal sample of size \eqn{r_1 \ge r_0} is obtained.
 Finally, the optimal sample is used and the model parameters are estimated.
 
 \strong{NOTE} : If input parameters are not in given domain conditions
 necessary error messages will be provided to go further.
 
-If \eqn{r_2 \ge r_1} is not satisfied then an error message will be produced.
+If \eqn{r_1 \ge r_0} is not satisfied then an error message will be produced.
 
 If the big data \eqn{X,Y} has any missing values then an error message will be produced.
 
@@ -54,9 +54,9 @@ Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1)
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-10000; Family<-"logistic"
 Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
-r1<-300; r2<-rep(100*c(6,9,12),50); Original_Data<-Full_Data$Complete_Data;
+r0<-300; r<-rep(100*c(6,9,12),50); Original_Data<-Full_Data$Complete_Data;
 
-LCCsampling(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,1]),
+LCCsampling(r0 = r0, r = r, Y = as.matrix(Original_Data[,1]),
             X = as.matrix(Original_Data[,-1]),
             N = nrow(Original_Data))->Results
 

@@ -4,12 +4,12 @@
 \alias{modelRobustPoiSub}
 \title{Model robust optimal subsampling for A- and L- optimality criteria under Poisson regression}
 \usage{
-modelRobustPoiSub(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Covariates)
+modelRobustPoiSub(r0,r,Y,X,N,Apriori_probs,All_Combinations,All_Covariates)
 }
 \arguments{
-\item{r1}{sample size for initial random sampling}
+\item{r0}{sample size for initial random sample}
 
-\item{r2}{sample size for optimal sampling}
+\item{r}{final sample size including initial(r0) and optimal(r1) samples}
 
 \item{Y}{response data or Y}
 
@@ -47,17 +47,17 @@ optimality criteria.
 Two stage subsampling algorithm for big data under Poisson regression for multiple models that can
 describe the big data.
 
-First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters for all models.
+First stage is to obtain a random sample of size \eqn{r_0} and estimate the model parameters for all models.
 Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria and
 model averaging A-, L-optimality subsampling methods.
 
-Through the estimated subsampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
+Through the estimated subsampling probabilities a sample of size \eqn{r_1 \ge r_0} is obtained.
 Finally, the two samples are combined and the model parameters are estimated for all the models.
 
 \strong{NOTE} :  If input parameters are not in given domain conditions
 necessary error messages will be provided to go further.
 
-If \eqn{r_2 \ge r_1} is not satisfied then an error message will be produced.
+If \eqn{r_1 \ge r_0} is not satisfied then an error message will be produced.
 
 If the big data \eqn{X,Y} has any missing values then an error message will be produced.
 
@@ -68,8 +68,8 @@ If \eqn{0 < \alpha_{q} < 1} for the a priori model probabilities are not satisfi
 where \eqn{q=1,\ldots,Q} and \eqn{Q} is the number of models in the model set.
 }
 \examples{
-indexes<-1:ceiling(nrow(One_Million_Songs)*0.5)
-Original_Data<-One_Million_Songs[indexes,]
+indexes<-1:ceiling(nrow(One_million_songs)*0.5)
+Original_Data<-One_million_songs[indexes,]
 colnames(Original_Data)<-c("Y",paste0("X",1:ncol(Original_Data[,-1])))
 
 # Scaling the covariate data
@@ -98,9 +98,9 @@ for (i in 1:No_of_Variables)
 All_Models<-All_Models[1:6]
 names(All_Models)<-paste0("Model_",1:length(All_Models))
 
-r1<-300; r2<-rep(100*c(6,9),25);
+r0<-300; r<-rep(100*c(6,9),25);
 
-modelRobustPoiSub(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,1]),
+modelRobustPoiSub(r0 = r0, r = r, Y = as.matrix(Original_Data[,1]),
                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                   Apriori_probs = rep(1/length(All_Models),length(All_Models)),
                   All_Combinations = All_Models,

@@ -75,7 +75,7 @@ Replicates<-50
 
 # set the initial and final subsample sizes, 
 # with the distribution parameters to generate data
-r1<-c(1,1,2.5,5,10)*100; r2<-2500;
+r0<-c(1,1,2.5,5,10)*100; r<-2500;
 Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5); 
 Family<-"linear"
 
@@ -117,7 +117,7 @@ cat("Benchmarked biglm() function.\n")
 # benchmarking the NeEDS4BigData::AoptimalGauLMSub() function
 AoptimalGauLMSub<-sapply(1:Replicates,function(i){
   start_T<-Sys.time()
-  suppressMessages(AoptimalGauLMSub(r1[Covariate_idx],r2,
+  suppressMessages(AoptimalGauLMSub(r0[Covariate_idx],r,
                                     Y=as.matrix(Full_Data[,1]),
                                     X=as.matrix(Full_Data[,-1]),
                                     N=nrow(Full_Data)))
@@ -129,7 +129,7 @@ cat("Benchmarked AoptimalGauLMSub() function.\n")
 # benchmarking the NeEDS4BigData::LeverageSampling() function
 LeverageSampling<-sapply(1:Replicates,function(i){
   start_T<-Sys.time()
-  suppressMessages(LeverageSampling(r2,
+  suppressMessages(LeverageSampling(r,
                                     Y=as.matrix(Full_Data[,1]),
                                     X=as.matrix(Full_Data[,-1]),
                                     N=nrow(Full_Data),
@@ -143,7 +143,7 @@ cat("Benchmarked LeverageSampling() function.\n")
 # benchmarking the NeEDS4BigData::ALoptimalGLMSub() function
 ALoptimalGLMSub<-sapply(1:Replicates,function(i){
   start_T<-Sys.time()
-  suppressMessages(ALoptimalGLMSub(r1[Covariate_idx],r2,
+  suppressMessages(ALoptimalGLMSub(r0[Covariate_idx],r,
                                    Y=as.matrix(Full_Data[,1]),
                                    X=as.matrix(Full_Data[,-1]),
                                    N=nrow(Full_Data),
@@ -156,7 +156,7 @@ cat("Benchmarked ALoptimalGLMSub() function.\n")
 # benchmarking the NeEDS4BigData::AoptimalMCGLMSub() function
 AoptimalMCGLMSub<-sapply(1:Replicates,function(i){
   start_T<-Sys.time()
-  suppressMessages(AoptimalMCGLMSub(r1[Covariate_idx],r2,
+  suppressMessages(AoptimalMCGLMSub(r0[Covariate_idx],r,
                                     Y=as.matrix(Full_Data[,1]),
                                     X=as.matrix(Full_Data[,-1]),
                                     N=nrow(Full_Data),

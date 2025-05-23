@@ -1,5 +1,5 @@
-indexes<-1:ceiling(nrow(One_Million_Songs)*0.5)
-Original_Data<-One_Million_Songs[indexes,]
+indexes<-1:ceiling(nrow(One_million_songs)*0.5)
+Original_Data<-One_million_songs[indexes,]
 colnames(Original_Data)<-c("Y",paste0("X",1:ncol(Original_Data[,-1])))
 
 # Scaling the covariate data
@@ -27,9 +27,9 @@ for (i in 1:No_of_Variables)
 }
 All_Models<-All_Models[c(1,27:32)]
 names(All_Models)<-paste0("Model_",1:length(All_Models))
-r1<-300; r2<-rep(100*c(6,9,12),5)
+r0<-300; r<-rep(100*c(6,9,12),5)
 
-modelRobustPoiSub(r1 = r1, r2 = r2,
+modelRobustPoiSub(r0 = r0, r = r,
                   Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                   Apriori_probs = rep(1/length(All_Models),length(All_Models)),
@@ -51,7 +51,7 @@ test_that("length of the Beta Estimates",{
 })
 
 test_that("dim of the Model 1 Beta Estimates",{
-  expect_equal(dim(Results$Beta_Estimates$Model_1),c(length(r2)*4,2+length(All_Models$Model_1)))
+  expect_equal(dim(Results$Beta_Estimates$Model_1),c(length(r)*4,2+length(All_Models$Model_1)))
 })
 
 test_that("class of Model 1 Beta Estimates",{
@@ -67,35 +67,35 @@ test_that("class of subsampling probability",{
 })
 
 test_that("dimension of the Model 1 A-optimality sample",{
-  expect_equal(length(Results$`Sample_A-Optimality`$Model_1),length(r2)+1)
+  expect_equal(length(Results$`Sample_A-Optimality`$Model_1),length(r)+1)
 })
 
 test_that("dimension of the Model 1 L-optimality sample",{
-  expect_equal(length(Results$`Sample_L-Optimality`$Model_1),length(r2)+1)
+  expect_equal(length(Results$`Sample_L-Optimality`$Model_1),length(r)+1)
 })
 
 test_that("dimension of the Model 1 MR A-optimality sample",{
-  expect_equal(length(Results$`Sample_A-Optimality_MR`$Model_1),length(r2)+1)
+  expect_equal(length(Results$`Sample_A-Optimality_MR`$Model_1),length(r)+1)
 })
 
 test_that("dimension of the Model 1 MR L-optimality sample",{
-  expect_equal(length(Results$`Sample_L-Optimality_MR`$Model_1),length(r2)+1)
+  expect_equal(length(Results$`Sample_L-Optimality_MR`$Model_1),length(r)+1)
 })
 
 context_start_file("Checking the modelRobustPoiSub for error messages")
-test_that("Error on input for r2",{
-  expect_error(modelRobustPoiSub(r1 = r1, r2 = NA,
+test_that("Error on input for r",{
+  expect_error(modelRobustPoiSub(r0 = r0, r = NA,
                                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                                  Apriori_probs = rep(1/length(All_Models),length(All_Models)),
                                  All_Combinations = All_Models,
                                  All_Covariates = colnames(Original_Data)[-1]),
-               "NA or Infinite or NAN values in the r1,r2,N,Apriori_probs or All_Covariates")
+               "NA or Infinite or NAN values in the r0,r,N,Apriori_probs or All_Covariates")
 })
 Temp_Data<-Original_Data
 Temp_Data[100,]<-rep(NA,11)
 test_that("Error on X input",{
-  expect_error(modelRobustPoiSub(r1 = r1, r2 = r2,
+  expect_error(modelRobustPoiSub(r0 = r0, r = r,
                                  Y = as.matrix(Temp_Data[,colnames(Temp_Data) %in% c("Y")]),
                                  X = as.matrix(Temp_Data[,-1]),N = nrow(Temp_Data),
                                  Apriori_probs = rep(1/length(All_Models),length(All_Models)),
@@ -104,17 +104,17 @@ test_that("Error on X input",{
                "NA or Infinite or NAN values in the Y or X")
 })
 
-test_that("Error on r1 and r2 input",{
-  expect_error(modelRobustPoiSub(r1 = r1+1000, r2 = r2,
+test_that("Error on r0 and r input",{
+  expect_error(modelRobustPoiSub(r0 = r0+1000, r = r,
                                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                                  Apriori_probs = rep(1/length(All_Models),length(All_Models)),
                                  All_Combinations = All_Models,
                                  All_Covariates = colnames(Original_Data)[-1]),
-               "2*r1 cannot be greater than r2 at any point")
+               "2*r0 cannot be greater than r at any point")
 })
 test_that("Error on size of X and Y",{
-  expect_error(modelRobustPoiSub(r1 = r1, r2 = r2,
+  expect_error(modelRobustPoiSub(r0 = r0, r = r,
                                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data)+1,
                                  Apriori_probs = rep(1/length(All_Models),length(All_Models)),
@@ -124,7 +124,7 @@ test_that("Error on size of X and Y",{
 })
 
 test_that("Error on length on Apriori_probs the a priori probability",{
-  expect_error(modelRobustPoiSub(r1 = r1, r2 = r2,
+  expect_error(modelRobustPoiSub(r0 = r0, r = r,
                                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                                  Apriori_probs = c(rep(1/length(All_Models),length(All_Models)),0.1),
@@ -132,12 +132,12 @@ test_that("Error on length on Apriori_probs the a priori probability",{
                                  All_Covariates = colnames(Original_Data)[-1]),
                "No of models for averaging is not equal to the a priori probabilities")
 })
-test_that("Error on length of r1 or N",{
-  expect_error(modelRobustPoiSub(r1 = c(r1,3), r2 = r2,
+test_that("Error on length of r0 or N",{
+  expect_error(modelRobustPoiSub(r0 = c(r0,3), r = r,
                                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                                  Apriori_probs = c(rep(1/length(All_Models),length(All_Models)),0.1),
                                  All_Combinations = All_Models,
                                  All_Covariates = colnames(Original_Data)[-1]),
-               "r1 or N has a value greater than length one")
+               "r0 or N has a value greater than length one")
 })

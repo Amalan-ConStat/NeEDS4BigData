@@ -73,7 +73,8 @@ the big data, then later we assume the given main effects model is
 misspecified. Under these conditions from $2)$ and $3)$ we explore
 subsampling for four given big data sets. Further, to explore the
 computation time we ran simulations for the scenarios $2)$ and $3)$
-where we compare our subsampling functions against full data modelling.
+where we compare our subsampling functions against full data modelling
+in $4)$.
 
 #### Thank You
 

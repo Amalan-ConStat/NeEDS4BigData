@@ -5,10 +5,10 @@
 #' optimality criteria.
 #'
 #' @usage
-#' ALoptimalGLMSub(r1,r2,Y,X,N,family)
+#' ALoptimalGLMSub(r0,r,Y,X,N,family)
 #'
-#' @param r1      sample size for initial random sampling
-#' @param r2      sample size for optimal sampling
+#' @param r0      sample size for initial random sample
+#' @param r       final sample size including initial(r0) and optimal(r1) samples
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
@@ -18,16 +18,16 @@
 #' Two stage subsampling algorithm for big data under Generalised Linear Models
 #' (linear, logistic and Poisson regression).
 #'
-#' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
+#' First stage is to obtain a random sample of size \eqn{r_0} and estimate the model parameters.
 #' Using the estimated parameters subsampling probabilities are evaluated for A- and L-optimality criteria.
 #'
-#' Through the estimated subsampling probabilities an optimal sample of size \eqn{r_2 \ge r_1} is obtained.
+#' Through the estimated subsampling probabilities an optimal sample of size \eqn{r_1 \ge r_0} is obtained.
 #' Finally, the two samples are combined and the model parameters are estimated.
 #'
 #' \strong{NOTE} : If input parameters are not in given domain conditions
 #' necessary error messages will be provided to go further.
 #'
-#' If \eqn{r_2 \ge r_1} is not satisfied then an error message will be produced.
+#' If \eqn{r_1 \ge r_0} is not satisfied then an error message will be produced.
 #'
 #' If the big data \eqn{X,Y} has any missing values then an error message will be produced.
 #'
@@ -60,9 +60,9 @@
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"linear"
 #' Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 #'
-#' r1<-300; r2<-rep(c(6,9)*100,50); Original_Data<-Full_Data$Complete_Data;
+#' r0<-300; r<-rep(c(6,9)*100,50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' ALoptimalGLMSub(r1 = r1, r2 = r2,Y = as.matrix(Original_Data[,1]),
+#' ALoptimalGLMSub(r0 = r0, r = r,Y = as.matrix(Original_Data[,1]),
 #'                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                 family = "linear")->Results
 #'
@@ -72,9 +72,9 @@
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"logistic"
 #' Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 #'
-#' r1<-300; r2<-rep(c(6,9)*100,50); Original_Data<-Full_Data$Complete_Data;
+#' r0<-300; r<-rep(c(6,9)*100,50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' ALoptimalGLMSub(r1 = r1, r2 = r2,Y = as.matrix(Original_Data[,1]),
+#' ALoptimalGLMSub(r0 = r0, r = r,Y = as.matrix(Original_Data[,1]),
 #'                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                 family = "logistic")->Results
 #'
@@ -84,9 +84,9 @@
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"poisson"
 #' Full_Data<-GenGLMdata(Dist,NULL,No_Of_Var,Beta,N,Family)
 #'
-#' r1<-300; r2<-rep(c(6,9)*100,50); Original_Data<-Full_Data$Complete_Data;
+#' r0<-300; r<-rep(c(6,9)*100,50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' ALoptimalGLMSub(r1 = r1, r2 = r2,Y = as.matrix(Original_Data[,1]),
+#' ALoptimalGLMSub(r0 = r0, r = r,Y = as.matrix(Original_Data[,1]),
 #'                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                 family = "poisson")->Results
 #'
@@ -97,21 +97,21 @@
 #' @importFrom psych tr
 #' @importFrom matrixStats rowSums2
 #' @export
-ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
-  if(any(is.na(c(r1,r2,N,family))) | any(is.nan(c(r1,r2,N,family)))){
-    stop("NA or Infinite or NAN values in the r1,r2,N or family")
+ALoptimalGLMSub <- function(r0,r,Y,X,N,family){
+  if(any(is.na(c(r0,r,N,family))) | any(is.nan(c(r0,r,N,family)))){
+    stop("NA or Infinite or NAN values in the r0,r,N or family")
   }
 
-  if((length(r1) + length(N) + length(family)) != 3){
-    stop("r1, N or family has a value greater than length one")
+  if((length(r0) + length(N) + length(family)) != 3){
+    stop("r0, N or family has a value greater than length one")
   }
 
   if(anyNA(Y) | anyNA(X) | any(is.nan(Y)) | any(is.nan(X)) ){
     stop("NA or Infinite or NAN values in the Y or X")
   }
 
-  if(any((2*r1) > r2)){
-    stop("2*r1 cannot be greater than r2 at any point")
+  if(any((2*r0) > r)){
+    stop("2*r0 cannot be greater than r at any point")
   }
 
   if((N != nrow(X)) | (N != nrow(Y)) | nrow(X) != nrow(Y)){
@@ -124,7 +124,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 
   if(family %in% c("linear")){
     PI.prop <- rep(1/N, N)
-    idx.prop <- sample(1:N, size = r1, replace = TRUE)
+    idx.prop <- sample(1:N, size = r0, replace = TRUE)
 
     x.prop <- X[idx.prop,]
     y.prop <- Y[idx.prop,]
@@ -141,20 +141,20 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
       stop("There are NA or NaN values in the model parameters")
     }
 
-    beta.mVc<-beta.mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
-    Var_Epsilon<-matrix(nrow = length(r2),ncol = 3)
+    beta.mVc<-beta.mMSE<-matrix(nrow = length(r),ncol = ncol(X)+1 )
+    Var_Epsilon<-matrix(nrow = length(r),ncol = 3)
     Sample.mMSE<-Sample.mVc<-list()
 
     Sample.mMSE[[1]]<-Sample.mVc[[1]]<-idx.prop
 
-    beta.mVc[,1]<-beta.mMSE[,1]<-Var_Epsilon[,1]<-r2
+    beta.mVc[,1]<-beta.mMSE[,1]<-Var_Epsilon[,1]<-r
 
     if(all(X[,1] == 1)){
-      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
+      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r",paste0("Beta_",0:(ncol(X)-1)))
     } else {
-      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",1:(ncol(X))))
+      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r",paste0("Beta_",1:(ncol(X))))
     }
-    colnames(Var_Epsilon)<-c("r2","A-Optimality","L-Optimality")
+    colnames(Var_Epsilon)<-c("r","A-Optimality","L-Optimality")
 
     ## mVc
     PI.mVc<-sqrt(Epsilon.prop^2 * matrixStats::rowSums2(X^2))
@@ -166,16 +166,16 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 
     message("Step 1 of the algorithm completed.\n")
 
-    for (i in 1:length(r2))
+    for (i in 1:length(r))
     {
       ## mVc
-      idx.mVc <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mVc)
+      idx.mVc <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI.mVc)
 
       x.mVc <- X[c(idx.mVc, idx.prop),]
       y.mVc <- Y[c(idx.mVc, idx.prop)]
       pinv.mVc<-c(1 / PI.mVc[idx.mVc], pinv.prop)
 
-      pi4_r<-sqrt(r2[i]*pinv.mVc^(-1))
+      pi4_r<-sqrt(r[i]*pinv.mVc^(-1))
       X_r4<-x.mVc/pi4_r
       Y_r4<-y.mVc/pi4_r
       beta.prop<-solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4))
@@ -191,13 +191,13 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
       }
 
       ## mMSE
-      idx.mMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mMSE)
+      idx.mMSE <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI.mMSE)
 
       x.mMSE <- X[c(idx.mMSE, idx.prop),]
       y.mMSE <- Y[c(idx.mMSE, idx.prop)]
       pinv.mMSE<-c(1 / PI.mMSE[idx.mMSE], pinv.prop)
 
-      pi4_r<-sqrt(r2[i]*pinv.mMSE^(-1))
+      pi4_r<-sqrt(r[i]*pinv.mMSE^(-1))
       X_r4<-x.mMSE/pi4_r
       Y_r4<-y.mMSE/pi4_r
       beta.prop<-solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4))
@@ -218,14 +218,14 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 
     Subsampling_Methods<-factor(c("A-Optimality","L-Optimality"))
 
-    Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),rbind(beta.mMSE,beta.mVc))
+    Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r)),rbind(beta.mMSE,beta.mVc))
 
-    Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
-                                       "Sample"=rep(r2,times=length(Subsampling_Methods)),
+    Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r)),
+                                       "Sample"=rep(r,times=length(Subsampling_Methods)),
                                        "Var Epsilon"=c(Var_Epsilon[,"A-Optimality"],
                                                        Var_Epsilon[,"L-Optimality"]))
 
-    names(Sample.mMSE)<-names(Sample.mVc)<-c(r1,r2)
+    names(Sample.mMSE)<-names(Sample.mVc)<-c(r0,r)
 
     message("Step 2 of the algorithm completed.")
 
@@ -242,7 +242,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
     n0 <- N - n1
     PI.prop <- rep(1/(2*n0), N)
     PI.prop[Y==1] <- 1/(2*n1)
-    idx.prop <- sample(1:N, size = r1, replace = TRUE, prob = PI.prop)
+    idx.prop <- sample(1:N, size = r0, replace = TRUE, prob = PI.prop)
 
     x.prop <- X[idx.prop,]
     y.prop <- Y[idx.prop,]
@@ -257,17 +257,17 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
     Xbeta_Final<-X%*%beta.prop
     P.prop  <- 1 - 1 / (1 + exp(Xbeta_Final))
 
-    beta.mVc<-beta.mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
+    beta.mVc<-beta.mMSE<-matrix(nrow = length(r),ncol = ncol(X)+1 )
     Sample.mMSE<-Sample.mVc<-list()
 
     Sample.mMSE[[1]]<-Sample.mVc[[1]]<-idx.prop
 
-    beta.mVc[,1]<-beta.mMSE[,1]<-r2
+    beta.mVc[,1]<-beta.mMSE[,1]<-r
 
     if(all(X[,1] == 1)){
-      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
+      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r",paste0("Beta_",0:(ncol(X)-1)))
     } else {
-      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",1:(ncol(X))))
+      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r",paste0("Beta_",1:(ncol(X))))
     }
 
     ## mVc
@@ -284,10 +284,10 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 
     message("Step 1 of the algorithm completed.\n")
 
-    for (i in 1:length(r2))
+    for (i in 1:length(r))
     {
       ## mVc
-      idx.mVc <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mVc)
+      idx.mVc <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI.mVc)
 
       x.mVc <- X[c(idx.mVc, idx.prop), ]
       y.mVc <- Y[c(idx.mVc, idx.prop)]
@@ -302,7 +302,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
       }
 
       ## mMSE
-      idx.mMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mMSE)
+      idx.mMSE <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI.mMSE)
 
       x.mMSE <- X[c(idx.mMSE, idx.prop),]
       y.mMSE <- Y[c(idx.mMSE, idx.prop)]
@@ -322,10 +322,10 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 
     Subsampling_Methods<-factor(c("A-Optimality","L-Optimality"))
 
-    Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
+    Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r)),
                                 rbind(beta.mMSE,beta.mVc))
 
-    names(Sample.mMSE)<-names(Sample.mVc)<-c(r1,r2)
+    names(Sample.mMSE)<-names(Sample.mVc)<-c(r0,r)
 
     message("Step 2 of the algorithm completed.")
 
@@ -339,7 +339,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
   }
   if(family %in% "poisson"){
     PI.prop <- rep(1/N, N)
-    idx.prop <- sample(1:N, size = r1, replace = TRUE)
+    idx.prop <- sample(1:N, size = r0, replace = TRUE)
 
     x.prop<-X[idx.prop,]
     y.prop <- Y[idx.prop,]
@@ -356,17 +356,17 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
     Xbeta_Final<-X %*% beta.prop
     P.prop  <- exp(Xbeta_Final)
 
-    beta.mVc<-beta.mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
+    beta.mVc<-beta.mMSE<-matrix(nrow = length(r),ncol = ncol(X)+1 )
     Sample.mMSE<-Sample.mVc<-list()
 
     Sample.mMSE[[1]]<-Sample.mVc[[1]]<-idx.prop
 
-    beta.mVc[,1]<-beta.mMSE[,1]<-r2
+    beta.mVc[,1]<-beta.mMSE[,1]<-r
 
     if(all(X[,1] == 1)){
-      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
+      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r",paste0("Beta_",0:(ncol(X)-1)))
     } else {
-      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r2",paste0("Beta_",1:(ncol(X))))
+      colnames(beta.mMSE)<-colnames(beta.mVc)<-c("r",paste0("Beta_",1:(ncol(X))))
     }
 
     ## mVc
@@ -382,10 +382,10 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 
     message("Step 1 of the algorithm completed.\n")
 
-    for (i in 1:length(r2))
+    for (i in 1:length(r))
     {
       ## mVc
-      idx.mVc <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mVc)
+      idx.mVc <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI.mVc)
 
       x.mVc <- X[c(idx.mVc, idx.prop),]
       y.mVc <- Y[c(idx.mVc, idx.prop)]
@@ -400,7 +400,7 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
       }
 
       ## mMSE
-      idx.mMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mMSE)
+      idx.mMSE <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI.mMSE)
 
       x.mMSE <- X[c(idx.mMSE, idx.prop),]
       y.mMSE <- Y[c(idx.mMSE, idx.prop)]
@@ -420,10 +420,10 @@ ALoptimalGLMSub <- function(r1,r2,Y,X,N,family){
 
     Subsampling_Methods<-factor(c("A-Optimality","L-Optimality"))
 
-    Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
+    Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r)),
                                 rbind(beta.mMSE,beta.mVc))
 
-    names(Sample.mMSE)<-names(Sample.mVc)<-c(r1,r2)
+    names(Sample.mMSE)<-names(Sample.mVc)<-c(r0,r)
 
     message("Step 2 of the algorithm completed.")
 

@@ -63,10 +63,10 @@ plot_Beta.LocalCaseControl<-function(object){
                          labels = paste0("beta[",label_values,"]"))
 
   Mean_Data <- Temp_Data |>
-    dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
+    dplyr::group_by(.data$Method,.data$r,.data$Beta) |>
     dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
 
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r2),color=.data$Method))+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r),color=.data$Method))+
     ggridges::geom_density_ridges2(scale=0.95,alpha=0,linewidth=0.9)+
     ggh4x::facet_grid2(.~Beta,scales = "free", labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
@@ -127,10 +127,10 @@ plot_Beta.A_L_OptimalSubsampling<-function(object){
                          labels = paste0("beta[",label_values,"]"))
 
   Mean_Data <- Temp_Data |>
-    dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
+    dplyr::group_by(.data$Method,.data$r,.data$Beta) |>
     dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
 
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r2),color=.data$Method))+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r),color=.data$Method))+
     ggridges::geom_density_ridges2(scale=0.95,alpha=0,linewidth=0.9)+
     ggh4x::facet_grid2(.~Beta,scales = "free", labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
@@ -159,10 +159,10 @@ plot_Beta.AoptimalSubsampling<-function(object){
                          labels = paste0("beta[",label_values,"]"))
 
   Mean_Data <- Temp_Data |>
-    dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
+    dplyr::group_by(.data$Method,.data$r,.data$Beta) |>
     dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
 
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r2),color=.data$Method))+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r),color=.data$Method))+
     ggridges::geom_density_ridges2(scale=0.95,alpha=0,linewidth=0.9)+
     ggh4x::facet_grid2(.~Beta,scales = "free", labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
@@ -191,10 +191,10 @@ plot_Beta.A_OptimalSamplingMC<-function(object){
                          labels = paste0("beta[",label_values,"]"))
 
   Mean_Data <- Temp_Data |>
-    dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
+    dplyr::group_by(.data$Method,.data$r,.data$Beta) |>
     dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
 
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r2),color=.data$Method))+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r),color=.data$Method))+
     ggridges::geom_density_ridges2(scale=0.95,alpha=0,linewidth=0.9)+
     ggh4x::facet_grid2(.~Beta,scales = "free", labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
@@ -224,12 +224,12 @@ plot_Beta.ModelRobust<-function(object){
                              labels = paste0("beta[",label_values,"]"))
 
       Mean_Data <- Temp_Data |>
-        dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
+        dplyr::group_by(.data$Method,.data$r,.data$Beta) |>
         dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
 
       method_colors<-c("#A50021","#F76D5E","#005000","#50FF50")
 
-      ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r2),color=.data$Method),
+      ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r),color=.data$Method),
                       outline.type = "full")+
         ggridges::geom_density_ridges2(scale=0.95,alpha=0,linewidth=0.9)+
         ggh4x::facet_grid2(.~Beta,scales = "free",labeller = ggplot2::label_parsed)+
@@ -263,10 +263,10 @@ plot_Beta.ModelMisspecified<-function(object){
                          labels = paste0("beta[",label_values,"]"))
 
   Mean_Data <- Temp_Data |>
-    dplyr::group_by(.data$Method,.data$r2,.data$Beta) |>
+    dplyr::group_by(.data$Method,.data$r,.data$Beta) |>
     dplyr::summarise(Mean = mean(.data$Values),.groups = "drop")
 
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r2),color=.data$Method))+
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$Values,y=factor(.data$r),color=.data$Method))+
     ggridges::geom_density_ridges2(scale=0.95,alpha=0,linewidth=0.9)+
     ggh4x::facet_grid2(.~Beta,scales = "free",labeller = ggplot2::label_parsed)+
     ggplot2::xlab(expression(paste(beta," values")))+
@@ -317,7 +317,7 @@ plot_AMSE<-function(object){
 plot_AMSE.ModelMisspecified<-function(object){
   Temp_Data<-data.frame(object$AMSE_Estimates) |>
     tidyr::pivot_longer(cols = c("Variance","Bias.2","AMSE"),names_to = "Metric",values_to = "Values") |>
-    dplyr::group_by(.data$Method,.data$r2,.data$Metric) |>
+    dplyr::group_by(.data$Method,.data$r,.data$Metric) |>
     dplyr::summarise(Mean=mean(.data$Values),.groups = "drop")
 
   Temp_Data$Metric<-factor(Temp_Data$Metric,levels = c("Bias.2","Variance","AMSE"),
@@ -331,13 +331,13 @@ plot_AMSE.ModelMisspecified<-function(object){
   method_linetypes<-c(rep("dashed",3),"solid",rep("dotted",length(Log_Odds_Labels)),
                       rep("dotdash",length(Power_Labels)))
 
-  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$r2,y=.data$Mean,color=.data$Method,
+  ggplot2::ggplot(data=Temp_Data,ggplot2::aes(x=.data$r,y=.data$Mean,color=.data$Method,
                                               linetype=.data$Method,group=.data$Method))+
     ggplot2::geom_point(size=2)+
     ggplot2::geom_line()+
     ggplot2::scale_color_manual(values = method_colors)+
     ggplot2::scale_linetype_manual(values = method_linetypes)+
-    ggplot2::scale_x_continuous(labels=unique(Temp_Data$r2),breaks=unique(Temp_Data$r2))+
+    ggplot2::scale_x_continuous(labels=unique(Temp_Data$r),breaks=unique(Temp_Data$r))+
     ggplot2::facet_wrap(~Metric,scales = "free")+
     ggplot2::theme_bw()+
     ggplot2::theme(legend.position = "bottom",

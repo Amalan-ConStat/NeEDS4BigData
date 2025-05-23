@@ -82,7 +82,7 @@ Method_Shape_Types<-c(rep(17,4),rep(4,3),16)
 ```
 
 The obtained samples and their respective model parameter estimates are over $M=250$ simulations across different sample sizes $k=(800,\ldots,2000)$. 
-We set the initial sample size of $r1=400$ for the methods that requires a random sample. 
+We set the initial sample size of $r0=400$ for the methods that requires a random sample. 
 From the final samples, model parameters of the assume model are estimated. 
 These estimated model parameters are compared with the estimated model parameters of the full big data through the mean squared error $MSE(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ}\sum_{i=1}^M \sum_{j=1}^J(\tilde{\beta}_{k,j} - \hat{\beta}_j)^2$. 
 Here, $\tilde{\beta}_k$ is the estimated model parameters from the sample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter. 
@@ -120,7 +120,7 @@ colnames(Final_Beta_LS)<-c("Method","Sample",paste0("Beta",0:4))
 
 ```{r A-optimality subsampling for GauLin Model}
 # A-optimality subsampling for Gaussian Linear Model
-NeEDS4BigData::AoptimalGauLMSub(r1=400,r2=rep_k,
+NeEDS4BigData::AoptimalGauLMSub(r0=400,r=rep_k,
                                 Y=as.matrix(Original_Data[,1]),
                                 X=as.matrix(Original_Data[,-1]),N=N)->Results
 Final_Beta_AoptGauLM<-Results$Beta_Estimates
@@ -132,7 +132,7 @@ colnames(Final_Beta_AoptGauLM)<-c("Method","Sample",paste0("Beta",0:4))
 
 ```{r A- and L- optimaliy subsampling}
 # A- and L-optimality subsampling for GLM
-NeEDS4BigData::ALoptimalGLMSub(r1=400,r2=rep_k,
+NeEDS4BigData::ALoptimalGLMSub(r0=400,r=rep_k,
                                Y=as.matrix(Original_Data[,1]),
                                X=as.matrix(Original_Data[,-1]),
                                N=N,family = "linear")->Results
@@ -144,7 +144,7 @@ colnames(Final_Beta_ALoptGLM)<-c("Method","Sample",paste0("Beta",0:4))
 
 ```{r A-optimality subsampling with measurement constraints}
 # A-optimality subsampling for without response
-NeEDS4BigData::AoptimalMCGLMSub(r1=400,r2=rep_k,
+NeEDS4BigData::AoptimalMCGLMSub(r0=400,r=rep_k,
                                 Y=as.matrix(Original_Data[,1]),
                                 X=as.matrix(Original_Data[,-1]),
                                 N=N,family="linear")->Results

@@ -5,10 +5,10 @@
 #' with the RLmAMSE (Reduction of Loss by minimizing the Average Mean Squared Error).
 #'
 #' @usage
-#' modelMissLinSub(r1,r2,Y,X,N,Alpha,proportion,model="Auto")
+#' modelMissLinSub(r0,r,Y,X,N,Alpha,proportion,model="Auto")
 #'
-#' @param r1          sample size for initial random sampling
-#' @param r2          sample size for optimal sampling
+#' @param r0          sample size for initial random sample
+#' @param r           final sample size including initial(r0) and optimal(r1) samples
 #' @param Y           response data or Y
 #' @param X           covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N           size of the big data
@@ -21,18 +21,18 @@
 #'
 #' Two stage subsampling algorithm for big data under linear regression for potential model misspecification.
 #'
-#' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters.
+#' First stage is to obtain a random sample of size \eqn{r_0} and estimate the model parameters.
 #' Using the estimated parameters subsampling probabilities are evaluated for A-, L-, L1-optimality criteria,
 #' RLmAMSE and enhanced RLmAMSE (log-odds and power) subsampling methods.
 #'
-#' Through the estimated subsampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
+#' Through the estimated subsampling probabilities a sample of size \eqn{r_1 \ge r_0} is obtained.
 #' Finally, the two samples are combined and the model parameters are estimated for A-, L-, L1-optimality,
 #' RLmAMSE and enhanced RLmAMSE (log-odds and power).
 #'
 #' \strong{NOTE} :  If input parameters are not in given domain conditions
 #' necessary error messages will be provided to go further.
 #'
-#' If \eqn{r_2 \ge r_1} is not satisfied then an error message will be produced.
+#' If \eqn{r_1 \ge r_0} is not satisfied then an error message will be produced.
 #'
 #' If the big data \eqn{X,Y} has any missing values then an error message will be produced.
 #'
@@ -86,13 +86,13 @@
 #' X_Data <- cbind(X0=1,X_1);
 #' Full_Data<-GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon,family)
 #'
-#' r1<-300; r2<-rep(100*c(6,9),50);
+#' r0<-300; r<-rep(100*c(6,9),50);
 #' Original_Data<-Full_Data$Complete_Data[,-ncol(Full_Data$Complete_Data)];
 #'
 #' # cl <- parallel::makeCluster(4)
 #' # doParallel::registerDoParallel(cl)
 #' \dontrun{
-#' Results<-modelMissLinSub(r1 = r1, r2 = r2,
+#' Results<-modelMissLinSub(r0 = r0, r = r,
 #'                          Y = as.matrix(Original_Data[,1]),
 #'                          X = as.matrix(Original_Data[,-1]),
 #'                          N = N, Alpha = 10, proportion = 0.3)
@@ -113,13 +113,13 @@
 #' @importFrom psych tr
 #' @importFrom rlang is_formula
 #' @export
-modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion,model="Auto"){
-  if(any(is.na(c(r1,r2,N,Alpha,proportion))) | any(is.nan(c(r1,r2,N,Alpha,proportion)))){
-    stop("NA or Infinite or NAN values in the r1,r2,N,Alpha or proportion")
+modelMissLinSub <- function(r0,r,Y,X,N,Alpha,proportion,model="Auto"){
+  if(any(is.na(c(r0,r,N,Alpha,proportion))) | any(is.nan(c(r0,r,N,Alpha,proportion)))){
+    stop("NA or Infinite or NAN values in the r0,r,N,Alpha or proportion")
   }
 
-  if((length(r1) + length(N) + length(proportion)) != 3){
-    stop("proportion, r1 or N has a value greater than length one")
+  if((length(r0) + length(N) + length(proportion)) != 3){
+    stop("proportion, r0 or N has a value greater than length one")
   }
 
   if((N != nrow(X)) | (N != nrow(Y)) | nrow(X) != nrow(Y)){
@@ -130,8 +130,8 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion,model="Auto"){
     stop("NA or Infinite or NAN values in the Y or X")
   }
 
-  if(any((2*r1) > r2)){
-    stop("2*r1 cannot be greater than r2 at any point")
+  if(any((2*r0) > r)){
+    stop("2*r0 cannot be greater than r at any point")
   }
 
   if(Alpha <= 1 | length(Alpha) > 1){
@@ -164,7 +164,7 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion,model="Auto"){
     stop("The model for GAM is not a valid formula or input")
   }
 
-  idx.prop <- sample(1:N, size = r1, replace = TRUE)
+  idx.prop <- sample(1:N, size = r0, replace = TRUE)
 
   x.prop <- X[idx.prop,]
   y.prop <- Y[idx.prop]
@@ -181,7 +181,7 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion,model="Auto"){
   f_estimate<-Xbeta_GAM-Xbeta_Final
   Var_GAM.prop<-sum((Y-Xbeta_GAM)^2)/N
 
-  if(proportion*N != r1){
+  if(proportion*N != r0){
     idx.proportion <- sample(1:N, size = ceiling(proportion*N), replace = TRUE)
     Y_proportion<-Y[idx.proportion]
     X_proportion<-X[idx.proportion,]
@@ -213,34 +213,34 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion,model="Auto"){
   x.prop_t<-t(x.prop)
   f_estimate.prop<-f_estimate[idx.prop]
   Xt_X.prop<-crossprod(x.prop)
-  L1_r1_1_Temp<-(1+1/r1)*Tempsy_Var_Gam_Var
-  r1_Temp<-(1+1/r1)
+  L1_r0_1_Temp<-(1+1/r0)*Tempsy_Var_Gam_Var
+  r0_Temp<-(1+1/r0)
 
   a<-NULL
   L_All <- foreach::foreach(a = 1:N, .combine = rbind,.packages = "psych") %dopar% {
-    X_r1<-matrix(X[a,],nrow=1)
-    Xt_X<-Xt_X.prop + crossprod(X_r1)
+    X_r0<-matrix(X[a,],nrow=1)
+    Xt_X<-Xt_X.prop + crossprod(X_r0)
 
     Temp_Solve<-solve(Xt_X)
-    Temp_Xr1_Solve<-x.prop %*% Temp_Solve
-    Temp1 <- tcrossprod(Temp_Xr1_Solve,x.prop)
+    Temp_Xr0_Solve<-x.prop %*% Temp_Solve
+    Temp1 <- tcrossprod(Temp_Xr0_Solve,x.prop)
 
-    L1_r1 <- L1_r1_1_Temp*psych::tr(Temp1)
-    Temp_f_r1 <- Temp1%*%f_estimate.prop
-    Temp_diff <- (r1_Temp*Temp_f_r1 - f_estimate.prop)
-    L2_r1 <- sum((Var_prop_inv*Temp_diff)^2)
+    L1_r0 <- L1_r0_1_Temp*psych::tr(Temp1)
+    Temp_f_r0 <- Temp1%*%f_estimate.prop
+    Temp_diff <- (r0_Temp*Temp_f_r0 - f_estimate.prop)
+    L2_r0 <- sum((Var_prop_inv*Temp_diff)^2)
 
-    L1_r1_1 <- r1_Temp*Var_prop_inv*psych::tr(Temp1)
+    L1_r0_1 <- r0_Temp*Var_prop_inv*psych::tr(Temp1)
 
-    c(L1_r1+L2_r1,L1_r1_1)
+    c(L1_r0+L2_r0,L1_r0_1)
   }
 
   Temp1<-x.prop%*%solve(crossprod(x.prop))%*%x.prop_t
-  L1_r1 <- Tempsy_Var_Gam_Var*psych::tr(Temp1)
+  L1_r0 <- Tempsy_Var_Gam_Var*psych::tr(Temp1)
   Temp_diff<-(Temp1%*%f_estimate.prop-f_estimate.prop)
-  L2_r1 <- sum((Var_prop_inv*Temp_diff)^2)
-  L1_r1_1 <- Var_prop_inv*psych::tr(Temp1)
-  L_All_Temp<-cbind(L1_r1+L2_r1,L1_r1_1)
+  L2_r0 <- sum((Var_prop_inv*Temp_diff)^2)
+  L1_r0_1 <- Var_prop_inv*psych::tr(Temp1)
+  L_All_Temp<-cbind(L1_r0+L2_r0,L1_r0_1)
 
   # L1-optimality
   L_All_Final<-abs(L_All_Temp[,2]-L_All[,2])
@@ -259,41 +259,41 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion,model="Auto"){
   PI.RLmAMSE_Pow<-apply(as.matrix(Alpha),1,function(Alpha,PI.RLmAMSE){
     PI.RLmAMSE^Alpha/sum(PI.RLmAMSE^Alpha)},PI.RLmAMSE)
 
-  Var_Epsilon<-matrix(nrow=length(r2),ncol=5)
+  Var_Epsilon<-matrix(nrow=length(r),ncol=5)
 
   # For the Model with already available subsampling probabilities - mVc
-  beta_mVc<-matrix(nrow = length(r2),ncol = ncol(X)+1);
-  Utility_mVc<-matrix(nrow = length(r2),ncol = 4);
-  AMSE_Sample_mVc<-matrix(nrow = length(r2),ncol = 4) ; Sample.mVc<-list();
+  beta_mVc<-matrix(nrow = length(r),ncol = ncol(X)+1);
+  Utility_mVc<-matrix(nrow = length(r),ncol = 4);
+  AMSE_Sample_mVc<-matrix(nrow = length(r),ncol = 4) ; Sample.mVc<-list();
 
   # For the Model with already available subsampling probabilities - mMSE
-  beta_mMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1);
-  Utility_mMSE<-matrix(nrow = length(r2),ncol = 4);
-  AMSE_Sample_mMSE<-matrix(nrow = length(r2),ncol = 4) ; Sample.mMSE<-list();
+  beta_mMSE<-matrix(nrow = length(r),ncol = ncol(X)+1);
+  Utility_mMSE<-matrix(nrow = length(r),ncol = 4);
+  AMSE_Sample_mMSE<-matrix(nrow = length(r),ncol = 4) ; Sample.mMSE<-list();
 
   # For the Model with already available subsampling probabilities - L1-optimality
-  beta_L1_optimality<-matrix(nrow = length(r2),ncol = ncol(X)+1);
-  Utility_L1_optimality<-matrix(nrow = length(r2),ncol = 4);
-  AMSE_Sample_L1_optimality<-matrix(nrow = length(r2),ncol = 4) ; Sample.L1_optimality<-list();
+  beta_L1_optimality<-matrix(nrow = length(r),ncol = ncol(X)+1);
+  Utility_L1_optimality<-matrix(nrow = length(r),ncol = 4);
+  AMSE_Sample_L1_optimality<-matrix(nrow = length(r),ncol = 4) ; Sample.L1_optimality<-list();
 
   # For the Real and Model with model robust subsampling probabilities RLmAMSE
-  beta_RLmAMSE<-matrix(nrow = length(r2),ncol = ncol(X)+1 );
-  Utility_RLmAMSE<-matrix(nrow = length(r2),ncol = 4);
-  AMSE_Sample_RLmAMSE<-matrix(nrow = length(r2),ncol = 4) ; Sample.RLmAMSE<-list()
+  beta_RLmAMSE<-matrix(nrow = length(r),ncol = ncol(X)+1 );
+  Utility_RLmAMSE<-matrix(nrow = length(r),ncol = 4);
+  AMSE_Sample_RLmAMSE<-matrix(nrow = length(r),ncol = 4) ; Sample.RLmAMSE<-list()
 
   # For the Model with model robust subsampling probabilities RLmAMSE LO
-  beta_RLmAMSE_LO<-replicate(length(Alpha),array(dim = c(length(r2),ncol(X)+1)),simplify = FALSE) ;
-  Utility_RLmAMSE_LO<-replicate(length(Alpha),array(dim = c(length(r2),4)),simplify = FALSE) ;
-  AMSE_Sample_RLmAMSE_LO<-replicate(length(Alpha),array(dim = c(length(r2),4)),simplify = FALSE);
-  Sample.RLmAMSE_LO<-replicate(length(Alpha),list(rep(list(NA),length(r2)+1)));
-  Var_RLmAMSE_LO<-matrix(nrow = length(r2),ncol=length(Alpha))
+  beta_RLmAMSE_LO<-replicate(length(Alpha),array(dim = c(length(r),ncol(X)+1)),simplify = FALSE) ;
+  Utility_RLmAMSE_LO<-replicate(length(Alpha),array(dim = c(length(r),4)),simplify = FALSE) ;
+  AMSE_Sample_RLmAMSE_LO<-replicate(length(Alpha),array(dim = c(length(r),4)),simplify = FALSE);
+  Sample.RLmAMSE_LO<-replicate(length(Alpha),list(rep(list(NA),length(r)+1)));
+  Var_RLmAMSE_LO<-matrix(nrow = length(r),ncol=length(Alpha))
 
   # For the Model with model robust subsampling probabilities RLmAMSE Pow
-  beta_RLmAMSE_Pow<-replicate(length(Alpha),array(dim = c(length(r2),ncol(X)+1)),simplify = FALSE) ;
-  Utility_RLmAMSE_Pow<-replicate(length(Alpha),array(dim = c(length(r2),4)),simplify = FALSE) ;
-  AMSE_Sample_RLmAMSE_Pow<-replicate(length(Alpha),array(dim = c(length(r2),4)),simplify = FALSE);
-  Sample.RLmAMSE_Pow<-replicate(length(Alpha),list(rep(list(NA),length(r2)+1)));
-  Var_RLmAMSE_Pow<-matrix(nrow = length(r2),ncol=length(Alpha))
+  beta_RLmAMSE_Pow<-replicate(length(Alpha),array(dim = c(length(r),ncol(X)+1)),simplify = FALSE) ;
+  Utility_RLmAMSE_Pow<-replicate(length(Alpha),array(dim = c(length(r),4)),simplify = FALSE) ;
+  AMSE_Sample_RLmAMSE_Pow<-replicate(length(Alpha),array(dim = c(length(r),4)),simplify = FALSE);
+  Sample.RLmAMSE_Pow<-replicate(length(Alpha),list(rep(list(NA),length(r)+1)));
+  Var_RLmAMSE_Pow<-matrix(nrow = length(r),ncol=length(Alpha))
 
   Tempsy_Var_Gam_Var_AMSE<-Var_GAM_Full*Var_Full^(-2)
   VarFull_Inv<-Var_Full^(-1)
@@ -303,20 +303,20 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion,model="Auto"){
     Sample.RLmAMSE_LO[[j]][[1]]<-Sample.RLmAMSE_Pow[[j]][[1]]<-idx.prop
   }
 
-  Var_Epsilon[,1]<-r2
+  Var_Epsilon[,1]<-r
   Utility_mVc[,1]<-Utility_mMSE[,1]<-Utility_L1_optimality[,1]<-
-    Utility_RLmAMSE[,1]<-r2
+    Utility_RLmAMSE[,1]<-r
 
   message("Step 1 of the algorithm completed.\n")
 
-  for (i in 1:length(r2))
+  for (i in 1:length(r))
   {
     # mVc
-    idx.mVc <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mVc)
+    idx.mVc <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI.mVc)
 
     x.mVc <- X[c(idx.mVc, idx.prop),]
     y.mVc <- Y[c(idx.mVc, idx.prop)]
-    w.mVc <- c(1/PI.mVc[idx.mVc], rep(N,r1))
+    w.mVc <- c(1/PI.mVc[idx.mVc], rep(N,r0))
 
     Temp_Inv<-solve(crossprod(x.mVc))
     x.mVc_t<-t(x.mVc)
@@ -325,27 +325,27 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion,model="Auto"){
     Utility_mVc[i,-1]<-c(VarFull_Inv*psych::tr(Temp_Inv),VarFull_Inv*psych::tr(Temp1),
                           VarFull_Inv*psych::tr(Temp1))
 
-    pi4_r<-sqrt(r2[i]*w.mVc^(-1))
+    pi4_r<-sqrt(r[i]*w.mVc^(-1))
     X_r4<-x.mVc/pi4_r
     Y_r4<-y.mVc/pi4_r
-    beta_mVc[i,]<-c(r2[i],solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4)))
+    beta_mVc[i,]<-c(r[i],solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4)))
     Xbeta_Final<-X%*%beta_mVc[i,-1]
     Var_Epsilon[i,2]<-sum((Y-Xbeta_Final)^2)/N
 
-    L1_r1 <- Tempsy_Var_Gam_Var_AMSE*psych::tr(Temp1)
-    L2_r1 <- sum((VarFull_Inv*(Temp1%*%F_Estimate_Full[c(idx.mVc,idx.prop)] -
+    L1_r0 <- Tempsy_Var_Gam_Var_AMSE*psych::tr(Temp1)
+    L2_r0 <- sum((VarFull_Inv*(Temp1%*%F_Estimate_Full[c(idx.mVc,idx.prop)] -
                                  F_Estimate_Full[c(idx.mVc, idx.prop)]))^2)
 
-    AMSE_Sample_mVc[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+    AMSE_Sample_mVc[i,]<-c(r[i],L1_r0,L2_r0,L1_r0+L2_r0)
 
     idx.mVc->Sample.mVc[[i+1]]
 
     # mMSE
-    idx.mMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.mMSE)
+    idx.mMSE <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI.mMSE)
 
     x.mMSE <- X[c(idx.mMSE, idx.prop),]
     y.mMSE <- Y[c(idx.mMSE, idx.prop)]
-    w.mMSE <- c(1/PI.mMSE[idx.mMSE], rep(N,r1))
+    w.mMSE <- c(1/PI.mMSE[idx.mMSE], rep(N,r0))
 
     Temp_Inv<-solve(crossprod(x.mMSE))
     x.mMSE_t<-t(x.mMSE)
@@ -354,27 +354,27 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion,model="Auto"){
     Utility_mMSE[i,-1]<-c(VarFull_Inv*psych::tr(Temp_Inv),VarFull_Inv*psych::tr(Temp1),
                           VarFull_Inv*psych::tr(Temp1))
 
-    pi4_r<-sqrt(r2[i]*w.mMSE^(-1))
+    pi4_r<-sqrt(r[i]*w.mMSE^(-1))
     X_r4<-x.mMSE/pi4_r
     Y_r4<-y.mMSE/pi4_r
-    beta_mMSE[i,]<-c(r2[i],solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4)))
+    beta_mMSE[i,]<-c(r[i],solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4)))
     Xbeta_Final<-X%*%beta_mMSE[i,-1]
     Var_Epsilon[i,3]<-sum((Y-Xbeta_Final)^2)/N
 
-    L1_r1 <- Tempsy_Var_Gam_Var_AMSE*psych::tr(Temp1)
-    L2_r1 <- sum((VarFull_Inv*(Temp1%*%F_Estimate_Full[c(idx.mMSE,idx.prop)]-
+    L1_r0 <- Tempsy_Var_Gam_Var_AMSE*psych::tr(Temp1)
+    L2_r0 <- sum((VarFull_Inv*(Temp1%*%F_Estimate_Full[c(idx.mMSE,idx.prop)]-
                                  F_Estimate_Full[c(idx.mMSE, idx.prop)]))^2)
 
-    AMSE_Sample_mMSE[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+    AMSE_Sample_mMSE[i,]<-c(r[i],L1_r0,L2_r0,L1_r0+L2_r0)
 
     idx.mMSE->Sample.mMSE[[i+1]]
 
     # L1-optimality
-    idx.L1_optimality <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.L1_optimality)
+    idx.L1_optimality <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI.L1_optimality)
 
     x.L1_optimality <- X[c(idx.L1_optimality, idx.prop),]
     y.L1_optimality <- Y[c(idx.L1_optimality, idx.prop)]
-    w.L1_optimality <- c(1/PI.L1_optimality[idx.L1_optimality], rep(N,r1))
+    w.L1_optimality <- c(1/PI.L1_optimality[idx.L1_optimality], rep(N,r0))
 
     Temp_Inv<-solve(crossprod(x.L1_optimality))
     x.L1_optimality_t<-t(x.L1_optimality)
@@ -383,27 +383,27 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion,model="Auto"){
     Utility_L1_optimality[i,-1]<-c(VarFull_Inv*psych::tr(Temp_Inv),VarFull_Inv*psych::tr(Temp1),
                                    VarFull_Inv*psych::tr(Temp1))
 
-    pi4_r<-sqrt(r2[i]*w.L1_optimality^(-1))
+    pi4_r<-sqrt(r[i]*w.L1_optimality^(-1))
     X_r4<-x.L1_optimality/pi4_r
     Y_r4<-y.L1_optimality/pi4_r
-    beta_L1_optimality[i,]<-c(r2[i],solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4)))
+    beta_L1_optimality[i,]<-c(r[i],solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4)))
     Xbeta_Final<-X%*%beta_L1_optimality[i,-1]
     Var_Epsilon[i,4]<-sum((Y-Xbeta_Final)^2)/N
 
-    L1_r1 <- Tempsy_Var_Gam_Var_AMSE*psych::tr(Temp1)
-    L2_r1 <- sum((VarFull_Inv*(Temp1%*%F_Estimate_Full[c(idx.L1_optimality,idx.prop)]-
+    L1_r0 <- Tempsy_Var_Gam_Var_AMSE*psych::tr(Temp1)
+    L2_r0 <- sum((VarFull_Inv*(Temp1%*%F_Estimate_Full[c(idx.L1_optimality,idx.prop)]-
                                  F_Estimate_Full[c(idx.L1_optimality, idx.prop)]))^2)
 
-    AMSE_Sample_L1_optimality[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+    AMSE_Sample_L1_optimality[i,]<-c(r[i],L1_r0,L2_r0,L1_r0+L2_r0)
 
     idx.L1_optimality->Sample.L1_optimality[[i+1]]
 
     # RLmAMSE
-    idx.RLmAMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.RLmAMSE)
+    idx.RLmAMSE <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI.RLmAMSE)
 
     x.RLmAMSE <- X[c(idx.RLmAMSE, idx.prop),]
     y.RLmAMSE <- Y[c(idx.RLmAMSE, idx.prop)]
-    w.RLmAMSE <- c(1/PI.RLmAMSE[idx.RLmAMSE],rep(N,r1))
+    w.RLmAMSE <- c(1/PI.RLmAMSE[idx.RLmAMSE],rep(N,r0))
 
     Temp_Inv<-solve(crossprod(x.RLmAMSE))
     x.RLmAMSE_t<-t(x.RLmAMSE)
@@ -412,76 +412,76 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion,model="Auto"){
     Utility_RLmAMSE[i,-1]<-c(VarFull_Inv*psych::tr(Temp_Inv),VarFull_Inv*psych::tr(Temp1),
                                    VarFull_Inv*psych::tr(Temp1))
 
-    pi4_r<-sqrt(r2[i]*w.RLmAMSE^(-1))
+    pi4_r<-sqrt(r[i]*w.RLmAMSE^(-1))
     X_r4<-x.RLmAMSE/pi4_r
     Y_r4<-y.RLmAMSE/pi4_r
-    beta_RLmAMSE[i,]<-c(r2[i],solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4)))
+    beta_RLmAMSE[i,]<-c(r[i],solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4)))
     Xbeta_Final<-X%*%beta_RLmAMSE[i,-1]
     Var_Epsilon[i,5]<-sum((Y-Xbeta_Final)^2)/N
 
-    L1_r1 <- Tempsy_Var_Gam_Var_AMSE*psych::tr(Temp1)
-    L2_r1 <- sum((VarFull_Inv*(Temp1%*%F_Estimate_Full[c(idx.RLmAMSE,idx.prop)] -
+    L1_r0 <- Tempsy_Var_Gam_Var_AMSE*psych::tr(Temp1)
+    L2_r0 <- sum((VarFull_Inv*(Temp1%*%F_Estimate_Full[c(idx.RLmAMSE,idx.prop)] -
                                  F_Estimate_Full[c(idx.RLmAMSE,idx.prop)]))^2)
 
-    AMSE_Sample_RLmAMSE[i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+    AMSE_Sample_RLmAMSE[i,]<-c(r[i],L1_r0,L2_r0,L1_r0+L2_r0)
 
     idx.RLmAMSE->Sample.RLmAMSE[[i+1]] # Model robust RLmAMSE
 
     for(j in 1:length(Alpha))
     {
       # RLmAMSE Log Odds
-      idx.RLmAMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.RLmAMSE_LO[,j])
+      idx.RLmAMSE <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI.RLmAMSE_LO[,j])
 
       x.RLmAMSE <- X[c(idx.RLmAMSE,idx.prop),]
       y.RLmAMSE <- Y[c(idx.RLmAMSE,idx.prop)]
-      w.RLmAMSE <- c(1/PI.RLmAMSE_LO[idx.RLmAMSE,j],rep(N,r1))
+      w.RLmAMSE <- c(1/PI.RLmAMSE_LO[idx.RLmAMSE,j],rep(N,r0))
 
       Temp_Inv<-solve(crossprod(x.RLmAMSE))
       x.RLmAMSE_t<-t(x.RLmAMSE)
       Temp1<-x.RLmAMSE%*%Temp_Inv%*%x.RLmAMSE_t
-      Utility_RLmAMSE_LO[[j]][i,]<-c(r2[i],VarFull_Inv*psych::tr(Temp_Inv),VarFull_Inv*psych::tr(Temp1),
+      Utility_RLmAMSE_LO[[j]][i,]<-c(r[i],VarFull_Inv*psych::tr(Temp_Inv),VarFull_Inv*psych::tr(Temp1),
                                      VarFull_Inv*psych::tr(Temp1))
 
-      pi4_r<-sqrt(r2[i]*w.RLmAMSE^(-1))
+      pi4_r<-sqrt(r[i]*w.RLmAMSE^(-1))
       X_r4<-x.RLmAMSE/pi4_r
       Y_r4<-y.RLmAMSE/pi4_r
-      beta_RLmAMSE_LO[[j]][i,]<-c(r2[i],solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4)))
+      beta_RLmAMSE_LO[[j]][i,]<-c(r[i],solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4)))
       Xbeta_Final<-X%*%beta_RLmAMSE_LO[[j]][i,-1]
       Var_RLmAMSE_LO[i,j]<-sum((Y-Xbeta_Final)^2)/N
 
-      L1_r1 <- Tempsy_Var_Gam_Var_AMSE*psych::tr(Temp1)
-      L2_r1 <- sum((VarFull_Inv*(Temp1%*%F_Estimate_Full[c(idx.RLmAMSE,idx.prop)]-
+      L1_r0 <- Tempsy_Var_Gam_Var_AMSE*psych::tr(Temp1)
+      L2_r0 <- sum((VarFull_Inv*(Temp1%*%F_Estimate_Full[c(idx.RLmAMSE,idx.prop)]-
                                    F_Estimate_Full[c(idx.RLmAMSE,idx.prop)]))^2)
 
-      AMSE_Sample_RLmAMSE_LO[[j]][i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+      AMSE_Sample_RLmAMSE_LO[[j]][i,]<-c(r[i],L1_r0,L2_r0,L1_r0+L2_r0)
 
       idx.RLmAMSE->Sample.RLmAMSE_LO[[j]][[i+1]] # Model robust RLmAMSE
 
       # RLmAMSE Power
-      idx.RLmAMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI.RLmAMSE_Pow[,j])
+      idx.RLmAMSE <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI.RLmAMSE_Pow[,j])
 
       x.RLmAMSE <- X[c(idx.RLmAMSE,idx.prop),]
       y.RLmAMSE <- Y[c(idx.RLmAMSE,idx.prop)]
-      w.RLmAMSE <- c(1/PI.RLmAMSE_Pow[idx.RLmAMSE,j],rep(N,r1))
+      w.RLmAMSE <- c(1/PI.RLmAMSE_Pow[idx.RLmAMSE,j],rep(N,r0))
 
       Temp_Inv<-solve(crossprod(x.RLmAMSE))
       x.RLmAMSE_t<-t(x.RLmAMSE)
       Temp1<-x.RLmAMSE%*%Temp_Inv%*%x.RLmAMSE_t
-      Utility_RLmAMSE_Pow[[j]][i,]<-c(r2[i],VarFull_Inv*psych::tr(Temp_Inv),VarFull_Inv*psych::tr(Temp1),
+      Utility_RLmAMSE_Pow[[j]][i,]<-c(r[i],VarFull_Inv*psych::tr(Temp_Inv),VarFull_Inv*psych::tr(Temp1),
                                       VarFull_Inv*psych::tr(Temp1))
 
-      pi4_r<-sqrt(r2[i]*w.RLmAMSE^(-1))
+      pi4_r<-sqrt(r[i]*w.RLmAMSE^(-1))
       X_r4<-x.RLmAMSE/pi4_r
       Y_r4<-y.RLmAMSE/pi4_r
-      beta_RLmAMSE_Pow[[j]][i,]<-c(r2[i],solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4)))
+      beta_RLmAMSE_Pow[[j]][i,]<-c(r[i],solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4)))
       Xbeta_Final<-X%*%beta_RLmAMSE_Pow[[j]][i,-1]
       Var_RLmAMSE_Pow[i,j]<-sum((Y-Xbeta_Final)^2)/N
 
-      L1_r1 <- Tempsy_Var_Gam_Var_AMSE*psych::tr(Temp1)
-      L2_r1 <- sum((VarFull_Inv*(Temp1%*%F_Estimate_Full[c(idx.RLmAMSE,idx.prop)] -
+      L1_r0 <- Tempsy_Var_Gam_Var_AMSE*psych::tr(Temp1)
+      L2_r0 <- sum((VarFull_Inv*(Temp1%*%F_Estimate_Full[c(idx.RLmAMSE,idx.prop)] -
                                    F_Estimate_Full[c(idx.RLmAMSE,idx.prop)]))^2)
 
-      AMSE_Sample_RLmAMSE_Pow[[j]][i,]<-c(r2[i],L1_r1,L2_r1,L1_r1+L2_r1)
+      AMSE_Sample_RLmAMSE_Pow[[j]][i,]<-c(r[i],L1_r0,L2_r0,L1_r0+L2_r0)
 
       idx.RLmAMSE->Sample.RLmAMSE_Pow[[j]][[i+1]] # Model robust RLmAMSE
     }
@@ -501,49 +501,49 @@ modelMissLinSub <- function(r1,r2,Y,X,N,Alpha,proportion,model="Auto"){
                              paste0("RLmAMSE Power ",Alpha)))
 
   # Beta Data
-  Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
+  Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
                               rbind(beta_mMSE,beta_mVc,beta_L1_optimality,beta_RLmAMSE,
                                     do.call(rbind,beta_RLmAMSE_LO),
                                     do.call(rbind,beta_RLmAMSE_Pow)))
 
   if(all(X[,1] == 1)){
-    colnames(Beta_Data)[-1]<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
+    colnames(Beta_Data)[-1]<-c("r",paste0("Beta_",0:(ncol(X)-1)))
   } else {
-    colnames(Beta_Data)[-1]<-c("r2",paste0("Beta_",1:(ncol(X))))
+    colnames(Beta_Data)[-1]<-c("r",paste0("Beta_",1:(ncol(X))))
   }
 
   # Utility Data
-  Utility_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
+  Utility_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
                                  rbind(Utility_mMSE, Utility_mVc,Utility_L1_optimality,Utility_RLmAMSE,
                                        do.call(rbind,Utility_RLmAMSE_LO),
                                        do.call(rbind,Utility_RLmAMSE_Pow)))
 
-  colnames(Utility_Data)<-c("Method","r2","A-Optimality","L-Optimality","L1-Optimality")
+  colnames(Utility_Data)<-c("Method","r","A-Optimality","L-Optimality","L1-Optimality")
 
   # Var Data
   Var_Data<-cbind.data.frame(Var_Epsilon,Var_RLmAMSE_LO,Var_RLmAMSE_Pow)
 
-  colnames(Var_Data)<-c("r2","A-Optimality","L-Optimality","L1-Optimality","RLmAMSE",
+  colnames(Var_Data)<-c("r","A-Optimality","L-Optimality","L1-Optimality","RLmAMSE",
                         paste0("RLmAMSE Log Odds ",Alpha),
                         paste0("RLmAMSE Power ",Alpha))
 
   # AMSE Sample Data
-  AMSE_Sample_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),
+  AMSE_Sample_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
                                      rbind(AMSE_Sample_mMSE,AMSE_Sample_mVc,
                                            AMSE_Sample_L1_optimality,AMSE_Sample_RLmAMSE,
                                            do.call(rbind,AMSE_Sample_RLmAMSE_LO),
                                            do.call(rbind,AMSE_Sample_RLmAMSE_Pow)))
-  colnames(AMSE_Sample_Data)[-1]<-c("r2","Variance","Bias.2","AMSE")
+  colnames(AMSE_Sample_Data)[-1]<-c("r","Variance","Bias.2","AMSE")
 
-  AMSE_Sample_Data[,-c(1,2)]<-AMSE_Sample_Data[,-c(1,2)]/r2
+  AMSE_Sample_Data[,-c(1,2)]<-AMSE_Sample_Data[,-c(1,2)]/r
 
-  all_r<-c(r1,r2)
+  all_r<-c(r0,r)
   # Sample Data
   for(j in 1:length(Alpha)){
     names(Sample.RLmAMSE_LO[[j]])<-names(Sample.RLmAMSE_Pow[[j]])<-paste0("Alpha_",Alpha[j],"_",all_r)
   }
 
-  names(Sample.mMSE)<-names(Sample.mVc)<-names(Sample.L1_optimality)<-names(Sample.RLmAMSE)<-c(r1,r2)
+  names(Sample.mMSE)<-names(Sample.mVc)<-names(Sample.L1_optimality)<-names(Sample.RLmAMSE)<-c(r0,r)
 
   message("Step 2 of the algorithm completed.")
 

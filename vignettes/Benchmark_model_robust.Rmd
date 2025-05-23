@@ -82,7 +82,7 @@ Replicates<-100
 
 # set the initial and final subsample sizes, 
 # with the distribution parameters to generate data
-r1<-c(1,2.5,5)*100; r2<-2500;
+r0<-c(1,2.5,5)*100; r<-2500;
 Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5); 
 Family<-"linear"
 
@@ -151,7 +151,7 @@ cat("Benchmarked biglm() function.\n")
 # benchmarking the NeEDS4BigData::modelRobustLinSub() function
 modelRobustLinSub<-sapply(1:Replicates,function(i){
   start_T<-Sys.time()
-  suppressMessages(modelRobustLinSub(r1[Covariate_idx],r2,
+  suppressMessages(modelRobustLinSub(r0[Covariate_idx],r,
                                      Y=as.matrix(Full_Data[,1]),
                                      X=as.matrix(Full_Data[,-1]),
                                      N=nrow(Full_Data),

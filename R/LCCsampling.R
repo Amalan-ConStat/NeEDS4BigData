@@ -4,10 +4,10 @@
 #' Sampling probabilities are obtained based on local case control method.
 #'
 #' @usage
-#' LCCsampling(r1,r2,Y,X,N)
+#' LCCsampling(r0,r,Y,X,N)
 #'
-#' @param r1      sample size for initial random sampling
-#' @param r2      sample size for local case control sampling
+#' @param r0      sample size for initial random sample
+#' @param r       final sample size including initial(r0) and case control(r1) samples
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
@@ -15,16 +15,16 @@
 #' @details
 #' Two stage sampling algorithm for big data under logistic regression.
 #'
-#' First obtain a random sample of size \eqn{r_1} and estimate the model parameters.
+#' First obtain a random sample of size \eqn{r_0} and estimate the model parameters.
 #' Using the estimated parameters sampling probabilities are evaluated for local case control.
 #'
-#' Through the estimated sampling probabilities an optimal sample of size \eqn{r_2 \ge r_1} is obtained.
+#' Through the estimated sampling probabilities an optimal sample of size \eqn{r_1 \ge r_0} is obtained.
 #' Finally, the optimal sample is used and the model parameters are estimated.
 #'
 #' \strong{NOTE} : If input parameters are not in given domain conditions
 #' necessary error messages will be provided to go further.
 #'
-#' If \eqn{r_2 \ge r_1} is not satisfied then an error message will be produced.
+#' If \eqn{r_1 \ge r_0} is not satisfied then an error message will be produced.
 #'
 #' If the big data \eqn{X,Y} has any missing values then an error message will be produced.
 #'
@@ -48,9 +48,9 @@
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-10000; Family<-"logistic"
 #' Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 #'
-#' r1<-300; r2<-rep(100*c(6,9,12),50); Original_Data<-Full_Data$Complete_Data;
+#' r0<-300; r<-rep(100*c(6,9,12),50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' LCCsampling(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,1]),
+#' LCCsampling(r0 = r0, r = r, Y = as.matrix(Original_Data[,1]),
 #'             X = as.matrix(Original_Data[,-1]),
 #'             N = nrow(Original_Data))->Results
 #'
@@ -58,21 +58,21 @@
 #'
 #' @importFrom Rdpack reprompt
 #' @export
-LCCsampling<-function(r1,r2,Y,X,N){
-  if(any(is.na(c(r1,r2,N))) | any(is.nan(c(r1,r2,N)))){
-    stop("NA or Infinite or NAN values in the r1,r2 or N")
+LCCsampling<-function(r0,r,Y,X,N){
+  if(any(is.na(c(r0,r,N))) | any(is.nan(c(r0,r,N)))){
+    stop("NA or Infinite or NAN values in the r0,r or N")
   }
 
-  if((length(r1) + length(N)) != 2){
-    stop("r1 or N has a value greater than length one")
+  if((length(r0) + length(N)) != 2){
+    stop("r0 or N has a value greater than length one")
   }
 
   if(anyNA(Y) | anyNA(X) | any(is.nan(Y)) | any(is.nan(X)) ){
     stop("NA or Infinite or NAN values in the Y or X")
   }
 
-  if(any((2*r1) > r2)){
-    stop("2*r1 cannot be greater than r2 at any point")
+  if(any((2*r0) > r)){
+    stop("2*r0 cannot be greater than r at any point")
   }
 
   if((N != nrow(X)) | (N != nrow(Y)) | nrow(X) != nrow(Y)){
@@ -83,7 +83,7 @@ LCCsampling<-function(r1,r2,Y,X,N){
   n0 <- N - n1
   PI.prop <- rep(1/(2*n0), N)
   PI.prop[Y==1] <- 1/(2*n1)
-  idx.prop <- sample(1:N, size = r1, replace = TRUE, prob = PI.prop)
+  idx.prop <- sample(1:N, size = r0, replace = TRUE, prob = PI.prop)
 
   x.prop <- X[idx.prop,]
   y.prop <- Y[idx.prop,]
@@ -98,17 +98,17 @@ LCCsampling<-function(r1,r2,Y,X,N){
   Xbeta_Final<-X%*% beta.prop_start
   P.prop  <- 1 - 1 / (1 + exp(Xbeta_Final))
 
-  beta.LCC<-matrix(nrow = length(r2),ncol = ncol(X)+1 )
-  Utility.LCC<-matrix(nrow = length(r2),ncol = 4 )
+  beta.LCC<-matrix(nrow = length(r),ncol = ncol(X)+1 )
+  Utility.LCC<-matrix(nrow = length(r),ncol = 4 )
   Sample.LCC<-list()
 
   Sample.LCC[[1]]<-idx.prop
 
-  beta.LCC[,1]<-Utility.LCC[,1]<-r2
+  beta.LCC[,1]<-Utility.LCC[,1]<-r
   if(all(X[,1] == 1)){
-    colnames(beta.LCC)<-c("r2",paste0("Beta_",0:(ncol(X)-1)))
+    colnames(beta.LCC)<-c("r",paste0("Beta_",0:(ncol(X)-1)))
   } else {
-    colnames(beta.LCC)<-c("r2",paste0("Beta_",1:(ncol(X))))
+    colnames(beta.LCC)<-c("r",paste0("Beta_",1:(ncol(X))))
   }
 
   ## local case control sampling
@@ -117,9 +117,9 @@ LCCsampling<-function(r1,r2,Y,X,N){
 
   message("Step 1 of the algorithm completed.\n")
 
-  for(i in 1:length(r2)){
+  for(i in 1:length(r)){
     ## local case control sampling
-    idx.LCC <- sample(1:N, size = r2[i], replace = TRUE, prob = PI.LCC)
+    idx.LCC <- sample(1:N, size = r[i], replace = TRUE, prob = PI.LCC)
 
     x.LCC <- X[idx.LCC,]
     y.LCC <- Y[idx.LCC]
@@ -139,9 +139,9 @@ LCCsampling<-function(r1,r2,Y,X,N){
   colnames(Full_SP)<-c("Local case control")
 
   Sampling_Methods<-factor(c("Local case control"))
-  Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r2)),beta.LCC)
+  Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),beta.LCC)
 
-  names(Sample.LCC)<-c(r1,r2)
+  names(Sample.LCC)<-c(r0,r)
 
   message("Step 2 of the algorithm completed.")
 

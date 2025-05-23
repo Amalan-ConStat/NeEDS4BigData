@@ -68,7 +68,7 @@ reference:
     desc: Real world big data
     contents:
         - Electric_consumption
-        - One_Million_Songs
+        - One_million_songs
         - Skin_segmentation
   - title: Generate Big Data
     desc: Simulating big data under different conditions

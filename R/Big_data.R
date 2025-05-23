@@ -59,7 +59,7 @@
 
 
 
-#' One Million Songs data
+#' One million songs data
 #'
 #' This data set contains 1,019,318 unique users' music play counts in the Echo Nest,
 #' which is available at "http://millionsongdataset.com/tasteprofile/".
@@ -81,13 +81,13 @@
 #' }
 #'
 #' @examples
-#' nrow(One_Million_Songs)
+#' nrow(One_million_songs)
 #'
 #' @references
 #' \insertRef{mcfee2012million}{NeEDS4BigData}
 #' \insertRef{ai2021optimal}{NeEDS4BigData}
 #'
-"One_Million_Songs"
+"One_million_songs"
 
 #' Generate data for Generalised Linear Models
 #'

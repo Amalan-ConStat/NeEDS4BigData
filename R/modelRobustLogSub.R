@@ -5,32 +5,32 @@
 #' optimality criteria.
 #'
 #' @usage
-#' modelRobustLogSub(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Covariates)
+#' modelRobustLogSub(r0,r,Y,X,N,Apriori_probs,All_Combinations,All_Covariates)
 #'
-#' @param r1      sample size for initial random sampling
-#' @param r2      sample size for optimal sampling
+#' @param r0      sample size for initial random sample
+#' @param r       final sample size including initial(r0) and optimal(r1) samples
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
-#' @param Apriori_probs   vector of a priori model probabilities that are used to obtain the model robust subsampling probabilities
+#' @param Apriori_probs    vector of a priori model probabilities that are used to obtain the model robust subsampling probabilities
 #' @param All_Combinations list of possible models that can describe the data
-#' @param All_Covariates all the covariates in the models
+#' @param All_Covariates   all the covariates in the models
 #'
 #' @details
 #' Two stage subsampling algorithm for big data under logistic regression for multiple models that can
 #' describe the big data.
 #'
-#' First stage is to obtain a random sample of size \eqn{r_1} and estimate the model parameters for all models.
+#' First stage is to obtain a random sample of size \eqn{r_0} and estimate the model parameters for all models.
 #' Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria and
 #' model averaging A-, L-optimality subsampling methods.
 #'
-#' Through the estimated subsampling probabilities a sample of size \eqn{r_2 \ge r_1} is obtained.
+#' Through the estimated subsampling probabilities a sample of size \eqn{r_1 \ge r_0} is obtained.
 #' Finally, the two samples are combined and the model parameters are estimated for all the models.
 #'
 #' \strong{NOTE} :  If input parameters are not in given domain conditions
 #' necessary error messages will be provided to go further.
 #'
-#' If \eqn{r_2 \ge r_1} is not satisfied then an error message will be produced.
+#' If \eqn{r_1 \ge r_0} is not satisfied then an error message will be produced.
 #'
 #' If the big data \eqn{X,Y} has any missing values then an error message will be produced.
 #'
@@ -87,9 +87,9 @@
 #' All_Models<-All_Models[-c(5:7)]
 #' names(All_Models)<-paste0("Model_",1:length(All_Models))
 #'
-#' r1<-300; r2<-rep(100*c(6,9),50);
+#' r0<-300; r<-rep(100*c(6,9),50);
 #'
-#' modelRobustLogSub(r1 = r1, r2 = r2, Y = as.matrix(Original_Data[,1]),
+#' modelRobustLogSub(r0 = r0, r = r, Y = as.matrix(Original_Data[,1]),
 #'                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                   Apriori_probs = rep(1/length(All_Models),length(All_Models)),
 #'                   All_Combinations = All_Models,
@@ -101,13 +101,13 @@
 #' @importFrom psych tr
 #' @importFrom matrixStats rowSums2
 #' @export
-modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Covariates){
-  if(any(is.na(c(r1,r2,N,Apriori_probs,All_Covariates))) | any(is.nan(c(r1,r2,N,Apriori_probs,All_Covariates)))){
-    stop("NA or Infinite or NAN values in the r1,r2,N,Apriori_probs or All_Covariates")
+modelRobustLogSub <- function(r0,r,Y,X,N,Apriori_probs,All_Combinations,All_Covariates){
+  if(any(is.na(c(r0,r,N,Apriori_probs,All_Covariates))) | any(is.nan(c(r0,r,N,Apriori_probs,All_Covariates)))){
+    stop("NA or Infinite or NAN values in the r0,r,N,Apriori_probs or All_Covariates")
   }
 
-  if((length(r1) + length(N)) != 2){
-    stop("r1 or N has a value greater than length one")
+  if((length(r0) + length(N)) != 2){
+    stop("r0 or N has a value greater than length one")
   }
 
   if((N != nrow(X)) | (N != nrow(Y)) | nrow(X) != nrow(Y)){
@@ -118,8 +118,8 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
     stop("NA or Infinite or NAN values in the Y or X")
   }
 
-  if(any((2*r1) > r2)){
-    stop("2*r1 cannot be greater than r2 at any point")
+  if(any((2*r0) > r)){
+    stop("2*r0 cannot be greater than r at any point")
   }
 
   if(length(Apriori_probs) != length(All_Combinations)){
@@ -134,7 +134,7 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   n0 <- N - n1
   PI.prop <- rep(1/(2*n0), N)
   PI.prop[Y==1] <- 1/(2*n1)
-  idx.prop <- sample(1:N, size = r1, replace = TRUE, prob = PI.prop)
+  idx.prop <- sample(1:N, size = r0, replace = TRUE, prob = PI.prop)
 
   x.prop<-lapply(1:length(All_Combinations),function(j){
     X[idx.prop,All_Covariates %in% All_Combinations[[j]] ]
@@ -171,12 +171,12 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   # For the models, Single and Model Robust
   for (a in 1:length(All_Combinations))
   {
-    beta.mVc_Single[[a]]<-matrix(nrow = length(r2),ncol = length(All_Combinations[[a]])+1 ) # Single Model Results
-    beta.mMSE_Single[[a]]<-matrix(nrow = length(r2),ncol = length(All_Combinations[[a]])+1 )
+    beta.mVc_Single[[a]]<-matrix(nrow = length(r),ncol = length(All_Combinations[[a]])+1 ) # Single Model Results
+    beta.mMSE_Single[[a]]<-matrix(nrow = length(r),ncol = length(All_Combinations[[a]])+1 )
     Sample.mMSE_Single[[a]]<-Sample.mVc_Single[[a]]<-list()
 
-    beta.mVc_MR[[a]]<-matrix(nrow = length(r2),ncol = length(All_Combinations[[a]])+1 ) # Model Robust Results
-    beta.mMSE_MR[[a]]<-matrix(nrow = length(r2),ncol = length(All_Combinations[[a]])+1 )
+    beta.mVc_MR[[a]]<-matrix(nrow = length(r),ncol = length(All_Combinations[[a]])+1 ) # Model Robust Results
+    beta.mMSE_MR[[a]]<-matrix(nrow = length(r),ncol = length(All_Combinations[[a]])+1 )
     Sample.mMSE_MR[[a]]<-Sample.mVc_MR[[a]]<-list()
 
     Sample.mMSE_Single[[a]][[1]]<-Sample.mVc_Single[[a]][[1]]<-
@@ -184,10 +184,10 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
 
     if(all(x.prop[[a]][,1] == 1)){
       colnames(beta.mVc_Single[[a]])<-colnames(beta.mMSE_Single[[a]])<-colnames(beta.mVc_MR[[a]])<-
-        colnames(beta.mMSE_MR[[a]])<-c("r2",paste0("Beta_",0:(length(All_Combinations[[a]])-1)))
+        colnames(beta.mMSE_MR[[a]])<-c("r",paste0("Beta_",0:(length(All_Combinations[[a]])-1)))
     } else {
       colnames(beta.mVc_Single[[a]])<-colnames(beta.mMSE_Single[[a]])<-colnames(beta.mVc_MR[[a]])<-
-        colnames(beta.mMSE_MR[[a]])<-c("r2",paste0("Beta_",1:(length(All_Combinations[[a]]))))
+        colnames(beta.mMSE_MR[[a]])<-c("r",paste0("Beta_",1:(length(All_Combinations[[a]]))))
     }
   }
 
@@ -217,13 +217,13 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
 
   message("Step 1 of the algorithm completed.\n")
 
-  for (i in 1:length(r2))
+  for (i in 1:length(r))
   {
     ## mVc
     idx_Single.mVc <- lapply(1:length(All_Combinations), function(j){
-      sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI_Single.mVc[[j]]) # Single Model Results
+      sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI_Single.mVc[[j]]) # Single Model Results
     })
-    idx_MR.mVc <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI_MR.mVc) # Model Robust Results
+    idx_MR.mVc <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI_MR.mVc) # Model Robust Results
 
     x_Single.mVc <-lapply(1:length(All_Combinations),function(j){
       X[c(idx_Single.mVc[[j]], idx.prop),All_Covariates %in% All_Combinations[[j]] ] # Single Model results
@@ -251,8 +251,8 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
       Sample.mVc_Single[[j]][[i+1]]<-idx_Single.mVc[[j]]
       Sample.mVc_MR[[j]][[i+1]]<-idx_MR.mVc
 
-      beta.mVc_Single[[j]][i,] <- c(r2[i],fit_Single.mVc[[j]]$par)
-      beta.mVc_MR[[j]][i,] <- c(r2[i],fit_MR.mVc[[j]]$par)
+      beta.mVc_Single[[j]][i,] <- c(r[i],fit_Single.mVc[[j]]$par)
+      beta.mVc_MR[[j]][i,] <- c(r[i],fit_MR.mVc[[j]]$par)
 
       if(anyNA(fit_Single.mVc[[j]]$par) || anyNA(fit_MR.mVc[[j]]$par)){
         stop("There are NA or NaN values in the model parameters")
@@ -261,9 +261,9 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
 
     ## mMSE
     idx_Single.mMSE <- lapply(1:length(All_Combinations),function(j){
-      sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI_Single.mMSE[[j]]) # Single Model Results
+      sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI_Single.mMSE[[j]]) # Single Model Results
     })
-    idx_MR.mMSE <- sample(1:N, size = r2[i]-r1, replace = TRUE, prob = PI_MR.mMSE) # Model Robust Results
+    idx_MR.mMSE <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI_MR.mMSE) # Model Robust Results
 
     x_Single.mMSE <- lapply(1:length(All_Combinations),function(j){
       X[c(idx_Single.mMSE[[j]], idx.prop),All_Covariates %in% All_Combinations[[j]] ] # Single Model Results
@@ -293,8 +293,8 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
 
       Sample.mMSE_MR[[j]][[i+1]]<-idx_MR.mMSE # Model Robust Results
 
-      beta.mMSE_Single[[j]][i,] <- c(r2[i],fit_Single.mMSE[[j]]$par) # Single Model Results
-      beta.mMSE_MR[[j]][i,] <- c(r2[i],fit_MR.mMSE[[j]]$par) # Model Robust Results
+      beta.mMSE_Single[[j]][i,] <- c(r[i],fit_Single.mMSE[[j]]$par) # Single Model Results
+      beta.mMSE_MR[[j]][i,] <- c(r[i],fit_MR.mMSE[[j]]$par) # Model Robust Results
 
       if(anyNA(fit_Single.mMSE[[j]]$par) || anyNA(fit_MR.mMSE[[j]]$par)){
         stop("There are NA or NaN values in the model parameters")
@@ -313,12 +313,12 @@ modelRobustLogSub <- function(r1,r2,Y,X,N,Apriori_probs,All_Combinations,All_Cov
 
   for (j in 1:length(All_Combinations))
   {
-    Beta_Data[[j]]<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r2)),
+    Beta_Data[[j]]<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r)),
                                      rbind(beta.mMSE_Single[[j]],beta.mVc_Single[[j]],
                                            beta.mMSE_MR[[j]],beta.mVc_MR[[j]]))
 
     names(Sample.mVc_Single[[j]])<-names(Sample.mMSE_Single[[j]])<-
-      names(Sample.mVc_MR[[j]])<-names(Sample.mMSE_MR[[j]])<-c(r1,r2)
+      names(Sample.mVc_MR[[j]])<-names(Sample.mMSE_MR[[j]])<-c(r0,r)
   }
 
   names(Beta_Data)<-paste0("Model_",1:length(All_Combinations))
