@@ -4,10 +4,10 @@
 \alias{LeverageSampling}
 \title{Basic and shrinkage leverage sampling for Generalised Linear Models}
 \usage{
-LeverageSampling(r,Y,X,N,S_alpha,family)
+LeverageSampling(rf,Y,X,N,S_alpha,family)
 }
 \arguments{
-\item{r}{sample size}
+\item{rf}{sample size}
 
 \item{Y}{response data or Y}
 
@@ -39,16 +39,16 @@ Sampling probabilities are obtained based on the basic and shrinkage leverage me
 \details{
 Leverage sampling algorithm for big data under Generalised Linear Models (linear, logistic and Poisson regression).
 
-First is to obtain a random sample of size \eqn{min(r)/2} and estimate the model parameters. Using the estimated parameters
+First is to obtain a random sample of size \eqn{min(rf)/2} and estimate the model parameters. Using the estimated parameters
 leverage scores are evaluated for leverage sampling.
 
-Through the estimated leverage scores a sample of size \eqn{r} was obtained. Finally,
-the sample of size \eqn{r} is used and the model parameters are estimated.
+Through the estimated leverage scores a sample of size \eqn{rf} was obtained. Finally,
+the sample of size \eqn{rf} is used and the model parameters are estimated.
 
 \strong{NOTE} : If input parameters are not in given domain conditions
 necessary error messages will be provided to go further.
 
-If \eqn{r} is not satisfied then an error message will be produced.
+If \eqn{rf} is not satisfied then an error message will be produced.
 
 If the big data \eqn{X,Y} has any missing values then an error message will be produced.
 
@@ -65,9 +65,9 @@ Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5)
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"linear"
 Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
-r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
+rf<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
 
-LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
+LeverageSampling(rf = rf, Y = as.matrix(Original_Data[,1]),
                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                  S_alpha = 0.95,
                  family = "linear")->Results
@@ -78,9 +78,9 @@ Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1)
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"logistic"
 Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
-r<-rep(100*c(6,10),25); Original_Data<-Full_Data$Complete_Data;
+rf<-rep(100*c(6,10),25); Original_Data<-Full_Data$Complete_Data;
 
-LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
+LeverageSampling(rf = rf, Y = as.matrix(Original_Data[,1]),
                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                  S_alpha = 0.95,
                  family = "logistic")->Results
@@ -91,9 +91,9 @@ Dist<-"Normal";
 No_Of_Var<-2; Beta<-c(-1,0.5,0.5); N<-5000; Family<-"poisson"
 Full_Data<-GenGLMdata(Dist,NULL,No_Of_Var,Beta,N,Family)
 
-r<-rep(100*c(6,10),25); Original_Data<-Full_Data$Complete_Data;
+rf<-rep(100*c(6,10),25); Original_Data<-Full_Data$Complete_Data;
 
-LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
+LeverageSampling(rf = rf, Y = as.matrix(Original_Data[,1]),
                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                  S_alpha = 0.95,
                  family = "poisson")->Results

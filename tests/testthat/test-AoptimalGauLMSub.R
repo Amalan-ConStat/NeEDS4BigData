@@ -2,9 +2,9 @@ Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5)
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-10000; Family<-"linear"
 Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
-r0<-300; r<-rep(100*c(6,9,12),50); Original_Data<-Full_Data$Complete_Data;
+r0<-300; rf<-rep(100*c(6,9,12),50); Original_Data<-Full_Data$Complete_Data;
 
-AoptimalGauLMSub(r0 = r0, r = r,
+AoptimalGauLMSub(r0 = r0, rf = rf,
                  Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                  X = as.matrix(Original_Data[,-1]),
                  N = nrow(Original_Data)) |> suppressMessages()->Results
@@ -19,7 +19,7 @@ test_that("length of the Results output",{
 })
 
 test_that("dimension of the Beta Estimates",{
-  expect_equal(dim(Results$Beta_Estimates),c(length(r),length(Beta)+2))
+  expect_equal(dim(Results$Beta_Estimates),c(length(rf),length(Beta)+2))
 })
 
 test_that("class of the Beta Estimates",{
@@ -27,7 +27,7 @@ test_that("class of the Beta Estimates",{
 })
 
 test_that("dimension of the Var Epsilon Estimates",{
-  expect_equal(dim(Results$Variance_Epsilon_Estimates),c(length(r),3))
+  expect_equal(dim(Results$Variance_Epsilon_Estimates),c(length(rf),3))
 })
 
 test_that("class of the Var Epsilon Estimates",{
@@ -55,38 +55,38 @@ test_that("value in subsampling probability lte A-Opt",{
 })
 
 test_that("dimension of the A-optimality sample",{
-  expect_equal(length(Results$`Sample_A-Optimality`),c(length(r)+1))
+  expect_equal(length(Results$`Sample_A-Optimality`),c(length(rf)+1))
 })
 
 context_start_file("Checking the AoptimalGauLMSub for error messages")
 test_that("Error on input for r",{
-  expect_error(AoptimalGauLMSub(r0 = r0, r = c(r,NA),
+  expect_error(AoptimalGauLMSub(r0 = r0, rf = c(rf,NA),
                                 Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                 X = as.matrix(Original_Data[,-1]),
-                                N = nrow(Original_Data)),"NA or Infinite or NAN values in the r0,r or N")
+                                N = nrow(Original_Data)),"NA or Infinite or NAN values in the r0,rf or N")
 })
 Original_Data[100,]<-rep(NA,4)
 test_that("Error on X input",{
-  expect_error(AoptimalGauLMSub(r0 = r0, r = r,
+  expect_error(AoptimalGauLMSub(r0 = r0, rf = rf,
                                 Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                 X = as.matrix(Original_Data[,-1]),
                                 N = nrow(Original_Data)),"NA or Infinite or NAN values in the Y or X")
 })
 Original_Data<-Full_Data$Complete_Data
 test_that("Error on r0 and r input",{
-  expect_error(AoptimalGauLMSub(r0 = r0+1000, r = r,
+  expect_error(AoptimalGauLMSub(r0 = r0+1000, rf = rf,
                                 Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                 X = as.matrix(Original_Data[,-1]),
-                                N = nrow(Original_Data)),"2*r0 cannot be greater than r at any point")
+                                N = nrow(Original_Data)),"2*r0 cannot be greater than rf at any point")
 })
 test_that("Error on size of X and Y",{
-  expect_error(AoptimalGauLMSub(r0 = r0, r = r,
+  expect_error(AoptimalGauLMSub(r0 = r0, rf = rf,
                                 Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                 X = as.matrix(Original_Data[,-1]),
                                 N = nrow(Original_Data)+1),"The big data size N is not the same as of the size of X or Y")
 })
 test_that("Error on length of r0, N or family",{
-  expect_error(AoptimalGauLMSub(r0 = r0, r = r,
+  expect_error(AoptimalGauLMSub(r0 = r0, rf = rf,
                                 Y = as.matrix(Original_Data[,colnames(Original_Data) %in% c("Y")]),
                                 X = as.matrix(Original_Data[,-1]),
                                 N = c(nrow(Original_Data),N)),"r0 or N has a value greater than length one")

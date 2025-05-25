@@ -79,7 +79,7 @@ N<-nrow(Original_Data); M<-250; k<-seq(8,20,by=2)*100; rep_k<-rep(k,each=M)
 The method $A$- and $L$-optimality of model robust or average subsampling [@mahendran2023model] is compared against the $A$- and $L$-optimality subsampling [@ai2021optimal;@yao2021review] method. 
 Here five models are selected out of sixteen models, which are 1) main effects model ($\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3+\beta_4X_4$), 2-5) main effects model with the squared term of each covariate ($X^2_1 / X^2_2 / X^2_3 / X^2_4$), 6-11) main effects model with two squared terms of the covariates, 12-15) main effects model with three squared terms of the covariates, and 16) main effects model with all squared terms. 
 The five models are selected based on the smallest AIC values.  
-For each model $l$ the mean squared error of the model parameters $MSE_l(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ} \sum_{i=1}^M \sum_{j=1}^J (\tilde{\beta}_{k,j} - \hat{\beta}_j)^2$ are calculated for the $M=250$ simulations across the sample sizes $k=(800,\ldots,2000)$ and the initial sample size is $r0=400$. 
+For each model $l$ the mean squared error of the model parameters $MSE_l(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ} \sum_{i=1}^M \sum_{j=1}^J (\tilde{\beta}_{k,j} - \hat{\beta}_j)^2$ are calculated for the $M=250$ simulations across the sample sizes $k=r_f=(800,\ldots,2000)$ and the initial sample size is $r_0=400$. 
 Here, for the $l$-th model $\tilde{\beta}_k$ is the estimated model parameters from the sample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter.
 
 ```{r Define the methods}
@@ -138,7 +138,7 @@ Below is the code of implementation for this scenario.
 ```{r Equal apriori probabilities, fig.width=12,fig.height=12,fig.align='center',fig.cap="Mean squared error for all the models with equal apriori in the order a to e for Model 1 to 5 across the subsampling methods under comparison."}
 All_Covariates<-colnames(Original_Data_ModelRobust)[-1]
 # A- and L-optimality model robust subsampling for linear regression
-NeEDS4BigData::modelRobustLinSub(r0=400,r=rep_k,
+NeEDS4BigData::modelRobustLinSub(r0=400,rf=rep_k,
                                  Y=as.matrix(Original_Data_ModelRobust[,1]),
                                  X=as.matrix(Original_Data_ModelRobust[,-1]),
                                  N=N,Apriori_probs=rep(1/Model_Set,Model_Set),
@@ -157,7 +157,7 @@ for (i in 1:length(All_Models)) {
          ncol = ncol(Final_Beta_modelRobust[[i]][,-c(1,2)]),byrow = TRUE)->All_Beta
   
   data.frame("Method"=Final_Beta_modelRobust[[i]]$Method,
-             "Sample"=Final_Beta_modelRobust[[i]]$r,
+             "Sample"=Final_Beta_modelRobust[[i]]$rf,
              "SE"=rowSums((All_Beta-
                            Final_Beta_modelRobust[[i]][,-c(1,2)])^2))->MSE_Beta_MR
   
@@ -201,7 +201,7 @@ Method_Colour<-c("#D82632","#A50021","greenyellow","#BBFFBB","#50FF50","#00BB00"
 Method_Shape_Types<-c(rep(8,3),rep(17,3))
 
 # A- and L-optimality and RLmAMSE model misspecified subsampling for linear regression 
-NeEDS4BigData::modelMissLinSub(r0=400,r=rep_k,
+NeEDS4BigData::modelMissLinSub(r0=400,rf=rep_k,
                                Y=as.matrix(Original_Data[,1]),
                                X=as.matrix(Original_Data[,-1]),
                                N=N,Alpha=10,proportion=0.5)->Results
@@ -218,7 +218,7 @@ matrix(rep(All_Beta,by=nrow(Final_Beta_modelMiss)),nrow = nrow(Final_Beta_modelM
 # Plots for the mean squared error of the model parameter estimates 
 # and the AMSE for the main effects model 
 MSE_Beta_modelMiss<-data.frame("Method"=Final_Beta_modelMiss$Method,
-                               "Sample"=Final_Beta_modelMiss$r,
+                               "Sample"=Final_Beta_modelMiss$rf,
                                "SE"=rowSums((All_Beta - 
                                                Final_Beta_modelMiss[,-c(1,2)])^2))
 
@@ -239,14 +239,14 @@ ggplot(Mean_Data_MM,aes(x=factor(Sample),y=Mean,color=Method,shape=Method))+
   scale_shape_manual(values = Method_Shape_Types)+
   theme_bw()+guides(colour = guide_legend(nrow = 3))+Theme_special()->p1
 
-Mean_AMSE<-Final_AMSE_modelMiss |> dplyr::group_by(r,Method) |> 
+Mean_AMSE<-Final_AMSE_modelMiss |> dplyr::group_by(rf,Method) |> 
        dplyr::summarise(Mean=mean(AMSE),
                         min=quantile(AMSE,0.05),
                         max=quantile(AMSE,0.95),.groups ='drop')
 
-ggplot(Mean_AMSE,aes(x=factor(r),y=Mean,color=Method,shape=Method)) +
+ggplot(Mean_AMSE,aes(x=factor(rf),y=Mean,color=Method,shape=Method)) +
   geom_point(size=3,position = position_dodge(width = 0.5))+
-  geom_line(data=Mean_AMSE,aes(x=factor(r),y=Mean,group=Method,color=Method),
+  geom_line(data=Mean_AMSE,aes(x=factor(rf),y=Mean,group=Method,color=Method),
             position = position_dodge(width = 0.5))+
   geom_errorbar(data=Mean_AMSE,aes(ymin=min,ymax=max),
                 width=0.3,position = position_dodge(width = 0.5))+

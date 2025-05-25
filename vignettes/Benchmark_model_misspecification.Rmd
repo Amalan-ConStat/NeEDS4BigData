@@ -47,7 +47,7 @@ load("additionaldata/Results_Model_Misspecification.Rdata")
 The `lm()`, `biglm()`, `glm()`, and `bigglm()` functions are benchmarked against the model-misspecification subsampling functions. 
 This benchmarking is conducted across all three regression problems using a consistent setup throughout.
 For large data sizes $N = \{10^4,5 \times 10^4,10^5,5 \times 10^5,10^6\}$, three different covariate sizes $\{5,10,25\}$, and two different misspecification types $\{1,2\}$, the functions were replicated $100$ times.
-When using the model-misspecification subsampling functions, the initial subsample sizes $\{100,200,500\}$ were selected based on the covariate sizes, while the final subsample size was fixed at $2500$. 
+When using the model-misspecification subsampling functions, the initial subsample sizes $r_0=\{100,200,500\}$ were selected based on the covariate sizes, while the final subsample size was fixed at $r_f=2500$. 
 Further based on the size of big data we set different proportion sizes to estimate the AMSE, that is $\{0.5,0.1,0.05,0.02,0.005\}$, such that the sample size is $5000$.
 
 ```{r N and Covariate size}
@@ -82,7 +82,7 @@ Replicates<-100
 
 # set the initial and final subsample sizes, 
 # with the proportion values for AMSE calculation
-r0<-c(1,2,5)*100; r<-2500; Family<-"linear"
+r0<-c(1,2,5)*100; rf<-2500; Family<-"linear"
 proportion<-c(0.5,0.1,0.05,0.02,0.005)
 
 # assign the indexes
@@ -142,7 +142,7 @@ cat("Benchmarked biglm() function.\n")
 # benchmarking the NeEDS4BigData::modelMissLinSub() function
 modelMissLinSub<-sapply(1:Replicates,function(i){
   start_T<-Sys.time()
-  suppressMessages(modelMissLinSub(r0[Covariate_idx],r,
+  suppressMessages(modelMissLinSub(r0[Covariate_idx],rf,
                                    Y=as.matrix(Full_Data[,1]),
                                    X=as.matrix(Full_Data[,-c(1,ncol(Full_Data))]),
                                    N=nrow(Full_Data),

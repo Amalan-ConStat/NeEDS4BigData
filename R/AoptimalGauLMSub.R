@@ -4,10 +4,10 @@
 #' to describe the data. Subsampling probabilities are obtained based on the A-optimality criteria.
 #'
 #' @usage
-#' AoptimalGauLMSub(r0,r,Y,X,N)
+#' AoptimalGauLMSub(r0,rf,Y,X,N)
 #'
 #' @param r0      sample size for initial random sample
-#' @param r       final sample size including initial(r0) and optimal(r1) samples
+#' @param rf       final sample size including initial(r0) and optimal(r) samples
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
@@ -18,13 +18,13 @@
 #' First stage is to obtain a random sample of size \eqn{r_0} and estimate the model parameters.
 #' Using the estimated parameters subsampling probabilities are evaluated for A-optimality criteria.
 #'
-#' Through the estimated subsampling probabilities an optimal sample of size \eqn{r_1 \ge r_0} is obtained.
+#' Through the estimated subsampling probabilities an optimal sample of size \eqn{r \ge r_0} is obtained.
 #' Finally, the two samples are combined and the model parameters are estimated.
 #'
 #' \strong{NOTE} : If input parameters are not in given domain conditions
 #' necessary error messages will be provided to go further.
 #'
-#' If \eqn{r_1 \ge r_0} is not satisfied then an error message will be produced.
+#' If \eqn{r \ge r_0} is not satisfied then an error message will be produced.
 #'
 #' If the big data \eqn{X,Y} has any missing values then an error message will be produced.
 #'
@@ -50,9 +50,9 @@
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-10000; Family<-"linear"
 #' Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 #'
-#' r0<-300; r<-rep(100*c(6,12),50); Original_Data<-Full_Data$Complete_Data;
+#' r0<-300; rf<-rep(100*c(6,12),50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' AoptimalGauLMSub(r0 = r0, r = r,Y = as.matrix(Original_Data[,1]),
+#' AoptimalGauLMSub(r0 = r0, rf = rf,Y = as.matrix(Original_Data[,1]),
 #'                  X = as.matrix(Original_Data[,-1]),
 #'                  N = nrow(Original_Data))->Results
 #'
@@ -61,9 +61,9 @@
 #' @importFrom Rdpack reprompt
 #' @importFrom matrixStats rowSums2
 #' @export
-AoptimalGauLMSub <- function(r0,r,Y,X,N){
-  if(any(is.na(c(r0,r,N))) | any(is.nan(c(r0,r,N)))){
-    stop("NA or Infinite or NAN values in the r0,r or N")
+AoptimalGauLMSub <- function(r0,rf,Y,X,N){
+  if(any(is.na(c(r0,rf,N))) | any(is.nan(c(r0,rf,N)))){
+    stop("NA or Infinite or NAN values in the r0,rf or N")
   }
 
   if((length(r0) + length(N)) != 2){
@@ -74,8 +74,8 @@ AoptimalGauLMSub <- function(r0,r,Y,X,N){
     stop("NA or Infinite or NAN values in the Y or X")
   }
 
-  if(any((2*r0) > r)){
-    stop("2*r0 cannot be greater than r at any point")
+  if(any((2*r0) > rf)){
+    stop("2*r0 cannot be greater than rf at any point")
   }
 
   if((N != nrow(X)) | (N != nrow(Y)) | nrow(X) != nrow(Y)){
@@ -103,20 +103,20 @@ AoptimalGauLMSub <- function(r0,r,Y,X,N){
   Second <- (Epsilon.prop^2 - Var.prop)^2/(4 * N^2 * Var.prop)
   ML_Inv <- solve(crossprod(X))
 
-  beta.mMSE<-matrix(nrow = length(r),ncol = ncol(X)+1 )
-  Var_Epsilon<-matrix(nrow = length(r),ncol = 2)
+  beta.mMSE<-matrix(nrow = length(rf),ncol = ncol(X)+1 )
+  Var_Epsilon<-matrix(nrow = length(rf),ncol = 2)
   Sample.mMSE<-list()
 
   Sample.mMSE[[1]]<-idx.prop
 
-  beta.mMSE[,1]<-Var_Epsilon[,1]<-r
+  beta.mMSE[,1]<-Var_Epsilon[,1]<-rf
 
   if(all(X[,1] == 1)){
-    colnames(beta.mMSE)<-c("r",paste0("Beta_",0:(ncol(X)-1)))
+    colnames(beta.mMSE)<-c("rf",paste0("Beta_",0:(ncol(X)-1)))
   } else {
-    colnames(beta.mMSE)<-c("r",paste0("Beta_",1:(ncol(X))))
+    colnames(beta.mMSE)<-c("rf",paste0("Beta_",1:(ncol(X))))
   }
-  colnames(Var_Epsilon)<-c("r","A-Optimality")
+  colnames(Var_Epsilon)<-c("rf","A-Optimality")
 
   ## mMSE
   PI.mMSE <- sqrt(Epsilon.prop^2 * matrixStats::rowSums2((X %*% ML_Inv)^2) + Second)
@@ -124,16 +124,16 @@ AoptimalGauLMSub <- function(r0,r,Y,X,N){
 
   message("Step 1 of the algorithm completed.\n")
 
-  for (i in 1:length(r))
+  for (i in 1:length(rf))
   {
     ## mMSE
-    idx.mMSE <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI.mMSE)
+    idx.mMSE <- sample(1:N, size = rf[i]-r0, replace = TRUE, prob = PI.mMSE)
 
     x.mMSE <- X[c(idx.mMSE, idx.prop),]
     y.mMSE <- Y[c(idx.mMSE, idx.prop)]
     pinv.mMSE<-c(1 / PI.mMSE[idx.mMSE], pinv.prop)
 
-    pi4_r<-sqrt(r[i]*pinv.mMSE^(-1))
+    pi4_r<-sqrt(rf[i]*pinv.mMSE^(-1))
     X_r4<-x.mMSE/pi4_r
     Y_r4<-y.mMSE/pi4_r
     beta.prop<-solve(a=crossprod(X_r4),b=crossprod(X_r4,Y_r4))
@@ -154,12 +154,12 @@ AoptimalGauLMSub <- function(r0,r,Y,X,N){
 
   Subsampling_Methods<-factor(c("A-Optimality"))
 
-  Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r)),beta.mMSE)
+  Beta_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(rf)),beta.mMSE)
 
-  Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r)),
-                                     "Sample"=r,"Var Epsilon"=Var_Epsilon[,"A-Optimality"])
+  Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(rf)),
+                                     "Sample"=rf,"Var Epsilon"=Var_Epsilon[,"A-Optimality"])
 
-  names(Sample.mMSE)<-c(r0,r)
+  names(Sample.mMSE)<-c(r0,rf)
 
   message("Step 2 of the algorithm completed.")
 

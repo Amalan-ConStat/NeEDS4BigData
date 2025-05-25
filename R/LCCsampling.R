@@ -4,10 +4,10 @@
 #' Sampling probabilities are obtained based on local case control method.
 #'
 #' @usage
-#' LCCsampling(r0,r,Y,X,N)
+#' LCCsampling(r0,rf,Y,X,N)
 #'
 #' @param r0      sample size for initial random sample
-#' @param r       final sample size including initial(r0) and case control(r1) samples
+#' @param rf      final sample size including initial(r0) and case control(r) samples
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
@@ -18,13 +18,13 @@
 #' First obtain a random sample of size \eqn{r_0} and estimate the model parameters.
 #' Using the estimated parameters sampling probabilities are evaluated for local case control.
 #'
-#' Through the estimated sampling probabilities an optimal sample of size \eqn{r_1 \ge r_0} is obtained.
+#' Through the estimated sampling probabilities an optimal sample of size \eqn{r \ge r_0} is obtained.
 #' Finally, the optimal sample is used and the model parameters are estimated.
 #'
 #' \strong{NOTE} : If input parameters are not in given domain conditions
 #' necessary error messages will be provided to go further.
 #'
-#' If \eqn{r_1 \ge r_0} is not satisfied then an error message will be produced.
+#' If \eqn{r \ge r_0} is not satisfied then an error message will be produced.
 #'
 #' If the big data \eqn{X,Y} has any missing values then an error message will be produced.
 #'
@@ -48,9 +48,9 @@
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-10000; Family<-"logistic"
 #' Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 #'
-#' r0<-300; r<-rep(100*c(6,9,12),50); Original_Data<-Full_Data$Complete_Data;
+#' r0<-300; rf<-rep(100*c(6,9,12),50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' LCCsampling(r0 = r0, r = r, Y = as.matrix(Original_Data[,1]),
+#' LCCsampling(r0 = r0, rf = rf, Y = as.matrix(Original_Data[,1]),
 #'             X = as.matrix(Original_Data[,-1]),
 #'             N = nrow(Original_Data))->Results
 #'
@@ -58,9 +58,9 @@
 #'
 #' @importFrom Rdpack reprompt
 #' @export
-LCCsampling<-function(r0,r,Y,X,N){
-  if(any(is.na(c(r0,r,N))) | any(is.nan(c(r0,r,N)))){
-    stop("NA or Infinite or NAN values in the r0,r or N")
+LCCsampling<-function(r0,rf,Y,X,N){
+  if(any(is.na(c(r0,rf,N))) | any(is.nan(c(r0,rf,N)))){
+    stop("NA or Infinite or NAN values in the r0,rf or N")
   }
 
   if((length(r0) + length(N)) != 2){
@@ -71,8 +71,8 @@ LCCsampling<-function(r0,r,Y,X,N){
     stop("NA or Infinite or NAN values in the Y or X")
   }
 
-  if(any((2*r0) > r)){
-    stop("2*r0 cannot be greater than r at any point")
+  if(any((2*r0) > rf)){
+    stop("2*r0 cannot be greater than rf at any point")
   }
 
   if((N != nrow(X)) | (N != nrow(Y)) | nrow(X) != nrow(Y)){
@@ -98,17 +98,17 @@ LCCsampling<-function(r0,r,Y,X,N){
   Xbeta_Final<-X%*% beta.prop_start
   P.prop  <- 1 - 1 / (1 + exp(Xbeta_Final))
 
-  beta.LCC<-matrix(nrow = length(r),ncol = ncol(X)+1 )
-  Utility.LCC<-matrix(nrow = length(r),ncol = 4 )
+  beta.LCC<-matrix(nrow = length(rf),ncol = ncol(X)+1 )
+  Utility.LCC<-matrix(nrow = length(rf),ncol = 4 )
   Sample.LCC<-list()
 
   Sample.LCC[[1]]<-idx.prop
 
-  beta.LCC[,1]<-Utility.LCC[,1]<-r
+  beta.LCC[,1]<-Utility.LCC[,1]<-rf
   if(all(X[,1] == 1)){
-    colnames(beta.LCC)<-c("r",paste0("Beta_",0:(ncol(X)-1)))
+    colnames(beta.LCC)<-c("rf",paste0("Beta_",0:(ncol(X)-1)))
   } else {
-    colnames(beta.LCC)<-c("r",paste0("Beta_",1:(ncol(X))))
+    colnames(beta.LCC)<-c("rf",paste0("Beta_",1:(ncol(X))))
   }
 
   ## local case control sampling
@@ -117,9 +117,9 @@ LCCsampling<-function(r0,r,Y,X,N){
 
   message("Step 1 of the algorithm completed.\n")
 
-  for(i in 1:length(r)){
+  for(i in 1:length(rf)){
     ## local case control sampling
-    idx.LCC <- sample(1:N, size = r[i], replace = TRUE, prob = PI.LCC)
+    idx.LCC <- sample(1:N, size = rf[i], replace = TRUE, prob = PI.LCC)
 
     x.LCC <- X[idx.LCC,]
     y.LCC <- Y[idx.LCC]
@@ -139,9 +139,9 @@ LCCsampling<-function(r0,r,Y,X,N){
   colnames(Full_SP)<-c("Local case control")
 
   Sampling_Methods<-factor(c("Local case control"))
-  Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),beta.LCC)
+  Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(rf)),beta.LCC)
 
-  names(Sample.LCC)<-c(r0,r)
+  names(Sample.LCC)<-c(r0,rf)
 
   message("Step 2 of the algorithm completed.")
 

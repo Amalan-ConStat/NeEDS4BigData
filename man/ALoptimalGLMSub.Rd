@@ -4,12 +4,12 @@
 \alias{ALoptimalGLMSub}
 \title{A- and L-optimality criteria based subsampling under Generalised Linear Models}
 \usage{
-ALoptimalGLMSub(r0,r,Y,X,N,family)
+ALoptimalGLMSub(r0,rf,Y,X,N,family)
 }
 \arguments{
 \item{r0}{sample size for initial random sample}
 
-\item{r}{final sample size including initial(r0) and optimal(r1) samples}
+\item{rf}{final sample size including initial(r0) and optimal(r) samples}
 
 \item{Y}{response data or Y}
 
@@ -44,13 +44,13 @@ Two stage subsampling algorithm for big data under Generalised Linear Models
 First stage is to obtain a random sample of size \eqn{r_0} and estimate the model parameters.
 Using the estimated parameters subsampling probabilities are evaluated for A- and L-optimality criteria.
 
-Through the estimated subsampling probabilities an optimal sample of size \eqn{r_1 \ge r_0} is obtained.
+Through the estimated subsampling probabilities an optimal sample of size \eqn{r \ge r_0} is obtained.
 Finally, the two samples are combined and the model parameters are estimated.
 
 \strong{NOTE} : If input parameters are not in given domain conditions
 necessary error messages will be provided to go further.
 
-If \eqn{r_1 \ge r_0} is not satisfied then an error message will be produced.
+If \eqn{r \ge r_0} is not satisfied then an error message will be produced.
 
 If the big data \eqn{X,Y} has any missing values then an error message will be produced.
 
@@ -65,9 +65,9 @@ Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5)
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"linear"
 Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
-r0<-300; r<-rep(c(6,9)*100,50); Original_Data<-Full_Data$Complete_Data;
+r0<-300; rf<-rep(c(6,9)*100,50); Original_Data<-Full_Data$Complete_Data;
 
-ALoptimalGLMSub(r0 = r0, r = r,Y = as.matrix(Original_Data[,1]),
+ALoptimalGLMSub(r0 = r0, rf = rf,Y = as.matrix(Original_Data[,1]),
                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                 family = "linear")->Results
 
@@ -77,9 +77,9 @@ Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1)
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"logistic"
 Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
-r0<-300; r<-rep(c(6,9)*100,50); Original_Data<-Full_Data$Complete_Data;
+r0<-300; rf<-rep(c(6,9)*100,50); Original_Data<-Full_Data$Complete_Data;
 
-ALoptimalGLMSub(r0 = r0, r = r,Y = as.matrix(Original_Data[,1]),
+ALoptimalGLMSub(r0 = r0, rf = rf,Y = as.matrix(Original_Data[,1]),
                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                 family = "logistic")->Results
 
@@ -89,9 +89,9 @@ Dist<-"Normal";
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"poisson"
 Full_Data<-GenGLMdata(Dist,NULL,No_Of_Var,Beta,N,Family)
 
-r0<-300; r<-rep(c(6,9)*100,50); Original_Data<-Full_Data$Complete_Data;
+r0<-300; rf<-rep(c(6,9)*100,50); Original_Data<-Full_Data$Complete_Data;
 
-ALoptimalGLMSub(r0 = r0, r = r,Y = as.matrix(Original_Data[,1]),
+ALoptimalGLMSub(r0 = r0, rf = rf,Y = as.matrix(Original_Data[,1]),
                 X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                 family = "poisson")->Results
 

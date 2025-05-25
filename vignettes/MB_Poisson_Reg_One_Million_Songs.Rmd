@@ -81,8 +81,8 @@ Method_Colour<-c("#BBFFBB","#50FF50","#00BB00",
 Method_Shape_Types<-c(rep(17,3),rep(4,3),16)
 ```
 
-The obtained samples and their respective model parameter estimates are over $M=250$ simulations across different sample sizes $k=(800,\ldots,2000)$. 
-We set the initial sample size of $r0=400$ for the methods that requires a random sample. 
+The obtained samples and their respective model parameter estimates are over $M=250$ simulations across different sample sizes $k=r_f=(800,\ldots,2000)$. 
+We set the initial sample size of $r_0=400$ for the methods that requires a random sample. 
 From the final samples, model parameters of the assume model are estimated.
 These estimated model parameters are compared with the estimated model parameters of the full big data through the mean squared error $MSE(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ}\sum_{i=1}^M \sum_{j=1}^J(\tilde{\beta}_{k,j} - \hat{\beta}_j)^2$. 
 Here, $\tilde{\beta}_k$ is the estimated model parameters from the sample of size $k$ and $\hat{\beta}$ is the estimated model parameters from the full big data, while $j$ is index of the model parameter.
@@ -109,7 +109,7 @@ colnames(Final_Beta_RS)<-c("Method","Sample",paste0("Beta",1:5))
 ```{r Leverage sampling}
 # Leverage sampling 
 ## we set the shrinkage value of S_alpha=0.9
-NeEDS4BigData::LeverageSampling(r=rep_k,Y=as.matrix(Original_Data[,1]),
+NeEDS4BigData::LeverageSampling(rf=rep_k,Y=as.matrix(Original_Data[,1]),
                                 X=as.matrix(Original_Data[,-1]),N=N,
                                 S_alpha = 0.9,family = "poisson")->Results
 Final_Beta_LS<-Results$Beta_Estimates
@@ -120,7 +120,7 @@ colnames(Final_Beta_LS)<-c("Method","Sample",paste0("Beta",1:5))
 
 ```{r A- and L-optimality subsampling}
 # A- and L-optimality subsampling for GLM
-NeEDS4BigData::ALoptimalGLMSub(r0=400,r=rep_k,
+NeEDS4BigData::ALoptimalGLMSub(r0=400,rf=rep_k,
                                Y=as.matrix(Original_Data[,1]),
                                X=as.matrix(Original_Data[,-1]),
                                N=N,family = "poisson")->Results
@@ -132,7 +132,7 @@ colnames(Final_Beta_ALoptGLM)<-c("Method","Sample",paste0("Beta",1:5))
 
 ```{r A-optimality subsampling with measurement constraints}
 # A-optimality subsampling without response
-NeEDS4BigData::AoptimalMCGLMSub(r0=400,r=rep_k,
+NeEDS4BigData::AoptimalMCGLMSub(r0=400,rf=rep_k,
                                 Y=as.matrix(Original_Data[,1]),
                                 X=as.matrix(Original_Data[,-1]),
                                 N=N,family="poisson")->Results

@@ -4,12 +4,12 @@
 \alias{modelRobustLogSub}
 \title{Model robust optimal subsampling for A- and L- optimality criteria under logistic regression}
 \usage{
-modelRobustLogSub(r0,r,Y,X,N,Apriori_probs,All_Combinations,All_Covariates)
+modelRobustLogSub(r0,rf,Y,X,N,Apriori_probs,All_Combinations,All_Covariates)
 }
 \arguments{
 \item{r0}{sample size for initial random sample}
 
-\item{r}{final sample size including initial(r0) and optimal(r1) samples}
+\item{rf}{final sample size including initial(r0) and optimal(r) samples}
 
 \item{Y}{response data or Y}
 
@@ -51,13 +51,13 @@ First stage is to obtain a random sample of size \eqn{r_0} and estimate the mode
 Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria and
 model averaging A-, L-optimality subsampling methods.
 
-Through the estimated subsampling probabilities a sample of size \eqn{r_1 \ge r_0} is obtained.
+Through the estimated subsampling probabilities a sample of size \eqn{r \ge r_0} is obtained.
 Finally, the two samples are combined and the model parameters are estimated for all the models.
 
 \strong{NOTE} :  If input parameters are not in given domain conditions
 necessary error messages will be provided to go further.
 
-If \eqn{r_1 \ge r_0} is not satisfied then an error message will be produced.
+If \eqn{r \ge r_0} is not satisfied then an error message will be produced.
 
 If the big data \eqn{X,Y} has any missing values then an error message will be produced.
 
@@ -96,9 +96,9 @@ for (i in 1:No_of_Variables){
 All_Models<-All_Models[-c(5:7)]
 names(All_Models)<-paste0("Model_",1:length(All_Models))
 
-r0<-300; r<-rep(100*c(6,9),50);
+r0<-300; rf<-rep(100*c(6,9),50);
 
-modelRobustLogSub(r0 = r0, r = r, Y = as.matrix(Original_Data[,1]),
+modelRobustLogSub(r0 = r0, rf = rf, Y = as.matrix(Original_Data[,1]),
                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
                   Apriori_probs = rep(1/length(All_Models),length(All_Models)),
                   All_Combinations = All_Models,

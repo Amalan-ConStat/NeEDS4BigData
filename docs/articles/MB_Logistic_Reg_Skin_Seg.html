@@ -318,9 +318,9 @@ are implemented on the big data.</p>
 <span><span class="va">Method_Shape_Types</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">17</span>,<span class="fl">3</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span><span class="op">)</span>,<span class="fl">16</span><span class="op">)</span></span></code></pre></div>
 <p>The obtained samples and their respective model parameter estimates
 are over <span class="math inline">\(M=250\)</span> simulations across
-different sample sizes <span class="math inline">\(k=(800,\ldots,2000)\)</span>. We set the initial
-sample size of <span class="math inline">\(r0=400\)</span> for the
-methods that requires a random sample. From the final samples, model
+different sample sizes <span class="math inline">\(k=r_f=(800,\ldots,2000)\)</span>. We set the
+initial sample size of <span class="math inline">\(r_0=400\)</span> for
+the methods that requires a random sample. From the final samples, model
 parameters of the assume model are estimated. These estimated model
 parameters are compared with the estimated model parameters of the full
 big data through the mean squared error <span class="math inline">\(MSE(\tilde{\beta}_k,\hat{\beta})=\frac{1}{MJ}\sum_{i=1}^M
@@ -352,7 +352,7 @@ parameters from the full big data, while <span class="math inline">\(j\)</span> 
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Leverage sampling</span></span>
 <span><span class="co">## we set the shrinkage value of S_alpha=0.9</span></span>
-<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/LeverageSampling.html">LeverageSampling</a></span><span class="op">(</span>r<span class="op">=</span><span class="va">rep_k</span>,Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
+<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/LeverageSampling.html">LeverageSampling</a></span><span class="op">(</span>rf<span class="op">=</span><span class="va">rep_k</span>,Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>                                X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,N<span class="op">=</span><span class="va">N</span>,</span>
 <span>                                S_alpha <span class="op">=</span> <span class="fl">0.9</span>,family <span class="op">=</span> <span class="st">"logistic"</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>
 <pre><code><span><span class="co">## Basic and shrinkage leverage probabilities calculated.</span></span></code></pre>
@@ -366,7 +366,7 @@ parameters from the full big data, while <span class="math inline">\(j\)</span> 
 </h3>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Local case control sampling</span></span>
-<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/LCCsampling.html">LCCsampling</a></span><span class="op">(</span>r0<span class="op">=</span><span class="fl">400</span>,r<span class="op">=</span><span class="va">rep_k</span>,</span>
+<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/LCCsampling.html">LCCsampling</a></span><span class="op">(</span>r0<span class="op">=</span><span class="fl">400</span>,rf<span class="op">=</span><span class="va">rep_k</span>,</span>
 <span>                           Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>                           X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>                           N<span class="op">=</span><span class="va">N</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>
@@ -382,7 +382,7 @@ parameters from the full big data, while <span class="math inline">\(j\)</span> 
 </h3>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># A- and L-optimality subsampling for GLM </span></span>
-<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/ALoptimalGLMSub.html">ALoptimalGLMSub</a></span><span class="op">(</span>r0<span class="op">=</span><span class="fl">400</span>,r<span class="op">=</span><span class="va">rep_k</span>,</span>
+<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/ALoptimalGLMSub.html">ALoptimalGLMSub</a></span><span class="op">(</span>r0<span class="op">=</span><span class="fl">400</span>,rf<span class="op">=</span><span class="va">rep_k</span>,</span>
 <span>                               Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>                               X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>                               N<span class="op">=</span><span class="va">N</span>,family <span class="op">=</span> <span class="st">"logistic"</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>
@@ -397,7 +397,7 @@ parameters from the full big data, while <span class="math inline">\(j\)</span> 
 </h3>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># A-optimality subsampling for without response</span></span>
-<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/AoptimalMCGLMSub.html">AoptimalMCGLMSub</a></span><span class="op">(</span>r0<span class="op">=</span><span class="fl">400</span>,r<span class="op">=</span><span class="va">rep_k</span>,</span>
+<span><span class="fu">NeEDS4BigData</span><span class="fu">::</span><span class="fu"><a href="../reference/AoptimalMCGLMSub.html">AoptimalMCGLMSub</a></span><span class="op">(</span>r0<span class="op">=</span><span class="fl">400</span>,rf<span class="op">=</span><span class="va">rep_k</span>,</span>
 <span>                                Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>                                X<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Original_Data</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>                                N<span class="op">=</span><span class="va">N</span>,family<span class="op">=</span><span class="st">"logistic"</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Results</span></span></code></pre></div>

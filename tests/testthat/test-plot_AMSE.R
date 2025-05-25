@@ -7,9 +7,9 @@ X_Data <- cbind(X0=1,X_1);
 
 Full_Data<-GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon,family)
 
-r0<-300; r<-rep(100*c(6,9),10); Original_Data<-Full_Data$Complete_Data[,-ncol(Full_Data$Complete_Data)];
+r0<-300; rf<-rep(100*c(6,9),10); Original_Data<-Full_Data$Complete_Data[,-ncol(Full_Data$Complete_Data)];
 
-Results<-modelMissLinSub(r0 = r0, r = r,
+Results<-modelMissLinSub(r0 = r0, rf = rf,
                          Y = as.matrix(Original_Data[,1]),
                          X = as.matrix(Original_Data[,-1]),
                          N = N, Alpha = 10, proportion = 0.3) |> suppressWarnings() |> suppressMessages()

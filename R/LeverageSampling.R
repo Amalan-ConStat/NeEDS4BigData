@@ -4,9 +4,9 @@
 #' Sampling probabilities are obtained based on the basic and shrinkage leverage method.
 #'
 #' @usage
-#' LeverageSampling(r,Y,X,N,S_alpha,family)
+#' LeverageSampling(rf,Y,X,N,S_alpha,family)
 #'
-#' @param r       sample size
+#' @param rf      sample size
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
@@ -16,16 +16,16 @@
 #' @details
 #' Leverage sampling algorithm for big data under Generalised Linear Models (linear, logistic and Poisson regression).
 #'
-#' First is to obtain a random sample of size \eqn{min(r)/2} and estimate the model parameters. Using the estimated parameters
+#' First is to obtain a random sample of size \eqn{min(rf)/2} and estimate the model parameters. Using the estimated parameters
 #' leverage scores are evaluated for leverage sampling.
 #'
-#' Through the estimated leverage scores a sample of size \eqn{r} was obtained. Finally,
-#' the sample of size \eqn{r} is used and the model parameters are estimated.
+#' Through the estimated leverage scores a sample of size \eqn{rf} was obtained. Finally,
+#' the sample of size \eqn{rf} is used and the model parameters are estimated.
 #'
 #' \strong{NOTE} : If input parameters are not in given domain conditions
 #' necessary error messages will be provided to go further.
 #'
-#' If \eqn{r} is not satisfied then an error message will be produced.
+#' If \eqn{rf} is not satisfied then an error message will be produced.
 #'
 #' If the big data \eqn{X,Y} has any missing values then an error message will be produced.
 #'
@@ -59,9 +59,9 @@
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"linear"
 #' Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 #'
-#' r<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
+#' rf<-rep(100*c(6,10),50); Original_Data<-Full_Data$Complete_Data;
 #'
-#' LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
+#' LeverageSampling(rf = rf, Y = as.matrix(Original_Data[,1]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                  S_alpha = 0.95,
 #'                  family = "linear")->Results
@@ -72,9 +72,9 @@
 #' No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000; Family<-"logistic"
 #' Full_Data<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 #'
-#' r<-rep(100*c(6,10),25); Original_Data<-Full_Data$Complete_Data;
+#' rf<-rep(100*c(6,10),25); Original_Data<-Full_Data$Complete_Data;
 #'
-#' LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
+#' LeverageSampling(rf = rf, Y = as.matrix(Original_Data[,1]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                  S_alpha = 0.95,
 #'                  family = "logistic")->Results
@@ -85,9 +85,9 @@
 #' No_Of_Var<-2; Beta<-c(-1,0.5,0.5); N<-5000; Family<-"poisson"
 #' Full_Data<-GenGLMdata(Dist,NULL,No_Of_Var,Beta,N,Family)
 #'
-#' r<-rep(100*c(6,10),25); Original_Data<-Full_Data$Complete_Data;
+#' rf<-rep(100*c(6,10),25); Original_Data<-Full_Data$Complete_Data;
 #'
-#' LeverageSampling(r = r, Y = as.matrix(Original_Data[,1]),
+#' LeverageSampling(rf = rf, Y = as.matrix(Original_Data[,1]),
 #'                  X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                  S_alpha = 0.95,
 #'                  family = "poisson")->Results
@@ -96,9 +96,9 @@
 #'
 #' @importFrom Rdpack reprompt
 #' @export
-LeverageSampling<-function(r,Y,X,N,S_alpha,family){
-  if(any(is.na(c(r,S_alpha,N,family))) | any(is.nan(c(r,S_alpha,N,family)))){
-    stop("NA or Infinite or NAN values in the r,S_alpha,N or family")
+LeverageSampling<-function(rf,Y,X,N,S_alpha,family){
+  if(any(is.na(c(rf,S_alpha,N,family))) | any(is.nan(c(rf,S_alpha,N,family)))){
+    stop("NA or Infinite or NAN values in the rf,S_alpha,N or family")
   }
 
   if((length(N) + length(family)) != 2){
@@ -130,27 +130,27 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     PI.blev <- PP / ncol(X)
     PI.slev <- S_alpha * PI.blev + (1-S_alpha) * 1 / N
 
-    beta.blev<-beta.uwlev<-beta.slev<-matrix(nrow = length(r),ncol = ncol(X)+1 )
-    Utility.blev<-Utility.uwlev<-Utility.slev<-matrix(nrow = length(r),ncol = 4 )
-    Var_Epsilon<-matrix(nrow = length(r),ncol = 4)
+    beta.blev<-beta.uwlev<-beta.slev<-matrix(nrow = length(rf),ncol = ncol(X)+1 )
+    Utility.blev<-Utility.uwlev<-Utility.slev<-matrix(nrow = length(rf),ncol = 4 )
+    Var_Epsilon<-matrix(nrow = length(rf),ncol = 4)
     Sample.blev<-Sample.uwlev<-Sample.slev<-list()
 
-    beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-Var_Epsilon[,1]<-r
+    beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-Var_Epsilon[,1]<-rf
 
     if(all(X[,1] == 1)){
       colnames(beta.blev)<-colnames(beta.uwlev)<-
-        colnames(beta.slev)<-c("r",paste0("Beta_",0:(ncol(X)-1)))
+        colnames(beta.slev)<-c("rf",paste0("Beta_",0:(ncol(X)-1)))
     } else {
       colnames(beta.blev)<-colnames(beta.uwlev)<-
-        colnames(beta.slev)<-c("r",paste0("Beta_",1:(ncol(X))))
+        colnames(beta.slev)<-c("rf",paste0("Beta_",1:(ncol(X))))
     }
-    colnames(Var_Epsilon)<-c("r","Basic Leverage","Unweighted Leverage","Shrinkage Leverage")
+    colnames(Var_Epsilon)<-c("rf","Basic Leverage","Unweighted Leverage","Shrinkage Leverage")
 
     message("Basic and shrinkage leverage probabilities calculated.\n")
 
-    for (i in 1:length(r)) {
+    for (i in 1:length(rf)) {
       # basic leverage sampling
-      idx.blev <- sample(1:N, size = r[i], replace = TRUE, prob = PI.blev)
+      idx.blev <- sample(1:N, size = rf[i], replace = TRUE, prob = PI.blev)
 
       x.blev <- X[idx.blev,]
       y.blev <- Y[idx.blev]
@@ -187,7 +187,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       }
 
       # shrinkage leverage sampling
-      idx.slev <- sample(N, size = r[i], replace = TRUE, prob = PI.slev)
+      idx.slev <- sample(N, size = rf[i], replace = TRUE, prob = PI.slev)
 
       x.slev <- X[idx.slev,]
       y.slev <- Y[idx.slev]
@@ -214,16 +214,16 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
 
     Sampling_Methods<-factor(c("Basic Leverage","Unweighted Leverage","Shrinkage Leverage"))
 
-    Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
+    Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(rf)),
                                 rbind(beta.blev,beta.uwlev,beta.slev))
 
-    Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
-                                       "Sample"=rep(r,times=length(Sampling_Methods)),
+    Var_Epsilon_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(rf)),
+                                       "Sample"=rep(rf,times=length(Sampling_Methods)),
                                        "Var Epsilon"=c(Var_Epsilon[,"Basic Leverage"],
                                                        Var_Epsilon[,"Unweighted Leverage"],
                                                        Var_Epsilon[,"Shrinkage Leverage"]))
 
-    names(Sample.blev)<-names(Sample.uwlev)<-names(Sample.slev)<-r
+    names(Sample.blev)<-names(Sample.uwlev)<-names(Sample.slev)<-rf
 
     message("Sampling completed.")
 
@@ -236,7 +236,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     return(ans)
   }
   if(family %in% c("logistic")){
-    r1<-round(min(r/2))
+    r1<-round(min(rf/2))
     n1 <- sum(Y)
     n0 <- N - n1
     PI.prop <- rep(1/(2*n0), N)
@@ -265,24 +265,24 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     PI.blev <- PP / sum(PP)
     PI.slev <- (S_alpha * PI.blev) + (1-S_alpha) / N
 
-    beta.blev<-beta.uwlev<-beta.slev<-matrix(nrow = length(r),ncol = ncol(X)+1 )
+    beta.blev<-beta.uwlev<-beta.slev<-matrix(nrow = length(rf),ncol = ncol(X)+1 )
     Sample.blev<-Sample.uwlev<-Sample.slev<-list()
 
-    beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-r
+    beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-rf
 
     if(all(X[,1] == 1)){
       colnames(beta.blev)<-colnames(beta.uwlev)<-
-        colnames(beta.slev)<-c("r",paste0("Beta_",0:(ncol(X)-1)))
+        colnames(beta.slev)<-c("rf",paste0("Beta_",0:(ncol(X)-1)))
     } else {
       colnames(beta.blev)<-colnames(beta.uwlev)<-
-        colnames(beta.slev)<-c("r",paste0("Beta_",1:(ncol(X))))
+        colnames(beta.slev)<-c("rf",paste0("Beta_",1:(ncol(X))))
     }
 
     message("Basic and shrinkage leverage probabilities calculated.\n")
 
-    for (i in 1:length(r)) {
+    for (i in 1:length(rf)) {
       # basic leverage sampling
-      idx.blev <- sample(N, size = r[i], replace = TRUE, PI.blev)
+      idx.blev <- sample(N, size = rf[i], replace = TRUE, PI.blev)
 
       x.blev <- X[idx.blev,]
       y.blev <- Y[idx.blev]
@@ -299,7 +299,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       }
 
       # unweighted leverage sampling
-      fit.uwlev <- .getMLE(x=x.blev, y=as.vector(y.blev), w=rep(N,r[i]))
+      fit.uwlev <- .getMLE(x=x.blev, y=as.vector(y.blev), w=rep(N,rf[i]))
       beta.prop<-fit.uwlev$par
 
       Sample.uwlev[[i]]<-idx.blev
@@ -310,7 +310,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       }
 
       # shrinkage leverage sampling
-      idx.slev <- sample(1:N, size = r[i], replace = TRUE, PI.slev)
+      idx.slev <- sample(1:N, size = rf[i], replace = TRUE, PI.slev)
 
       x.slev <- X[idx.slev,]
       y.slev <- Y[idx.slev]
@@ -332,10 +332,10 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
 
     Sampling_Methods<-factor(c("Basic Leverage","Unweighted Leverage","Shrinkage Leverage"))
 
-    Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
+    Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(rf)),
                                 rbind(beta.blev,beta.uwlev,beta.slev))
 
-    names(Sample.blev)<-names(Sample.uwlev)<-names(Sample.slev)<-r
+    names(Sample.blev)<-names(Sample.uwlev)<-names(Sample.slev)<-rf
 
     message("Sampling completed.")
 
@@ -347,7 +347,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     return(ans)
   }
   if(family %in% c("poisson")){
-    r1<-round(min(r/2))
+    r1<-round(min(rf/2))
     PI.prop <- rep(1/N, N)
     idx.prop <- sample(1:N, size = r1, replace = TRUE)
 
@@ -375,23 +375,23 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
     PI.blev <- PP / sum(PP)
     PI.slev <- (S_alpha * PI.blev) + ((1-S_alpha) / N)
 
-    beta.blev<-beta.uwlev<-beta.slev<-matrix(nrow = length(r),ncol = ncol(X)+1 )
+    beta.blev<-beta.uwlev<-beta.slev<-matrix(nrow = length(rf),ncol = ncol(X)+1 )
     Sample.blev<-Sample.uwlev<-Sample.slev<-list()
 
-    beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-r
+    beta.blev[,1]<-beta.uwlev[,1]<-beta.slev[,1]<-rf
     if(all(X[,1] == 1)){
       colnames(beta.blev)<-colnames(beta.uwlev)<-
-        colnames(beta.slev)<-c("r",paste0("Beta_",0:(ncol(X)-1)))
+        colnames(beta.slev)<-c("rf",paste0("Beta_",0:(ncol(X)-1)))
     } else {
       colnames(beta.blev)<-colnames(beta.uwlev)<-
-        colnames(beta.slev)<-c("r",paste0("Beta_",1:(ncol(X))))
+        colnames(beta.slev)<-c("rf",paste0("Beta_",1:(ncol(X))))
     }
 
     message("Basic and shrinkage leverage probabilities calculated.\n")
 
-    for (i in 1:length(r)) {
+    for (i in 1:length(rf)) {
       # basic leverage sampling
-      idx.blev <- sample(1:N, size = r[i], replace = TRUE, prob = PI.blev)
+      idx.blev <- sample(1:N, size = rf[i], replace = TRUE, prob = PI.blev)
 
       x.blev <- X[idx.blev,]
       y.blev <- Y[idx.blev]
@@ -419,7 +419,7 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
       }
 
       # shrinkage leverage sampling
-      idx.slev <- sample(1:N, size = r[i], replace = TRUE, prob = PI.slev)
+      idx.slev <- sample(1:N, size = rf[i], replace = TRUE, prob = PI.slev)
 
       x.slev <- X[idx.slev,]
       y.slev <- Y[idx.slev]
@@ -441,10 +441,10 @@ LeverageSampling<-function(r,Y,X,N,S_alpha,family){
 
     Sampling_Methods<-factor(c("Basic Leverage","Unweighted Leverage","Shrinkage Leverage"))
 
-    Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(r)),
+    Beta_Data<-cbind.data.frame("Method"=rep(Sampling_Methods,each=length(rf)),
                                 rbind(beta.blev,beta.uwlev,beta.slev))
 
-    names(Sample.blev)<-names(Sample.uwlev)<-names(Sample.slev)<-r
+    names(Sample.blev)<-names(Sample.uwlev)<-names(Sample.slev)<-rf
 
     message("Sampling completed.")
 

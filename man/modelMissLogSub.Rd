@@ -4,12 +4,12 @@
 \alias{modelMissLogSub}
 \title{Subsampling under logistic regression for a potentially misspecified model}
 \usage{
-modelMissLogSub(r0,r,Y,X,N,Alpha,proportion,model="Auto")
+modelMissLogSub(r0,rf,Y,X,N,Alpha,proportion,model="Auto")
 }
 \arguments{
 \item{r0}{sample size for initial random sample}
 
-\item{r}{final sample size including initial(r0) and optimal(r1) samples}
+\item{rf}{final sample size including initial(r0) and optimal(r) samples}
 
 \item{Y}{response data or Y}
 
@@ -60,14 +60,14 @@ First stage is to obtain a random sample of size \eqn{r_0} and estimate the mode
 Using the estimated parameters subsampling probabilities are evaluated for A-, L-, L1-optimality criteria,
 RLmAMSE and enhanced RLmAMSE(log-odds and power) subsampling methods.
 
-Through the estimated subsampling probabilities a sample of size \eqn{r_1 \ge r_0} is obtained.
+Through the estimated subsampling probabilities a sample of size \eqn{r \ge r_0} is obtained.
 Finally, the two samples are combined and the model parameters are estimated for A-, L-, L1-optimality,
 RLmAMSE and enhanced RLmAMSE (log-odds and power).
 
 \strong{NOTE} :  If input parameters are not in given domain conditions
 necessary error messages will be provided to go further.
 
-If \eqn{r_1 \ge r_0} is not satisfied then an error message will be produced.
+If \eqn{r \ge r_0} is not satisfied then an error message will be produced.
 
 If the big data \eqn{X,Y} has any missing values then an error message will be produced.
 
@@ -92,13 +92,13 @@ Misspecification <- (Temp-mean(Temp))/sqrt(mean(Temp^2)-mean(Temp)^2)
 X_Data <- cbind(X0=1,X_1);
 Full_Data<-GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon=NULL,family)
 
-r0<-300; r<-rep(100*c(6,9),50);
+r0<-300; rf<-rep(100*c(6,9),50);
 Original_Data<-Full_Data$Complete_Data[,-ncol(Full_Data$Complete_Data)];
 
 # cl <- parallel::makeCluster(4)
 # doParallel::registerDoParallel(cl)
 \dontrun{
-Results<-modelMissLogSub(r0 = r0, r = r,
+Results<-modelMissLogSub(r0 = r0, rf = rf,
                          Y = as.matrix(Original_Data[,1]),
                          X = as.matrix(Original_Data[,-1]),
                          N = N, Alpha = 10, proportion = 0.3)

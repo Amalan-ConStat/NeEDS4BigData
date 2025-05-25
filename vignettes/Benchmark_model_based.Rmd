@@ -47,7 +47,7 @@ load("additionaldata/Results_Model_Based.Rdata")
 The `lm()`, `biglm()`, `glm()` and `bigglm()` functions are benchmarked against the model-based subsampling functions.
 Benchmarking is conducted across all three regression problems using a consistent setup throughout.
 For the big data sizes $N = \{10^4,5 \times 10^4,10^5,5 \times 10^5,10^6,5 \times 10^6\}$ and for five different Covariates sizes $\{5,10,25,50,100\}$, the functions were replicated $100$ times.
-When using the subsampling functions, the initial subsample sizes $\{100,100,250,500,1000\}$ were selected based on the covariate sizes, while the final subsample size was fixed at $2500$ to ensure successful implementation. 
+When using the subsampling functions, the initial subsample sizes $r_0=\{100,100,250,500,1000\}$ were selected based on the covariate sizes, while the final subsample size was fixed at $r_f=2500$ to ensure successful implementation. 
 
 ```{r N and Covariate size}
 N_size<-c(1,5,10,50,100,500)*10000
@@ -75,7 +75,7 @@ Replicates<-50
 
 # set the initial and final subsample sizes, 
 # with the distribution parameters to generate data
-r0<-c(1,1,2.5,5,10)*100; r<-2500;
+r0<-c(1,1,2.5,5,10)*100; rf<-2500;
 Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5); 
 Family<-"linear"
 
@@ -117,7 +117,7 @@ cat("Benchmarked biglm() function.\n")
 # benchmarking the NeEDS4BigData::AoptimalGauLMSub() function
 AoptimalGauLMSub<-sapply(1:Replicates,function(i){
   start_T<-Sys.time()
-  suppressMessages(AoptimalGauLMSub(r0[Covariate_idx],r,
+  suppressMessages(AoptimalGauLMSub(r0[Covariate_idx],rf,
                                     Y=as.matrix(Full_Data[,1]),
                                     X=as.matrix(Full_Data[,-1]),
                                     N=nrow(Full_Data)))
@@ -129,7 +129,7 @@ cat("Benchmarked AoptimalGauLMSub() function.\n")
 # benchmarking the NeEDS4BigData::LeverageSampling() function
 LeverageSampling<-sapply(1:Replicates,function(i){
   start_T<-Sys.time()
-  suppressMessages(LeverageSampling(r,
+  suppressMessages(LeverageSampling(rf,
                                     Y=as.matrix(Full_Data[,1]),
                                     X=as.matrix(Full_Data[,-1]),
                                     N=nrow(Full_Data),
@@ -143,7 +143,7 @@ cat("Benchmarked LeverageSampling() function.\n")
 # benchmarking the NeEDS4BigData::ALoptimalGLMSub() function
 ALoptimalGLMSub<-sapply(1:Replicates,function(i){
   start_T<-Sys.time()
-  suppressMessages(ALoptimalGLMSub(r0[Covariate_idx],r,
+  suppressMessages(ALoptimalGLMSub(r0[Covariate_idx],rf,
                                    Y=as.matrix(Full_Data[,1]),
                                    X=as.matrix(Full_Data[,-1]),
                                    N=nrow(Full_Data),
@@ -156,7 +156,7 @@ cat("Benchmarked ALoptimalGLMSub() function.\n")
 # benchmarking the NeEDS4BigData::AoptimalMCGLMSub() function
 AoptimalMCGLMSub<-sapply(1:Replicates,function(i){
   start_T<-Sys.time()
-  suppressMessages(AoptimalMCGLMSub(r0[Covariate_idx],r,
+  suppressMessages(AoptimalMCGLMSub(r0[Covariate_idx],rf,
                                     Y=as.matrix(Full_Data[,1]),
                                     X=as.matrix(Full_Data[,-1]),
                                     N=nrow(Full_Data),

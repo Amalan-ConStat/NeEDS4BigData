@@ -5,10 +5,10 @@
 #' optimality criteria.
 #'
 #' @usage
-#' modelRobustPoiSub(r0,r,Y,X,N,Apriori_probs,All_Combinations,All_Covariates)
+#' modelRobustPoiSub(r0,rf,Y,X,N,Apriori_probs,All_Combinations,All_Covariates)
 #'
 #' @param r0      sample size for initial random sample
-#' @param r       final sample size including initial(r0) and optimal(r1) samples
+#' @param rf      final sample size including initial(r0) and optimal(r) samples
 #' @param Y       response data or Y
 #' @param X       covariate data or X matrix that has all the covariates (first column is for the intercept)
 #' @param N       size of the big data
@@ -24,13 +24,13 @@
 #' Using the estimated parameters subsampling probabilities are evaluated for A-, L-optimality criteria and
 #' model averaging A-, L-optimality subsampling methods.
 #'
-#' Through the estimated subsampling probabilities a sample of size \eqn{r_1 \ge r_0} is obtained.
+#' Through the estimated subsampling probabilities a sample of size \eqn{r \ge r_0} is obtained.
 #' Finally, the two samples are combined and the model parameters are estimated for all the models.
 #'
 #' \strong{NOTE} :  If input parameters are not in given domain conditions
 #' necessary error messages will be provided to go further.
 #'
-#' If \eqn{r_1 \ge r_0} is not satisfied then an error message will be produced.
+#' If \eqn{r \ge r_0} is not satisfied then an error message will be produced.
 #'
 #' If the big data \eqn{X,Y} has any missing values then an error message will be produced.
 #'
@@ -89,9 +89,9 @@
 #' All_Models<-All_Models[1:6]
 #' names(All_Models)<-paste0("Model_",1:length(All_Models))
 #'
-#' r0<-300; r<-rep(100*c(6,9),25);
+#' r0<-300; rf<-rep(100*c(6,9),25);
 #'
-#' modelRobustPoiSub(r0 = r0, r = r, Y = as.matrix(Original_Data[,1]),
+#' modelRobustPoiSub(r0 = r0, rf = rf, Y = as.matrix(Original_Data[,1]),
 #'                   X = as.matrix(Original_Data[,-1]),N = nrow(Original_Data),
 #'                   Apriori_probs = rep(1/length(All_Models),length(All_Models)),
 #'                   All_Combinations = All_Models,
@@ -104,9 +104,9 @@
 #' @importFrom psych tr
 #' @importFrom matrixStats rowSums2
 #' @export
-modelRobustPoiSub <- function(r0,r,Y,X,N,Apriori_probs,All_Combinations,All_Covariates){
-  if(any(is.na(c(r0,r,N,Apriori_probs,All_Covariates))) | any(is.nan(c(r0,r,N,Apriori_probs,All_Covariates)))){
-    stop("NA or Infinite or NAN values in the r0,r,N,Apriori_probs or All_Covariates")
+modelRobustPoiSub <- function(r0,rf,Y,X,N,Apriori_probs,All_Combinations,All_Covariates){
+  if(any(is.na(c(r0,rf,N,Apriori_probs,All_Covariates))) | any(is.nan(c(r0,rf,N,Apriori_probs,All_Covariates)))){
+    stop("NA or Infinite or NAN values in the r0,rf,N,Apriori_probs or All_Covariates")
   }
 
   if((length(r0) + length(N)) != 2){
@@ -121,8 +121,8 @@ modelRobustPoiSub <- function(r0,r,Y,X,N,Apriori_probs,All_Combinations,All_Cova
     stop("NA or Infinite or NAN values in the Y or X")
   }
 
-  if(any((2*r0) > r)){
-    stop("2*r0 cannot be greater than r at any point")
+  if(any((2*r0) > rf)){
+    stop("2*r0 cannot be greater than rf at any point")
   }
 
   if(length(Apriori_probs) != length(All_Combinations)){
@@ -173,12 +173,12 @@ modelRobustPoiSub <- function(r0,r,Y,X,N,Apriori_probs,All_Combinations,All_Cova
   # For the models, Single and Model Robust
   for (a in 1:length(All_Combinations))
   {
-    beta.mVc_Single[[a]]<-matrix(nrow = length(r),ncol = length(All_Combinations[[a]])+1 ) # Single Model Results
-    beta.mMSE_Single[[a]]<-matrix(nrow = length(r),ncol = length(All_Combinations[[a]])+1 )
+    beta.mVc_Single[[a]]<-matrix(nrow = length(rf),ncol = length(All_Combinations[[a]])+1 ) # Single Model Results
+    beta.mMSE_Single[[a]]<-matrix(nrow = length(rf),ncol = length(All_Combinations[[a]])+1 )
     Sample.mMSE_Single[[a]]<-Sample.mVc_Single[[a]]<-list()
 
-    beta.mVc_MR[[a]]<-matrix(nrow = length(r),ncol = length(All_Combinations[[a]])+1 ) # Model Robust Results
-    beta.mMSE_MR[[a]]<-matrix(nrow = length(r),ncol = length(All_Combinations[[a]])+1 )
+    beta.mVc_MR[[a]]<-matrix(nrow = length(rf),ncol = length(All_Combinations[[a]])+1 ) # Model Robust Results
+    beta.mMSE_MR[[a]]<-matrix(nrow = length(rf),ncol = length(All_Combinations[[a]])+1 )
     Sample.mMSE_MR[[a]]<-Sample.mVc_MR[[a]]<-list()
 
     Sample.mMSE_Single[[a]][[1]]<-Sample.mVc_Single[[a]][[1]]<-
@@ -186,10 +186,10 @@ modelRobustPoiSub <- function(r0,r,Y,X,N,Apriori_probs,All_Combinations,All_Cova
 
     if(all(x.prop[[a]][,1] == 1)){
       colnames(beta.mVc_Single[[a]])<-colnames(beta.mMSE_Single[[a]])<-colnames(beta.mVc_MR[[a]])<-
-        colnames(beta.mMSE_MR[[a]])<-c("r",paste0("Beta_",0:(length(All_Combinations[[a]])-1)))
+        colnames(beta.mMSE_MR[[a]])<-c("rf",paste0("Beta_",0:(length(All_Combinations[[a]])-1)))
     } else {
       colnames(beta.mVc_Single[[a]])<-colnames(beta.mMSE_Single[[a]])<-colnames(beta.mVc_MR[[a]])<-
-        colnames(beta.mMSE_MR[[a]])<-c("r",paste0("Beta_",1:(length(All_Combinations[[a]]))))
+        colnames(beta.mMSE_MR[[a]])<-c("rf",paste0("Beta_",1:(length(All_Combinations[[a]]))))
     }
   }
 
@@ -216,13 +216,13 @@ modelRobustPoiSub <- function(r0,r,Y,X,N,Apriori_probs,All_Combinations,All_Cova
 
   message("Step 1 of the algorithm completed.\n")
 
-  for (i in 1:length(r))
+  for (i in 1:length(rf))
   {
     ## mVc
     idx_Single.mVc <- lapply(1:length(All_Combinations), function(j){
-      sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI_Single.mVc[[j]]) # Single Model Results
+      sample(1:N, size = rf[i]-r0, replace = TRUE, prob = PI_Single.mVc[[j]]) # Single Model Results
     })
-    idx_MR.mVc <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI_MR.mVc) # Model Robust Results
+    idx_MR.mVc <- sample(1:N, size = rf[i]-r0, replace = TRUE, prob = PI_MR.mVc) # Model Robust Results
 
     x_Single.mVc <-lapply(1:length(All_Combinations),function(j){ # Single Model Results
       X[c(idx_Single.mVc[[j]], idx.prop),All_Covariates %in% All_Combinations[[j]] ]
@@ -251,8 +251,8 @@ modelRobustPoiSub <- function(r0,r,Y,X,N,Apriori_probs,All_Combinations,All_Cova
       Sample.mVc_Single[[j]][[i+1]]<-idx_Single.mVc[[j]]
       Sample.mVc_MR[[j]][[i+1]]<-idx_MR.mVc
 
-      beta.mVc_Single[[j]][i,] <- c(r[i],fit_Single.mVc[[j]]$coefficients)
-      beta.mVc_MR[[j]][i,] <- c(r[i],fit_MR.mVc[[j]]$coefficients)
+      beta.mVc_Single[[j]][i,] <- c(rf[i],fit_Single.mVc[[j]]$coefficients)
+      beta.mVc_MR[[j]][i,] <- c(rf[i],fit_MR.mVc[[j]]$coefficients)
 
       if(anyNA(fit_Single.mVc[[j]]$coefficients) || anyNA(fit_MR.mVc[[j]]$coefficients)){
         stop("There are NA or NaN values in the model parameters")
@@ -261,9 +261,9 @@ modelRobustPoiSub <- function(r0,r,Y,X,N,Apriori_probs,All_Combinations,All_Cova
 
     ## mMSE
     idx_Single.mMSE <- lapply(1:length(All_Combinations),function(j){
-      sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI_Single.mMSE[[j]]) # Single Model Results
+      sample(1:N, size = rf[i]-r0, replace = TRUE, prob = PI_Single.mMSE[[j]]) # Single Model Results
     })
-    idx_MR.mMSE <- sample(1:N, size = r[i]-r0, replace = TRUE, prob = PI_MR.mMSE) # Model Robust Results
+    idx_MR.mMSE <- sample(1:N, size = rf[i]-r0, replace = TRUE, prob = PI_MR.mMSE) # Model Robust Results
 
     x_Single.mMSE <- lapply(1:length(All_Combinations),function(j){
       X[c(idx_Single.mMSE[[j]], idx.prop),All_Covariates %in% All_Combinations[[j]] ] # Single Model Results
@@ -294,8 +294,8 @@ modelRobustPoiSub <- function(r0,r,Y,X,N,Apriori_probs,All_Combinations,All_Cova
 
       Sample.mMSE_MR[[j]][[i+1]]<-idx_MR.mMSE # Model Robust Results
 
-      beta.mMSE_Single[[j]][i,] <-c(r[i],fit_Single.mMSE[[j]]$coefficients) # Single Model Results
-      beta.mMSE_MR[[j]][i,] <-c(r[i],fit_MR.mMSE[[j]]$coefficients) # Model Robust Results
+      beta.mMSE_Single[[j]][i,] <-c(rf[i],fit_Single.mMSE[[j]]$coefficients) # Single Model Results
+      beta.mMSE_MR[[j]][i,] <-c(rf[i],fit_MR.mMSE[[j]]$coefficients) # Model Robust Results
 
       if(anyNA(fit_Single.mMSE[[j]]$coefficients) || anyNA(fit_MR.mMSE[[j]]$coefficients)){
         stop("There are NA or NaN values in the model parameters")
@@ -314,12 +314,12 @@ modelRobustPoiSub <- function(r0,r,Y,X,N,Apriori_probs,All_Combinations,All_Cova
 
   for (j in 1:length(All_Combinations))
   {
-    Beta_Data[[j]]<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(r)),
+    Beta_Data[[j]]<-cbind.data.frame("Method"=rep(Subsampling_Methods,each=length(rf)),
                                      rbind(beta.mMSE_Single[[j]],beta.mVc_Single[[j]],
                                            beta.mMSE_MR[[j]],beta.mVc_MR[[j]]))
 
     names(Sample.mVc_Single[[j]])<-names(Sample.mMSE_Single[[j]])<-
-      names(Sample.mVc_MR[[j]])<-names(Sample.mMSE_MR[[j]])<-c(r0,r)
+      names(Sample.mVc_MR[[j]])<-names(Sample.mMSE_MR[[j]])<-c(r0,rf)
   }
 
   names(Beta_Data)<-paste0("Model_",1:length(All_Combinations))
