@@ -162,19 +162,25 @@ modelMissLogSub <- function(r0,rf,Y,X,N,Alpha,proportion,model="Auto"){
     stop("The model for GAM is not a valid formula or input")
   }
 
-  n1 <- sum(Y)
-  n0 <- N - n1
-  PI.prop <- rep(1/(2*n0), N)
-  PI.prop[Y==1] <- 1/(2*n1)
-  idx.prop <- sample(1:N, size = r0, replace = TRUE, prob = PI.prop)
+  # n1 <- sum(Y)
+  # n0 <- N - n1
+  # PI.prop <- rep(1/(2*n0), N)
+  # PI.prop[Y==1] <- 1/(2*n1)
+  # pinv.prop <- 1/PI.prop[idx.prop]
+
+  pinv.prop <- rep(N,r0)
+  idx.prop <- .stratified_sample_indices(Y,r0)
+  #idx.prop <- sample(1:N, size = r0, replace = TRUE, prob = PI.prop)
 
   x.prop <- X[idx.prop,]
   y.prop <- Y[idx.prop]
-  pinv.prop <- N
-  pinv.prop <- 1/PI.prop[idx.prop]
-  fit.prop <- .getMLE(x=x.prop, y=y.prop, w=pinv.prop)
 
-  beta.prop <- fit.prop$par
+  # fit.prop <- .getMLE(x=x.prop, y=y.prop, w=pinv.prop)
+  # beta.prop <- fit.prop$par
+
+  glm(y.prop~x.prop-1,family = binomial)->Results
+  beta.prop <- Results$coefficients
+
   if (anyNA(beta.prop)){
     stop("There are NA or NaN values in the model parameters")
   }
@@ -189,14 +195,21 @@ modelMissLogSub <- function(r0,rf,Y,X,N,Alpha,proportion,model="Auto"){
   f_estimate<-Xbeta_GAM - Xbeta_Final
 
   if(proportion*N != r0){
-    idx.proportion <- sample(1:N, size = ceiling(proportion*N), replace = TRUE, prob = PI.prop)
+
+    pinv.proportion <- rep(N, ceiling(proportion*N))
+    idx.proportion <-.stratified_sample_indices(Y, ceiling(proportion*N))
+    #pinv.proportion <- 1/PI.prop[idx.proportion]
+    #idx.proportion <- sample(1:N, size = ceiling(proportion*N), replace = TRUE, prob = PI.prop)
 
     Y_proportion <- Y[idx.proportion]
     X_proportion <- X[idx.proportion,]
-    pinv.proportion <- 1/PI.prop[idx.proportion]
-    fit.proportion <- .getMLE(x=X_proportion, y=Y_proportion, w=pinv.proportion)
 
-    beta.proportion <- fit.proportion$par
+    glm(Y_proportion~X_proportion-1,family = binomial)->fit.proportion
+    beta.proportion <- fit.proportion$coefficients
+
+    #fit.proportion <- .getMLE(x=X_proportion, y=Y_proportion, w=pinv.proportion)
+    #beta.proportion <- fit.proportion$par
+
     Xbeta_proportion <- X %*% beta.proportion
 
     Assumed_Data<-data.frame(Y=Y_proportion,X_proportion)

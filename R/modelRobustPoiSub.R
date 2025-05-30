@@ -86,7 +86,7 @@
 #'     term_no <- term_no+1
 #'   }
 #' }
-#' All_Models<-All_Models[1:6]
+#' All_Models<-All_Models[1:4]
 #' names(All_Models)<-paste0("Model_",1:length(All_Models))
 #'
 #' r0<-300; rf<-rep(100*c(6,9),25);

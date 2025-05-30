@@ -371,3 +371,20 @@ modelRobustLogSub <- function(r0,rf,Y,X,N,Apriori_probs,All_Combinations,All_Cov
   }
   list(par=beta, message=msg, iter=loop)
 }
+
+.stratified_sample_indices <- function(response, n_total) {
+  ind_0 <- which(response == 0)
+  ind_1 <- which(response == 1)
+  p_0 <- length(ind_0) / length(response)
+  p_1 <- 1 - p_0  # or length(ind_1) / length(response)
+
+  n_0 <- round(n_total * p_0)
+  n_1 <- n_total - n_0  # to ensure n_total
+
+  # Sampled indices
+  samp_ind_0 <- sample(ind_0, size = n_0)
+  samp_ind_1 <- sample(ind_1, size = n_1)
+
+  # Return combined indices
+  sort(c(samp_ind_0, samp_ind_1))
+}
