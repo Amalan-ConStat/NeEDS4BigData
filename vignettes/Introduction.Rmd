@@ -66,6 +66,6 @@ As of now in this package we focus on the subsampling methods
 4. A-optimality based subsampling for Gaussian Linear Model by @lee2021fast.
 5. A- and L-optimality based subsampling methods for Generalised Linear Models under response not involved in probability calculation by @zhang2021optimal.
 6. A- and L-optimality based model robust/average subsampling methods for Generalised Linear Models by @mahendran2023model.
-7. Subsampling for Generalised Linear Models under potential model misspecification as by @adewale2009robust and @adewale2010robust.
+7. Subsampling for Generalised Linear Models under potential model misspecification as by @Amalan2025Misspecification, @adewale2009robust and @adewale2010robust.
 
 ## References

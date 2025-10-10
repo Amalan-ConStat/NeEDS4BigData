@@ -85,6 +85,7 @@
 #'
 #' @references
 #' \insertRef{mcfee2012million}{NeEDS4BigData}
+#' @references
 #' \insertRef{ai2021optimal}{NeEDS4BigData}
 #'
 "One_million_songs"
@@ -289,6 +290,7 @@ GenGLMdata<-function(Dist,Dist_Par,No_Of_Var,Beta,N,family){
 #'
 #' @references
 #' \insertRef{adewale2009robust}{NeEDS4BigData}
+#' @references
 #' \insertRef{adewale2010robust}{NeEDS4BigData}
 #'
 #' @examples

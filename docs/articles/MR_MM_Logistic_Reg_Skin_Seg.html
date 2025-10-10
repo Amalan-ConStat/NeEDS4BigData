@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NeEDS4BigData</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -451,12 +451,13 @@ method under the assumption that the main effects model is potentially
 misspecified against the <span class="math inline">\(A\)</span>- and
 <span class="math inline">\(L\)</span>-optimality subsampling method.
 Under the subsampling method that accounts for potential model
-misspecification we take the scaling factor of <span class="math inline">\(\alpha=10\)</span>. As in scenario one an two the
-number of simulations and the sample sizes stay the same. We compare the
-mean squared error of the estimated model parameters, however as we
-assume the model is potentially misspecified the asymptotic
-approximation of the mean squared error from the predictions are
-calculated as well. Below is the code for this implementation.</p>
+misspecification we take the scaling factor of <span class="math inline">\(\alpha=10\)</span><span class="citation">(Mahendran, Thompson, and McGree 2025)</span>. As in
+scenario one an two the number of simulations and the sample sizes stay
+the same. We compare the mean squared error of the estimated model
+parameters, however as we assume the model is potentially misspecified
+the asymptotic approximation of the mean squared error from the
+predictions are calculated as well. Below is the code for this
+implementation.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the subsampling methods and their respective colours, shapes and line types</span></span>
 <span><span class="va">Method_Names</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A-Optimality"</span>,<span class="st">"L-Optimality"</span>,<span class="st">"L1-Optimality"</span>,<span class="st">"RLmAMSE"</span>,</span>
@@ -545,6 +546,11 @@ Ai, Mingyao, Jun Yu, Huiming Zhang, and HaiYing Wang. 2021.
 Mahendran, Amalan, Helen Thompson, and James M McGree. 2023. <span>“A
 Model Robust Subsampling Approach for Generalised Linear Models in Big
 Data Settings.”</span> <em>Statistical Papers</em> 64 (4): 1137–57.
+</div>
+<div id="ref-Amalan2025Misspecification" class="csl-entry">
+Mahendran, Amalan, Helen Thompson, and James M. McGree. 2025. <span>“A
+Subsampling Approach for Large Data Sets When the Generalised Linear
+Model Is Potentially Misspecified.”</span> <a href="https://arxiv.org/abs/2510.05902" class="external-link">https://arxiv.org/abs/2510.05902</a>.
 </div>
 <div id="ref-rajen2012skin" class="csl-entry">
 Rajen, Bhatt, and Dhall Abhinav. 2012. <span>“Skin Segmentation

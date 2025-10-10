@@ -52,6 +52,7 @@
 #'
 #' @references
 #' \insertRef{ma2014statistical}{NeEDS4BigData}
+#' @references
 #' \insertRef{ma2015leveraging}{NeEDS4BigData}
 #'
 #' @examples

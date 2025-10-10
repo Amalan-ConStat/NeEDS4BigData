@@ -103,5 +103,6 @@ plot_Beta(Results)
 }
 \references{
 \insertRef{ma2014statistical}{NeEDS4BigData}
+
 \insertRef{ma2015leveraging}{NeEDS4BigData}
 }

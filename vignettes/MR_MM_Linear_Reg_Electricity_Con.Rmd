@@ -188,7 +188,7 @@ ggarrange(plotlist = plot_list_MR,nrow = 3,ncol = 2,labels = "auto",
 ## Main effects model is potentially misspecified
 
 The final scenario is for comparison of the subsampling method under the assumption that the main effects model is potentially misspecified against the $A$- and $L$-optimality subsampling method. 
-Under the subsampling method that accounts for potential model misspecification we take the scaling factor of $\alpha=10$. 
+Under the subsampling method that accounts for potential model misspecification we take the scaling factor of $\alpha=10$[@Amalan2025Misspecification]. 
 As in the above scenarios the number of simulations and the sample sizes stay the same. 
 We compare the mean squared error of the estimated model parameters, however as we assume the model is potentially misspecified the asymptotic approximation of the mean squared error from the predictions are calculated as well.
 Below is the code for this implementation.

@@ -75,7 +75,10 @@
 #'
 #' @references
 #' \insertRef{adewale2009robust}{NeEDS4BigData}
+#' @references
 #' \insertRef{adewale2010robust}{NeEDS4BigData}
+#' @references
+#' \insertRef{Amalan2025Misspecification}{NeEDS4BigData}
 #'
 #' @examples
 #' Beta<-c(-1,0.75,0.75,1); Var_Epsilon<-0.5; family <- "linear"; N<-10000

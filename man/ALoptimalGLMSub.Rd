@@ -100,6 +100,8 @@ plot_Beta(Results)
 }
 \references{
 \insertRef{wang2018optimal}{NeEDS4BigData}
+
 \insertRef{ai2021optimal}{NeEDS4BigData}
+
 \insertRef{yao2021review}{NeEDS4BigData}
 }

@@ -112,5 +112,8 @@ plot_AMSE(Results)
 }
 \references{
 \insertRef{adewale2009robust}{NeEDS4BigData}
+
 \insertRef{adewale2010robust}{NeEDS4BigData}
+
+\insertRef{Amalan2025Misspecification}{NeEDS4BigData}
 }

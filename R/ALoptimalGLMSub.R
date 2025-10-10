@@ -52,7 +52,9 @@
 #'
 #' @references
 #' \insertRef{wang2018optimal}{NeEDS4BigData}
+#' @references
 #' \insertRef{ai2021optimal}{NeEDS4BigData}
+#' @references
 #' \insertRef{yao2021review}{NeEDS4BigData}
 #'
 #' @examples
