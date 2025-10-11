@@ -3,20 +3,19 @@ Package: NeEDS4BigData
 Title: New Experimental Design Based Subsampling Methods for Big Data
 Version: 1.0.1
 Authors@R: person(given = "Amalan", family = "Mahendran", email = "amalan0595@gmail.com", role = c("aut", "cre"),comment = c(ORCID = "0000-0002-0643-9052"))
-Maintainer: The package maintainer <amalan0595@gmail.com>
+Maintainer: Amalan Mahendran <amalan0595@gmail.com>
 Description: Subsampling methods for big data under different models and assumptions.
     Starting with linear regression and leading to Generalised Linear Models, softmax
     regression, and quantile regression. Specifically, the model-robust subsampling method 
-    proposed by Mahendran et al (2023) (<doi:10.1007/s00362-023-01446-9>), where multiple 
+    proposed in (<doi:10.1007/s00362-023-01446-9>), where multiple 
     models can describe the big data, and the subsampling framework for potentially 
-    misspecified Generalised Linear Models by De Silva and Mahendran (2025) 
-    (<arXiv:2510.05902>).
+    misspecified Generalised Linear Models in (<doi:10.48550/arXiv.2510.05902>).
 License: MIT + file LICENSE
 URL:
   https://github.com/Amalan-ConStat/NeEDS4BigData,https://amalan-constat.github.io/NeEDS4BigData/index.html
 BugReports: https://github.com/Amalan-ConStat/NeEDS4BigData/issues
 Depends: 
-    R (>= 4.0.0)
+    R (>= 4.1.0)
 Imports:
     dplyr,
     foreach,
