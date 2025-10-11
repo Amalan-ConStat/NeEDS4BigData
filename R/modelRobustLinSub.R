@@ -127,7 +127,8 @@ modelRobustLinSub <- function(r0,rf,Y,X,N,Apriori_probs,All_Combinations,All_Cov
     stop("No of models for averaging is not equal to the a priori probabilities")
   }
 
-  if(any(Apriori_probs > 1) | any(Apriori_probs < 0) | sum(Apriori_probs) != 1){
+  if(any(Apriori_probs > 1) | any(Apriori_probs < 0) ||
+     abs(sum(Apriori_probs) - 1) > .Machine$double.eps^0.5){
     stop("A priori probabilities not inbetween zero and one or the sum is one")
   }
 

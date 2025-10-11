@@ -3,7 +3,7 @@ Package: NeEDS4BigData
 Title: New Experimental Design Based Subsampling Methods for Big Data
 Version: 1.0.1
 Authors@R: person(given = "Amalan", family = "Mahendran", email = "amalan0595@gmail.com", role = c("aut", "cre"),comment = c(ORCID = "0000-0002-0643-9052"))
-Maintainer: The package maintainer <yourself@somewhere.net>
+Maintainer: The package maintainer <amalan0595@gmail.com>
 Description: Subsampling methods for big data under different models and assumptions.
     Starting with linear regression and leading to Generalised Linear Models, softmax
     regression, and quantile regression. Specifically, the model-robust subsampling method 
@@ -41,7 +41,9 @@ Suggests:
     parallel,
     rmarkdown,
     spelling,
-    testthat
+    testthat,
+    vctrs,
+    pillar
 Encoding: UTF-8
 Language: en-GB
 LazyData: true

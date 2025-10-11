@@ -39,7 +39,7 @@ Theme_special<-function(){
         legend.box.margin=margin(-1,-2,-1,-2))
 }
 
-load("additionaldata/Results_Model_Misspecification.Rdata")
+invisible(load("additionaldata/Results_Model_Misspecification.Rdata"))
 ```
 
 ## Setup
