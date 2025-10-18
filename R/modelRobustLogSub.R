@@ -63,7 +63,6 @@
 #' Original_Data<-cbind(Skin_segmentation[indexes,1],1,Skin_segmentation[indexes,-1])
 #' colnames(Original_Data)<-c("Y",paste0("X",0:ncol(Original_Data[,-c(1,2)])))
 #'
-#' # Scaling the covariate data
 #' for (j in 3:5) {
 #'   Original_Data[,j]<-scale(Original_Data[,j])
 #' }

@@ -42,23 +42,15 @@ Poisson regression through normal and uniform distribution.
 \examples{
 No_Of_Var<-2; Beta<-c(-1,2,1); N<-5000;
 
-# Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1,Error_Variance=0.5)
 Dist<-"MVNormal";
 Dist_Par<-list(Mean=rep(0,No_Of_Var),Variance=diag(rep(2,No_Of_Var)),Error_Variance=0.5)
-# Dist<-"Uniform"; Dist_Par<-list(Min=0,Max=1)
-
 Family<-"linear"
 Results<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
 Dist<-"Normal"; Dist_Par<-list(Mean=0,Variance=1);
-# Dist<-"MVNormal"; Dist_Par<-list(Mean=rep(0,No_Of_Var),Variance=diag(rep(2,No_Of_Var)))
-# Dist<-"Exponential"; Dist_Par<-list(Rate=3)
-# Dist<-"Uniform"; Dist_Par<-list(Min=0,Max=1)
-
 Family<-"logistic"
 Results<-GenGLMdata(Dist,Dist_Par,No_Of_Var,Beta,N,Family)
 
-# Dist<-"Normal";
 Dist<-"Uniform"; Family<-"poisson"
 Results<-GenGLMdata(Dist,NULL,No_Of_Var,Beta,N,Family)
 

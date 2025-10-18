@@ -7,9 +7,10 @@ Maintainer: Amalan Mahendran <amalan0595@gmail.com>
 Description: Subsampling methods for big data under different models and assumptions.
     Starting with linear regression and leading to Generalised Linear Models, softmax
     regression, and quantile regression. Specifically, the model-robust subsampling method 
-    proposed in (<doi:10.1007/s00362-023-01446-9>), where multiple 
-    models can describe the big data, and the subsampling framework for potentially 
-    misspecified Generalised Linear Models in (<doi:10.48550/arXiv.2510.05902>).
+    proposed in Mahendran, A., Thompson, H., and McGree, J. M. (2023) <doi:10.1007/s00362-023-01446-9>, 
+    where multiple models can describe the big data, and the subsampling framework for potentially 
+    misspecified Generalised Linear Models in Mahendran, A., Thompson, H., and McGree, J. M. (2025)
+    <doi:10.48550/arXiv.2510.05902>.
 License: MIT + file LICENSE
 URL:
   https://github.com/Amalan-ConStat/NeEDS4BigData,https://amalan-constat.github.io/NeEDS4BigData/index.html

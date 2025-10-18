@@ -86,30 +86,26 @@ or NAN or not one of the defined inputs an error message is printed. As a defaul
 \code{model="Auto"}, which is the main effects model wit the spline terms.
 }
 \examples{
-Beta<-c(-1,0.75,0.75,1); Var_Epsilon<-0.5; family <- "linear"; N<-10000
-X_1 <- replicate(2,stats::runif(n=N,min = -1,max = 1))
+Beta <- c(-1, 0.75, 0.75, 1); Var_Epsilon <- 0.5;
+family <- "linear"; N <- 500
+X_1 <- replicate(2, stats::runif(n = N, min = -1, max = 1))
 
-Temp<-Rfast::rowprods(X_1)
-Misspecification <- (Temp-mean(Temp))/sqrt(mean(Temp^2)-mean(Temp)^2)
-X_Data <- cbind(X0=1,X_1);
-Full_Data<-GenModelMissGLMdata(N,X_Data,Misspecification,Beta,Var_Epsilon,family)
+Temp <- Rfast::rowprods(X_1)
+Misspecification <- (Temp - mean(Temp)) / sqrt(mean(Temp^2) - mean(Temp)^2)
+X_Data <- cbind(X0 = 1, X_1)
 
-r0<-300; rf<-rep(100*c(6,9),50);
-Original_Data<-Full_Data$Complete_Data[,-ncol(Full_Data$Complete_Data)];
+Full_Data <- GenModelMissGLMdata(N, X_Data, Misspecification, Beta, Var_Epsilon, family)
+r0 <- 40; rf <- rep(10 * c(8, 12), 25)
+Original_Data <- Full_Data$Complete_Data[, -ncol(Full_Data$Complete_Data)]
 
-# cl <- parallel::makeCluster(4)
-# doParallel::registerDoParallel(cl)
-\dontrun{
-Results<-modelMissLinSub(r0 = r0, rf = rf,
-                         Y = as.matrix(Original_Data[,1]),
-                         X = as.matrix(Original_Data[,-1]),
-                         N = N, Alpha = 10, proportion = 0.3)
-
-# parallel::stopCluster(cl)
+Results <- modelMissLinSub(r0 = r0, rf = rf,
+                           Y = as.matrix(Original_Data[, 1]),
+                           X = as.matrix(Original_Data[, -1]),
+                           N = N, Alpha = 10, proportion = 0.5)
 
 plot_Beta(Results)
 plot_AMSE(Results)
-}
+
 
 }
 \references{
